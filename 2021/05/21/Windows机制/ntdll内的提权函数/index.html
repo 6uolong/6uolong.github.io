@@ -313,10 +313,10 @@
         
         
         <a  class="All 代码混淆 "
-           href="/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/"
+           href="/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="从零开始的MBA混淆">从零开始的MBA混淆</span>
+            <span class="post-title" title="从零开始的MBA混淆(1)">从零开始的MBA混淆(1)</span>
             <span class="post-date" title="2023-10-23 00:00:00">2023/10/23</span>
         </a>
         
@@ -349,19 +349,19 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/09/10/C%E5%92%8CCPP/C++%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
+           href="/2022/09/10/C%E5%92%8CCPP/C++%E4%B8%AD%E7%9A%84%E9%87%8D%E5%86%99,%E9%9A%90%E8%97%8F,%E9%87%8D%E8%BD%BD/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C++踩坑笔记">C++踩坑笔记</span>
+            <span class="post-title" title="C++中的重写、隐藏与重载的区别">C++中的重写、隐藏与重载的区别</span>
             <span class="post-date" title="2022-09-10 00:00:00">2022/09/10</span>
         </a>
         
         
         <a  class="All C和CPP "
-           href="/2022/09/10/C%E5%92%8CCPP/C++%E4%B8%AD%E7%9A%84%E9%87%8D%E5%86%99,%E9%9A%90%E8%97%8F,%E9%87%8D%E8%BD%BD/"
+           href="/2022/09/10/C%E5%92%8CCPP/C++%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C++中的重写、隐藏与重载的区别">C++中的重写、隐藏与重载的区别</span>
+            <span class="post-title" title="C++踩坑笔记">C++踩坑笔记</span>
             <span class="post-date" title="2022-09-10 00:00:00">2022/09/10</span>
         </a>
         
@@ -448,19 +448,19 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言零碎(2)">C语言零碎(2)</span>
+            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
+            <span class="post-title" title="C语言零碎(2)">C语言零碎(2)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -707,10 +707,6 @@
 </article>
 
 
-<p>
-    <a  class="dashang" onclick="dashangToggle()">💰</a>
-</p>
-
 
 
 
@@ -736,24 +732,6 @@
     </div>
 </div>
 
-<div class="hide_box" onclick="dashangToggle()"></div>
-<div class="shang_box">
-    <a class="shang_close"  onclick="dashangToggle()">×</a>
-    <div class="shang_tit">
-        <p>Help us with donation</p>
-    </div>
-    <div class="shang_payimg">
-        <div class="pay_img">
-            <img src="/img/alipay.jpg" class="alipay" title="扫码支持">
-            <img src="/img/weixin.jpg" class="weixin" title="扫码支持">
-        </div>
-    </div>
-    <div class="shang_payselect">
-        <span><label><input type="radio" name="pay" checked value="alipay">alipay</label></span><span><label><input type="radio" name="pay" value="weixin">weixin</label></span>
-    </div>
-</div>
-
-
 </body>
 <script src="/js/jquery.pjax.js?v=1.1.0" ></script>
 
@@ -767,14 +745,6 @@
         
 
         /*渲染打赏样式*/
-        
-        $("input[name=pay]").on("click", function () {
-            if($("input[name=pay]:checked").val()=="weixin"){
-                $(".shang_box .shang_payimg .pay_img").addClass("weixin_img");
-            } else {
-                $(".shang_box .shang_payimg .pay_img").removeClass("weixin_img");
-            }
-        })
         
 
         /*高亮代码块行号*/
@@ -793,11 +763,6 @@
     }
 
     /*打赏页面隐藏与展示*/
-    
-    function dashangToggle() {
-        $(".shang_box").fadeToggle();
-        $(".hide_box").fadeToggle();
-    }
     
 
 </script>
