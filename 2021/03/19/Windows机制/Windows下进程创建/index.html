@@ -6,17 +6,21 @@
   <meta name="keywords" content="">
   <meta name="description" content="Windows进程创建过程 | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： 12int a, b;int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b 线性MBA线性MBA常用于运算混淆中，它的定义如">
+<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从零开始的MBA混淆">
-<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
+<meta property="og:title" content="基于雪崩猜想的混淆构造">
+<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： 12int a, b;int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b 线性MBA线性MBA常用于运算混淆中，它的定义如">
+<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-23T13:10:47.619Z">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
+<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -115,7 +119,7 @@
     <li>
         <div class="all active" data-rel="All">All
             
-                <small>(34)</small>
+                <small>(35)</small>
             
         </div>
     </li>
@@ -157,7 +161,7 @@
         <div data-rel="代码混淆">
             
             代码混淆
-            <small>(2)</small>
+            <small>(3)</small>
         </div>
         
     </li>
@@ -245,7 +249,7 @@
         
     </div>
 </div>
-<input type="hidden" id="yelog_site_posts_number" value="34">
+<input type="hidden" id="yelog_site_posts_number" value="35">
 
 <div style="display: none">
     <span id="busuanzi_value_site_uv"></span>
@@ -297,6 +301,15 @@
 
     
     <nav id="title-list-nav">
+        
+        
+        <a  class="All 代码混淆 "
+           href="/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="基于雪崩猜想的混淆构造">基于雪崩猜想的混淆构造</span>
+            <span class="post-date" title="2023-10-25 00:00:00">2023/10/25</span>
+        </a>
         
         
         <a  class="All 代码混淆 "
@@ -707,7 +720,7 @@
 <p>更具体一点的步骤解释:<br>　　(1)建立EPROCESS<br>　　*分配并初始化EPROCESS结构块<br>　　*从父进程处继承得到进程的亲和性掩码<br>　　*分配进程的最大最小工作集尺（由两个参数决定PsMinimumWorkingSet PsMaximumWorkingSet）<br>　　*降新进程的配额块设置为父进程配额块地址，并递增父进程配额块的引用计数<br>　　*继承Windows的设备名字空间<br>　　*将父进程进程ID保存在新进程对象的InheritedFormUniqueProcessId中<br>　　*创建该进程的主访问令牌<br>　　*初始化进程句柄表<br>　　*将新进程的退出状态设置为STATUS_PENDING<br>　　(2)创建初始的进程地址空间<br>　　*在适当的页表中创建页表项，以映射初始页面<br>　　*从MmresidentAvailablePage算出进程工作集大小<br>　　*系统空间的非换页部分和系统缓存的页表被映射到进程<br>　　(3)初始化内核进程块KPROCESS<br>　　(4)结束进程地址空间的创建过程<br>　　(5)建立PEB<br>　　(6)完成执行体进程对象的创建过程<br>　3.创建初始线程（栈、堆执行环境初始化及执行线程体对象）。<br>　　这时候Windows执行体进程对象已经完全建立完成，但它还没有线程所以无法执行，接下来系统调用NtCreateThread来创建一个挂起的新线程它就是进程的主线程体。<br>　　4.通知Windows子系统新进程创建了(子系统是操作系统的一部分它是一个协助操作系统内核管理用户态&#x2F;客户方的一个子系统具体的进程为Csrss.exe)。接下来操作系统通过客户态(Kernel32.dll)给Windows子系统(Csrss)发送一个新进程线程创建的数据消息，让子系统建立自己的进程线程管理块。当Csrss接收到该消息时候执行下面的处理：<br>　　*复制一份该进程和线程句柄<br>　　*设置进程优先级<br>　　*分配Csrss进程块<br>　　*把新进程的异常处理端口绑定到Csrss中，这样当该进程发生异常时，Csrss将会接收到异常消息<br>　　*分配和初始化Csrss线程块<br>　　*把线程插入到进程的线程列表中<br>　　*把进程插入到Csrss的线程列表中<br>　　*显示进程启动光标<br>　　5.开始执行初始线程(如果创建时候指定了线程的CREATE_SUSPENDED状态则线程暂时挂起不执行)。到这里进程环境已经建立完毕进程中开始创建的主线程到这里获得执行权开始执行线程。<br>　　6.在新进程和线程环境中完成地址空间的初始化（比如加载必须的DLL和库），然后开始到进程入口执行。<br>　　到这步实质是调用ldrInitializeThunk来初始化加载器，堆管理器NLS表TLS数组以及临界区结构，并且加载任何必须要的DLL并且用<br>　　DLL_PROCESS_ATTACH功能代码来调用各DLL入口点，最后当加载器初始化例程返回到用户模式APC分发器时进程映像开始在用户模式下执行，然后它调用线程启动函数开始执行。</p>
 <h3 id="相关函数作用"><a href="#相关函数作用" class="headerlink" title="相关函数作用"></a>相关函数作用</h3>
       
-       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 jaytp@qq.com </span>
+       <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以邮件至 529597092@qq.com </span>
     </div>
 </article>
 
