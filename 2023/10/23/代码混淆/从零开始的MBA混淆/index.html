@@ -6,17 +6,21 @@
   <meta name="keywords" content="">
   <meta name="description" content="从零开始的MBA混淆 | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
+<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
 <meta property="og:type" content="article">
-<meta property="og:title" content="从零开始的MBA混淆">
-<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
+<meta property="og:title" content="基于雪崩猜想的混淆构造">
+<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
+<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-25T04:00:26.276Z">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
+<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
+<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -345,19 +349,19 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/09/10/C%E5%92%8CCPP/C++%E4%B8%AD%E7%9A%84%E9%87%8D%E5%86%99,%E9%9A%90%E8%97%8F,%E9%87%8D%E8%BD%BD/"
+           href="/2022/09/10/C%E5%92%8CCPP/C++%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C++中的重写、隐藏与重载的区别">C++中的重写、隐藏与重载的区别</span>
+            <span class="post-title" title="C++踩坑笔记">C++踩坑笔记</span>
             <span class="post-date" title="2022-09-10 00:00:00">2022/09/10</span>
         </a>
         
         
         <a  class="All C和CPP "
-           href="/2022/09/10/C%E5%92%8CCPP/C++%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
+           href="/2022/09/10/C%E5%92%8CCPP/C++%E4%B8%AD%E7%9A%84%E9%87%8D%E5%86%99,%E9%9A%90%E8%97%8F,%E9%87%8D%E8%BD%BD/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C++踩坑笔记">C++踩坑笔记</span>
+            <span class="post-title" title="C++中的重写、隐藏与重载的区别">C++中的重写、隐藏与重载的区别</span>
             <span class="post-date" title="2022-09-10 00:00:00">2022/09/10</span>
         </a>
         
@@ -651,7 +655,7 @@
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2023-10-25 12:00:26'>2023-10-23 00:00</time>
+            Created At : <time class="date" title='Updated At: 2023-10-25 13:18:35'>2023-10-23 00:00</time>
         
     </div>
     <div class="article-meta">
@@ -695,7 +699,7 @@ int c = (a &amp; b) + (a | b); // 等价于c=a+b
 </code></pre>
 <h2 id="线性MBA"><a href="#线性MBA" class="headerlink" title="线性MBA"></a>线性MBA</h2><p>线性MBA常用于运算混淆中，它的定义如下：<br>$$<br>\sum_{i \in I}a_i e_i (x_1,x_2,…,x_t)<br>$$<br>其中$a_i$为整数，$e_i(x_1,x_2,…,x_n)$为只含有布尔逻辑运算的表达式，简单举几个例子，以下的表达式都属于线性MBA：<br>$$<br>f(x,y) &#x3D; (x \lor y) - (x \land y) - (x \oplus y)<br>\newline<br>f(x,y) &#x3D; x-3*(x \land y)-(x \oplus y)+(\lnot y)-(\lnot(x \land y)) + 2*y<br>$$</p>
 <h3 id="位独立性"><a href="#位独立性" class="headerlink" title="位独立性"></a>位独立性</h3><p>线性MBA的特点是具有位独立性，即由加号相连接的每一项，只含有布尔逻辑运算，变量的每一位的运算不会影响到前一位或后一位，这就是位独立性。以int类型的变量举例来说：</p>
-<pre><code class="c">int x = 1, y = 1
+<pre><code class="cpp">int x = 1, y = 1
 int z = x + y // 01 + 01 = 10 低位向高位进位
 int t = x &amp; y // 01 &amp; 01 = 01 不会存在进位
 </code></pre>
@@ -734,13 +738,12 @@ int t = x &amp; y // 01 &amp; 01 = 01 不会存在进位
 <td>1</td>
 </tr>
 </tbody></table>
-<p>记上述矩阵为M，每一项的系数记作C，解下列线性方程，即可得到一个MBA恒等式:</p>
-<p>$$<br>Mc &#x3D; 0<br>\newline<br>c &#x3D; \begin{bmatrix}<br>1 \ 1<br>\ -1<br>\ -1<br>\end{bmatrix}<br>\newline<br>1<em>x + 1</em>y + (-1)<em>(x&amp;y)+(-1)</em>(x|y)&#x3D;0<br>\newline<br>x+y&#x3D;(x&amp;y)+(x|y)<br>$$</p>
-<p>则$x+y$便可以用$(x&amp;y)+(x|y)$进行混淆，使用上述方法，我们可以轻易地构造出许多线性MBA恒等式，进而构造出相应的混淆。</p>
+<p>记上述矩阵为M，每一项的系数记作C，解下列线性方程，即可得到一个MBA恒等式:<br>$$<br>Mc &#x3D; 0<br>\newline<br>c &#x3D; [1,1,-1,-1]^{T}<br>\newline<br>1*x + 1*y + (-1)*(x\land y)+(-1)*(x\lor y)&#x3D;0<br>\newline<br>x+y&#x3D;(x\land y)+(x\lor y)<br>$$</p>
+<p>则$x+y$便可以用$(x\land y)+(x\lor y)$进行混淆，使用上述方法，我们可以轻易地构造出许多线性MBA恒等式，进而构造出相应的混淆。</p>
 <h2 id="多项式MBA"><a href="#多项式MBA" class="headerlink" title="多项式MBA"></a>多项式MBA</h2><p>多项式MBA是线性MBA的更一般形式，简单点说就是把线性MBA作为乘数相乘并展开。它的数学定义如下：</p>
 <p>$$<br>\sum_{i \in I}a_i (\prod_{j \in J_i} e_{(i,j)} (x_1,x_2,…,x_t))<br>$$</p>
 <p>以下几个例子都是多项式MBA：</p>
-<p>$$<br>f(x,y) &#x3D; (x \land y)<em>(x \lor y)+(x \land \lnot y)</em>(\lnot x \land y)<br>\newline<br>f(x,y) &#x3D; (x - (x \land y)-(x \lor y))*(-x-1)<br>$$</p>
+<p>$$<br>f(x,y) &#x3D; (x \land y)*(x \lor y)+(x \land \lnot y)*(\lnot x \land y)<br>\newline<br>f(x,y) &#x3D; (x - (x \land y)-(x \lor y))*(-x-1)<br>$$</p>
 <p>多项式MBA可以按照变量个数和乘法次数进行分类，上面的两个式子都是二元二次多项式MBA，线性MBA是一种特殊的多项式MBA，线性MBA也可以称为n元一次多项式MBA。</p>
 <h2 id="构造多项式MBA"><a href="#构造多项式MBA" class="headerlink" title="构造多项式MBA"></a>构造多项式MBA</h2><h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Zhou, Yongxin, Alec Main, Yuan X. Gu, and Harold Johnson. “Information Hiding in Software with Mixed Boolean-Arithmetic Transforms.” In Information Security Applications, edited by Sehun Kim, Moti Yung, and Hyung-Woo Lee, 61–75. Lecture Notes in Computer Science. Berlin, Heidelberg: Springer, 2007.</p>
 <p>[2] Liu, Binbin, Junfu Shen, Jiang Ming, Qilong Zheng, Jing Li, and Dongpeng Xu. “MBA-Blast: Unveiling and Simplifying Mixed Boolean-Arithmetic Obfuscation,” 2021.</p>
