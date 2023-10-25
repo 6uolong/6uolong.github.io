@@ -6,21 +6,17 @@
   <meta name="keywords" content="">
   <meta name="description" content="C语言零碎(3) | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于雪崩猜想的混淆构造">
-<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
+<meta property="og:title" content="从零开始的MBA混淆">
+<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
-<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
+<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:00:26.276Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -448,15 +444,6 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
-            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
-        </a>
-        
-        
-        <a  class="All C和CPP "
            href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
            data-tag=""
            data-author="" >
@@ -466,10 +453,10 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
+            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -479,6 +466,15 @@
            data-tag=""
            data-author="" >
             <span class="post-title" title="C语言零碎(3)">C语言零碎(3)</span>
+            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
+        </a>
+        
+        
+        <a  class="All C和CPP "
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -698,7 +694,52 @@
 <p>通过异或运算可以用单链表实现双链表的功能的关键:<br>p-&gt;next &#x3D; pr*pl(pr为p的右节点,pl为p的左节点),满足这一关系的链表可以从右向左遍历,也可以从左向右遍历<br>然而这玩意可读性很差,个人觉得实际上没啥用</p>
 <h3 id="函数传参"><a href="#函数传参" class="headerlink" title="函数传参"></a>函数传参</h3><p>void func1(int x)&#x2F;&#x2F;传值<br>void func2(int *x)&#x2F;&#x2F;传指针(地址)<br>void func3(int &amp;x)&#x2F;&#x2F;传引用  </p>
 <h3 id="调用约定"><a href="#调用约定" class="headerlink" title="调用约定"></a>调用约定</h3><p>stdcall:驱动默认调用约定,参数从右向左入栈,被调用函数恢复堆栈<br>cdecl:C语言默认调用约定,参数从右向左入栈,调用者恢复堆栈,所以可支持变参函数<br>fastcall:x64平台下默认调用约定,前四个参数通过寄存器(rcx,rdx,r8,r9)传参,但是在栈上会预留出这4个参数的空间,多余参数从右向左依次入栈,调用者恢复堆栈平衡,与x86平台下的fastcall约定有较大差别<br>thiscall:thiscall是唯一一个不能明确指明的函数修饰,因为thiscall不是关键字.它是C++类成员函数缺省的调用约定.由于成员函数调用还有一个this指针,因此必须特殊处理,参数从右向左入栈,如果参数个数确定,this指针通过ecx传递给被调用者,如果参数个数不确定,this指针在所有参数压栈后被压入堆栈,而对参数个数不定的,调用者清理堆栈,否则函数自己清理堆栈</p>
-<h3 id="作业-逆转单词"><a href="#作业-逆转单词" class="headerlink" title="作业-逆转单词"></a>作业-逆转单词</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;stdio.h&gt;</span><br><span class="line">void reverse_word(char *str)</span><br><span class="line">&#123;</span><br><span class="line">	if (!str)</span><br><span class="line">	&#123;</span><br><span class="line">		return;</span><br><span class="line">	&#125;</span><br><span class="line">	int len = 0;</span><br><span class="line">	while (str[len])</span><br><span class="line">	&#123;</span><br><span class="line">		len++;</span><br><span class="line">	&#125;</span><br><span class="line">	for (int i = 0; i &lt; len / 2; i++)</span><br><span class="line">	&#123;</span><br><span class="line">		char tmp;</span><br><span class="line">		tmp = str[i];</span><br><span class="line">		str[i] = str[len - i - 1];</span><br><span class="line">		str[len - i - 1] = tmp;</span><br><span class="line">	&#125;</span><br><span class="line">	int i = 0;</span><br><span class="line">	int singleword_first = 0;</span><br><span class="line">	while (i &lt;= len)</span><br><span class="line">	&#123;</span><br><span class="line">		if (str[i] == &#x27; &#x27;|| str[i] == &#x27;\0&#x27;)</span><br><span class="line">		&#123;</span><br><span class="line">			for (int j = singleword_first; j - singleword_first &lt; (i-singleword_first)/2; j++)</span><br><span class="line">			&#123;</span><br><span class="line">				char tmp = str[j];</span><br><span class="line">				str[j] = str[i+singleword_first-j-1];</span><br><span class="line">				str[i + singleword_first - j-1] = tmp;</span><br><span class="line">			&#125;</span><br><span class="line">			singleword_first = i + 1;</span><br><span class="line">		&#125;</span><br><span class="line">		i++;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">int main()</span><br><span class="line">&#123;</span><br><span class="line">	char str[128];</span><br><span class="line">	gets_s(str, 128);</span><br><span class="line">	reverse_word(str);</span><br><span class="line">	printf_s(str);</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="作业-逆转单词"><a href="#作业-逆转单词" class="headerlink" title="作业-逆转单词"></a>作业-逆转单词</h3><pre><code>#include&lt;stdio.h&gt;
+void reverse_word(char *str)
+&#123;
+    if (!str)
+    &#123;
+        return;
+    &#125;
+    int len = 0;
+    while (str[len])
+    &#123;
+        len++;
+    &#125;
+    for (int i = 0; i &lt; len / 2; i++)
+    &#123;
+        char tmp;
+        tmp = str[i];
+        str[i] = str[len - i - 1];
+        str[len - i - 1] = tmp;
+    &#125;
+    int i = 0;
+    int singleword_first = 0;
+    while (i &lt;= len)
+    &#123;
+        if (str[i] == &#39; &#39;|| str[i] == &#39;\0&#39;)
+        &#123;
+            for (int j = singleword_first; j - singleword_first &lt; (i-singleword_first)/2; j++)
+            &#123;
+                char tmp = str[j];
+                str[j] = str[i+singleword_first-j-1];
+                str[i + singleword_first - j-1] = tmp;
+            &#125;
+            singleword_first = i + 1;
+        &#125;
+        i++;
+    &#125;
+&#125;
+int main()
+&#123;
+    char str[128];
+    gets_s(str, 128);
+    reverse_word(str);
+    printf_s(str);
+    return 0;
+&#125;
+</code></pre>
+
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以邮件至 529597092@qq.com </span>
     </div>

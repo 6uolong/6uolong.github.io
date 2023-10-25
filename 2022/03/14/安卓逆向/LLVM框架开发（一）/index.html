@@ -6,21 +6,17 @@
   <meta name="keywords" content="">
   <meta name="description" content="LLVM框架开发（一） | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于雪崩猜想的混淆构造">
-<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
+<meta property="og:title" content="从零开始的MBA混淆">
+<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
-<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
+<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:00:26.276Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -448,15 +444,6 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
-            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
-        </a>
-        
-        
-        <a  class="All C和CPP "
            href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
            data-tag=""
            data-author="" >
@@ -466,10 +453,10 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
+            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -479,6 +466,15 @@
            data-tag=""
            data-author="" >
             <span class="post-title" title="C语言零碎(3)">C语言零碎(3)</span>
+            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
+        </a>
+        
+        
+        <a  class="All C和CPP "
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -696,30 +692,100 @@
         <h3 id="Linux下LLVM环境配置"><a href="#Linux下LLVM环境配置" class="headerlink" title="Linux下LLVM环境配置"></a>Linux下LLVM环境配置</h3><ol>
 <li>在Ubuntu和Debian环境下，直接使用官方脚本安装，输入下面的命令直接安装LLVM14</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget https://apt.llvm.org/llvm.sh</span><br><span class="line">chmod +x llvm.sh</span><br><span class="line">sudo ./llvm.sh 14</span><br></pre></td></tr></table></figure>
-
+<pre><code>wget https://apt.llvm.org/llvm.sh
+chmod +x llvm.sh
+sudo ./llvm.sh 14
+</code></pre>
 <p>注意安装成功后命令会带上版本号，比如命令行下输入clang会提示找不到，但是输入clang-14就可以使用。</p>
 <ol start="2">
 <li>使用包管理器进行安装（推荐）</li>
 </ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install clang</span><br><span class="line">sudo apt install llvm</span><br></pre></td></tr></table></figure>
-
+<pre><code>sudo apt install clang
+sudo apt install llvm
+</code></pre>
 <p>使用这种方式安装的llvm和clang输入命令时不需要加版本号即可使用，推荐使用这种方法。</p>
 <ol>
 <li>从源码编译安装<br>暂时还没用到这种方法，按下不表。</li>
 </ol>
 <h3 id="使用旧PassManager开发第一个Pass开发"><a href="#使用旧PassManager开发第一个Pass开发" class="headerlink" title="使用旧PassManager开发第一个Pass开发"></a>使用旧PassManager开发第一个Pass开发</h3><p>参考官方经典案例Hello Pass：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;llvm/Pass.h&quot;</span><br><span class="line">#include &quot;llvm/IR/Function.h&quot;</span><br><span class="line">#include &quot;llvm/Support/raw_ostream.h&quot;</span><br><span class="line">#include &quot;llvm/IR/LegacyPassManager.h&quot;</span><br><span class="line">#include &quot;llvm/Transforms/IPO/PassManagerBuilder.h&quot;</span><br><span class="line"></span><br><span class="line">using namespace llvm;</span><br><span class="line"></span><br><span class="line">namespace &#123;</span><br><span class="line">  struct Hello : public FunctionPass &#123;</span><br><span class="line">    static char ID;</span><br><span class="line">    Hello() : FunctionPass(ID) &#123;&#125;</span><br><span class="line">    bool runOnFunction(Function &amp;F) override &#123;</span><br><span class="line">      errs() &lt;&lt; &quot;Hello: &quot;;</span><br><span class="line">      errs().write_escaped(F.getName()) &lt;&lt; &#x27;\n&#x27;;</span><br><span class="line">      return false;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">char Hello::ID = 0;</span><br><span class="line"></span><br><span class="line">// Register for opt</span><br><span class="line">static RegisterPass&lt;Hello&gt; X(&quot;hello&quot;, &quot;Hello World Pass&quot;);</span><br><span class="line"></span><br><span class="line">// Register for clang</span><br><span class="line">static RegisterStandardPasses Y(PassManagerBuilder::EP_EarlyAsPossible,</span><br><span class="line">  [](const PassManagerBuilder &amp;Builder, legacy::PassManagerBase &amp;PM) &#123;</span><br><span class="line">    PM.add(new Hello());</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<pre><code>#include &quot;llvm/Pass.h&quot;
+#include &quot;llvm/IR/Function.h&quot;
+#include &quot;llvm/Support/raw_ostream.h&quot;
+#include &quot;llvm/IR/LegacyPassManager.h&quot;
+#include &quot;llvm/Transforms/IPO/PassManagerBuilder.h&quot;
+
+using namespace llvm;
+
+namespace &#123;
+  struct Hello : public FunctionPass &#123;
+    static char ID;
+    Hello() : FunctionPass(ID) &#123;&#125;
+    bool runOnFunction(Function &amp;F) override &#123;
+      errs() &lt;&lt; &quot;Hello: &quot;;
+      errs().write_escaped(F.getName()) &lt;&lt; &#39;\n&#39;;
+      return false;
+    &#125;
+  &#125;;
+&#125;
+
+char Hello::ID = 0;
+
+// Register for opt
+static RegisterPass&lt;Hello&gt; X(&quot;hello&quot;, &quot;Hello World Pass&quot;);
+
+// Register for clang
+static RegisterStandardPasses Y(PassManagerBuilder::EP_EarlyAsPossible,
+  [](const PassManagerBuilder &amp;Builder, legacy::PassManagerBase &amp;PM) &#123;
+    PM.add(new Hello());
+  &#125;);
+</code></pre>
 <p>如果出现include文件找不到错误，请在.bashrc文件中指明LLVM头文件的路径，命令如下：</p>
 <p><code>export CPLUS_INCLUDE_PATH=CPLUS_INCLUDE_PATH:&quot;/usr/include/llvm&quot;:&quot;/usr/include/llvm-c&quot;</code></p>
 <p>写好代码后我们可以使用命令行输入命令进行编译，在初学阶段建议使用命令行编译，能够了解一些编译选项，在熟练后建议使用cmake进行编译。</p>
 <p><code>clang++ -fno-rtti -fPIC -shared Hello.cpp -o Hello.so</code><br>如果不想设置bashrc，可以直接使用以下命令编译：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clang++ `llvm-config --cxxflags` -fno-rtti -fPIC -shared Hello.cpp -o Hello.so </span><br></pre></td></tr></table></figure>
-
+<pre><code>clang++ `llvm-config --cxxflags` -fno-rtti -fPIC -shared Hello.cpp -o Hello.so 
+</code></pre>
 <p>之后可以使用opt动态加载bc文件或ll文件，由于高版本llvm默认使用新的passmanager，所以opt加载命令会在下文介绍。不过使用clang加载也是可以的，并且也很方便：</p>
 <p><code>clang++ -Xclang -load -Xclang Hello.so main.cpp -o main</code></p>
 <h3 id="使用新的PassManager开发Pass"><a href="#使用新的PassManager开发Pass" class="headerlink" title="使用新的PassManager开发Pass"></a>使用新的PassManager开发Pass</h3><p>代码如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">#include &quot;llvm/IR/PassManager.h&quot;</span><br><span class="line">#include &quot;llvm/Passes/PassBuilder.h&quot;</span><br><span class="line">#include &quot;llvm/Passes/PassPlugin.h&quot;</span><br><span class="line">#include &quot;llvm/Support/raw_ostream.h&quot;</span><br><span class="line">using namespace llvm;</span><br><span class="line"> </span><br><span class="line">namespace &#123;</span><br><span class="line">struct HelloNewPMPass : public PassInfoMixin&lt;HelloNewPMPass&gt; &#123;</span><br><span class="line">  PreservedAnalyses run(Function &amp;F,</span><br><span class="line">                        FunctionAnalysisManager &amp;FAM) &#123;</span><br><span class="line">    if(F.hasName())</span><br><span class="line">      errs() &lt;&lt; &quot;Hello &quot; &lt;&lt; F.getName() &lt;&lt; &quot;\n&quot;;</span><br><span class="line">    return PreservedAnalyses::all();</span><br><span class="line">    // 返回all表示未作改动</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&#125; // end anonymous namespace</span><br><span class="line"> </span><br><span class="line">extern &quot;C&quot; ::llvm::PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK</span><br><span class="line">llvmGetPassPluginInfo() &#123;</span><br><span class="line">  return &#123;</span><br><span class="line">    LLVM_PLUGIN_API_VERSION, &quot;HelloNewPMPass&quot;, &quot;v0.1&quot;,</span><br><span class="line">    [](PassBuilder &amp;PB) &#123;</span><br><span class="line">      PB.registerPipelineParsingCallback(</span><br><span class="line">        [](StringRef Name, FunctionPassManager &amp;FPM,</span><br><span class="line">           ArrayRef&lt;PassBuilder::PipelineElement&gt;) &#123;</span><br><span class="line">             // hellopass为自定义命令行编译选项</span><br><span class="line">          if(Name == &quot;hellopass&quot;)&#123;</span><br><span class="line">            FPM.addPass(HelloNewPMPass());</span><br><span class="line">            return true;</span><br><span class="line">          &#125;</span><br><span class="line">          return false;</span><br><span class="line">        &#125;</span><br><span class="line">      );</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre><code>#include &quot;llvm/IR/PassManager.h&quot;
+#include &quot;llvm/Passes/PassBuilder.h&quot;
+#include &quot;llvm/Passes/PassPlugin.h&quot;
+#include &quot;llvm/Support/raw_ostream.h&quot;
+using namespace llvm;
+ 
+namespace &#123;
+struct HelloNewPMPass : public PassInfoMixin&lt;HelloNewPMPass&gt; &#123;
+  PreservedAnalyses run(Function &amp;F,
+                        FunctionAnalysisManager &amp;FAM) &#123;
+    if(F.hasName())
+      errs() &lt;&lt; &quot;Hello &quot; &lt;&lt; F.getName() &lt;&lt; &quot;\n&quot;;
+    return PreservedAnalyses::all();
+    // 返回all表示未作改动
+  &#125;
+&#125;;
+&#125; // end anonymous namespace
+ 
+extern &quot;C&quot; ::llvm::PassPluginLibraryInfo LLVM_ATTRIBUTE_WEAK
+llvmGetPassPluginInfo() &#123;
+  return &#123;
+    LLVM_PLUGIN_API_VERSION, &quot;HelloNewPMPass&quot;, &quot;v0.1&quot;,
+    [](PassBuilder &amp;PB) &#123;
+      PB.registerPipelineParsingCallback(
+        [](StringRef Name, FunctionPassManager &amp;FPM,
+           ArrayRef&lt;PassBuilder::PipelineElement&gt;) &#123;
+             // hellopass为自定义命令行编译选项
+          if(Name == &quot;hellopass&quot;)&#123;
+            FPM.addPass(HelloNewPMPass());
+            return true;
+          &#125;
+          return false;
+        &#125;
+      );
+    &#125;
+  &#125;;
+&#125;
+</code></pre>
 <p>同样使用clang++编译成so文件，命令同上。<br>使用clang编译成ll文件或者bc文件，ll文件是便于人阅读的类似汇编语言的形式，而bc则是字节码形式，命令如下：<br><code>clang++ -emit-llvm -S main.cpp -o main.ll</code><br><code>clang++ -emit-llvm -c main.cpp -o main.bc</code><br>可以使用opt命令来加载so库并对ll文件或bc文件进行处理，命令如下：<br><code>opt -load-pass-plugin=/path -passes=&quot;hellopass&quot; -S main.ll -o hellomain.ll</code><br>最终使用clang将ll或者bc文件转换为可执行文件：<br><code>clang++ hellomain.ll -o hellomain</code></p>
 <h3 id="Pass开发学习流程"><a href="#Pass开发学习流程" class="headerlink" title="Pass开发学习流程"></a>Pass开发学习流程</h3><p>LLVM官方文档写的还是比较详细的，但是在学习写pass的过程中，总是感觉没有很好的抓手，个人认为最好的学习方法是通过实践学习。</p>
 <ol>

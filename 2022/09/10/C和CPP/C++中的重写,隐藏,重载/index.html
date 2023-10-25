@@ -6,21 +6,17 @@
   <meta name="keywords" content="">
   <meta name="description" content="C++中的重写、隐藏与重载的区别 | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于雪崩猜想的混淆构造">
-<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
+<meta property="og:title" content="从零开始的MBA混淆">
+<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
-<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
+<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:00:26.276Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -448,15 +444,6 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
-            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
-        </a>
-        
-        
-        <a  class="All C和CPP "
            href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
            data-tag=""
            data-author="" >
@@ -466,10 +453,10 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
+            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -479,6 +466,15 @@
            data-tag=""
            data-author="" >
             <span class="post-title" title="C语言零碎(3)">C语言零碎(3)</span>
+            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
+        </a>
+        
+        
+        <a  class="All C和CPP "
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -699,10 +695,70 @@
 <ul>
 <li>重写和被重写的函数在不同的类中，隐藏函数和被隐藏函数在不同类中,重载和被重载的函数在同一类中.</li>
 <li>重写与被重写的函数参数列表一定相同且必须有virtual修饰，重载和被重载的函数参数列表一定不同。</li>
-<li>当参数不同时，无论基类中的函数是否被virtual修饰，基类函数都是被隐藏，而不是被重写。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">#include&lt;iostream&gt;</span><br><span class="line">using namespace std;</span><br><span class="line">class base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int x;</span><br><span class="line">public:</span><br><span class="line">	base()</span><br><span class="line">	&#123;</span><br><span class="line">		x = 100;</span><br><span class="line">	&#125;</span><br><span class="line">	void func1()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::func1调用&quot;&lt;&lt;endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual void func2()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;base::func2调用&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line">class sub : public base</span><br><span class="line">&#123;</span><br><span class="line">public:</span><br><span class="line">	int x;</span><br><span class="line">public:</span><br><span class="line">	sub()</span><br><span class="line">	&#123;</span><br><span class="line">		x = 200;</span><br><span class="line">	&#125;</span><br><span class="line">	void func1()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;sub::func1调用&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">	virtual void func2()</span><br><span class="line">	&#123;</span><br><span class="line">		cout &lt;&lt; &quot;sub::func2调用&quot; &lt;&lt; endl;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">int main(int argc, char** argv)</span><br><span class="line">&#123;</span><br><span class="line">	sub b;</span><br><span class="line">	base * p1=&amp;b;</span><br><span class="line">	p1-&gt;func1();</span><br><span class="line">	p1-&gt;func2();</span><br><span class="line">	cout &lt;&lt; p1-&gt;x &lt;&lt; endl;</span><br><span class="line">	sub* p2 = &amp;b;</span><br><span class="line">	p2-&gt;func1();</span><br><span class="line">	p2-&gt;func2();</span><br><span class="line">	cout &lt;&lt; p2-&gt;x &lt;&lt; endl;</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-输出结果:<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">base::func1调用</span><br><span class="line">sub::func2调用</span><br><span class="line">100</span><br><span class="line">sub::func1调用</span><br><span class="line">sub::func2调用</span><br><span class="line">200</span><br></pre></td></tr></table></figure>
-注意以上代码中定义基类和派生类中定义了同名变量x,在为子类对象分配空间时并没有将同名变量覆盖,而是分配了两个4字节,在用基类引用访问时访问时访问到了存有100的那片空间,而用子类访问时则访问到了存有200的那片空间.</li>
+<li>当参数不同时，无论基类中的函数是否被virtual修饰，基类函数都是被隐藏，而不是被重写。</li>
 </ul>
+<pre><code>#include&lt;iostream&gt;
+using namespace std;
+class base
+&#123;
+public:
+    int x;
+public:
+    base()
+    &#123;
+        x = 100;
+    &#125;
+    void func1()
+    &#123;
+        cout &lt;&lt; &quot;base::func1调用&quot;&lt;&lt;endl;
+    &#125;
+    virtual void func2()
+    &#123;
+        cout &lt;&lt; &quot;base::func2调用&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+class sub : public base
+&#123;
+public:
+    int x;
+public:
+    sub()
+    &#123;
+        x = 200;
+    &#125;
+    void func1()
+    &#123;
+        cout &lt;&lt; &quot;sub::func1调用&quot; &lt;&lt; endl;
+    &#125;
+    virtual void func2()
+    &#123;
+        cout &lt;&lt; &quot;sub::func2调用&quot; &lt;&lt; endl;
+    &#125;
+&#125;;
+
+int main(int argc, char** argv)
+&#123;
+    sub b;
+    base * p1=&amp;b;
+    p1-&gt;func1();
+    p1-&gt;func2();
+    cout &lt;&lt; p1-&gt;x &lt;&lt; endl;
+    sub* p2 = &amp;b;
+    p2-&gt;func1();
+    p2-&gt;func2();
+    cout &lt;&lt; p2-&gt;x &lt;&lt; endl;
+    return 0;
+&#125;
+</code></pre>
+<p>输出结果:</p>
+<pre><code>base::func1调用
+sub::func2调用
+100
+sub::func1调用
+sub::func2调用
+200
+</code></pre>
+<p>注意以上代码中定义基类和派生类中定义了同名变量x,在为子类对象分配空间时并没有将同名变量覆盖,而是分配了两个4字节,在用基类引用访问时访问时访问到了存有100的那片空间,而用子类访问时则访问到了存有200的那片空间.</p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以邮件至 529597092@qq.com </span>

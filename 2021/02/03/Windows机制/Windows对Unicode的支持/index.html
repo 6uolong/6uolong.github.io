@@ -6,21 +6,17 @@
   <meta name="keywords" content="">
   <meta name="description" content="Windows编程中的Unicode问题 | 6uolong的博客">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta name="description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于雪崩猜想的混淆构造">
-<meta property="og:url" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/index.html">
+<meta property="og:title" content="从零开始的MBA混淆">
+<meta property="og:url" content="http://example.com/2023/10/23/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84MBA%E6%B7%B7%E6%B7%86/index.html">
 <meta property="og:site_name" content="6uolong的博客">
-<meta property="og:description" content="符号执行定义：一种程序分析技术，采用抽象的符号代替精确值作为程序输入变量，通过约束求解器得出每个路径抽象的输出结果。（解方程）  静态符号执行：不执行程序，将所有输入符号化。 动态（混合）符号执行：尽可能地执行程序，尽可能少地引入符号变量。  分析流程大致如下：  极简示例将下列C++源代码编译，并用符号执行框架angr进行分析。 #include&lt;iostream&gt; using na">
+<meta property="og:description" content="MBA运算MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、&#x2F;）的运算系统。以下为一个C语言实现的MBA运算示例： int a, b; int c &#x3D; (a &amp; b) + (a | b); &#x2F;&#x2F; 等价于c&#x3D;a+b  线性MBA线性MBA常用于运算混淆中，它的定义如">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%AF%BC%E6%95%B0%E5%9B%BE.jpg">
-<meta property="og:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%9C.jpg">
-<meta property="article:published_time" content="2023-10-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2023-10-25T04:02:16.457Z">
+<meta property="article:published_time" content="2023-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-10-25T04:00:26.276Z">
 <meta property="article:author" content="6uolong">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2023/10/25/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/%E5%88%86%E6%9E%90%E6%B5%81%E7%A8%8B.jpg">
 
 
 <link rel="icon" href="/img/avatar.jpg">
@@ -448,15 +444,6 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
-           data-tag=""
-           data-author="" >
-            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
-            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
-        </a>
-        
-        
-        <a  class="All C和CPP "
            href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(2)/"
            data-tag=""
            data-author="" >
@@ -466,10 +453,10 @@
         
         
         <a  class="All C和CPP "
-           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E(1)/"
            data-tag=""
            data-author="" >
-            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
+            <span class="post-title" title="C语言零碎(1)">C语言零碎(1)</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -479,6 +466,15 @@
            data-tag=""
            data-author="" >
             <span class="post-title" title="C语言零碎(3)">C语言零碎(3)</span>
+            <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
+        </a>
+        
+        
+        <a  class="All C和CPP "
+           href="/2022/01/06/C%E5%92%8CCPP/C%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+           data-tag=""
+           data-author="" >
+            <span class="post-title" title="C语言预处理机制">C语言预处理机制</span>
             <span class="post-date" title="2022-01-06 00:00:00">2022/01/06</span>
         </a>
         
@@ -695,9 +691,24 @@
       
         <h3 id="Windows操作系统内核对Unicode的支持"><a href="#Windows操作系统内核对Unicode的支持" class="headerlink" title="Windows操作系统内核对Unicode的支持"></a>Windows操作系统内核对Unicode的支持</h3><p>Windows操作系统内核中的字符表示为UTF-16小尾序，可以正确处理、显示以4字节存储的字符。但是Windows API实际上仅能正确处理UCS-2字符，即仅以2字节存储的，码位小于U+FFFF的Unicode字符。其根源是Microsoft C++语言把wchar_t数据类型定义为16比特的unsigned short，这就与一个wchar_t型变量对应一个宽字符，可以存储一个Unicode字符的规定相矛盾。相反，Linux平台的GCC编译器规定一个wchar_t是4字节长度，可以存储一个UTF-32字符，宁可浪费了很大的存储空间。</p>
 <h3 id="windows编程中L，-T-，TEXT和-TEXT的使用及其区别"><a href="#windows编程中L，-T-，TEXT和-TEXT的使用及其区别" class="headerlink" title="windows编程中L，_T() ，TEXT和_TEXT的使用及其区别"></a>windows编程中L，_T() ，TEXT和_TEXT的使用及其区别</h3><p>其实一句话概括的话,其实没有区别。字符串（literal string）前面的大写字母L，用来告诉编译器该字符串应该作为Unicode来编译。它用来将ASNI转换为Unicode。<br>tchar.h中定义如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">1. #define _T(x)       __T(x)  </span><br><span class="line">2. #define _TEXT(x)    __T(x)  </span><br><span class="line">3.   </span><br><span class="line">4. #ifdef  _UNICODE  </span><br><span class="line">5. #define __T(x)      L ## x     </span><br><span class="line">6. #else  </span><br><span class="line">7. #define __T(x)      x         </span><br><span class="line">8. #endif  </span><br></pre></td></tr></table></figure>
+<pre><code>  1. #define _T(x)       __T(x)  
+  2. #define _TEXT(x)    __T(x)  
+  3.   
+  4. #ifdef  _UNICODE  
+  5. #define __T(x)      L ## x     
+  6. #else  
+  7. #define __T(x)      x         
+  8. #endif  
+</code></pre>
 <p>winnt.h中定义如下:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">1. #define TEXT(quote) __TEXT(quote)   </span><br><span class="line">2.   </span><br><span class="line">3. #ifdef  UNICODE                       </span><br><span class="line">4. #define __TEXT(quote) L##quote        </span><br><span class="line">5. #else   /* UNICODE */                 </span><br><span class="line">6. #define __TEXT(quote) quote           </span><br><span class="line">7. #endif /* UNICODE */  </span><br></pre></td></tr></table></figure>
+<pre><code>  1. #define TEXT(quote) __TEXT(quote)   
+  2.   
+  3. #ifdef  UNICODE                       
+  4. #define __TEXT(quote) L##quote        
+  5. #else   /* UNICODE */                 
+  6. #define __TEXT(quote) quote           
+  7. #endif /* UNICODE */  
+</code></pre>
 <p>可以看到tchar.h是运行时的头文件，_T、_TEXT 根据_UNICODE来确定宏<br>winnt.h是Win的头文件根据，TEXT 根据UNICODE 来确定宏</p>
 <p>如果需要同时使用这3个宏，则需同时定义 UNICODE 和 _UNICODE_</p>
 
