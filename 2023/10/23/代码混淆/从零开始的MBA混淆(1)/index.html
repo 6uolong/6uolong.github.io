@@ -655,7 +655,7 @@
     </div>
     <div class="article-meta">
         
-            Created At : <time class="date" title='Updated At: 2023-10-25 18:10:50'>2023-10-23 00:00</time>
+            Created At : <time class="date" title='Updated At: 2023-10-27 16:25:14'>2023-10-23 00:00</time>
         
     </div>
     <div class="article-meta">
@@ -677,7 +677,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MBA%E8%BF%90%E7%AE%97"><span class="toc-text">MBA运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7MBA"><span class="toc-text">线性MBA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="toc-text">位独立性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8FMBA"><span class="toc-text">多项式MBA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%98%E4%B8%80%E6%B3%95%E6%9E%84%E9%80%A0%E5%A4%9A%E9%A1%B9%E5%BC%8FMBA"><span class="toc-text">乘一法构造多项式MBA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#MBA%E8%BF%90%E7%AE%97"><span class="toc-text">MBA运算</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BA%BF%E6%80%A7MBA"><span class="toc-text">线性MBA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E7%8B%AC%E7%AB%8B%E6%80%A7"><span class="toc-text">位独立性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8FMBA"><span class="toc-text">多项式MBA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B9%98%E4%B8%80%E6%B3%95%E6%9E%84%E9%80%A0%E5%A4%9A%E9%A1%B9%E5%BC%8FMBA"><span class="toc-text">乘一法构造多项式MBA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9D%9E%E5%A4%9A%E9%A1%B9%E5%BC%8FMBA"><span class="toc-text">非多项式MBA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%92%E5%BD%92%E6%B7%B7%E6%B7%86%E6%B3%95"><span class="toc-text">递归混淆法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%9B%BF%E6%8D%A2%E6%B3%95"><span class="toc-text">子表达式替换法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-text">参考文献</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -697,7 +697,8 @@
 <pre><code class="cpp">int a, b;
 int c = (a &amp; b) + (a | b); // 等价于c=a+b
 </code></pre>
-<h2 id="线性MBA"><a href="#线性MBA" class="headerlink" title="线性MBA"></a>线性MBA</h2><p>线性MBA常用于运算混淆中，它的定义如下：<br>$$<br>\sum_{i \in I}a_i e_i (x_1,x_2,…,x_t)<br>$$<br>其中$a_i$为整数，$e_i(x_1,x_2,…,x_n)$为只含有布尔逻辑运算的表达式，简单举几个例子，以下的表达式都属于线性MBA：<br>$$<br>f(x,y) &#x3D; (x \lor y) - (x \land y) - (x \oplus y)<br>\newline<br>f(x,y) &#x3D; x-3*(x \land y)-(x \oplus y)+(\lnot y)-(\lnot(x \land y)) + 2*y<br>$$</p>
+<h2 id="线性MBA"><a href="#线性MBA" class="headerlink" title="线性MBA"></a>线性MBA</h2><p>线性MBA常用于运算混淆中，它的定义如下：<br>$$<br>\sum_{i \in I}a_i e_i (x_1,x_2,…,x_t)<br>$$<br>其中$a_i$为整数，$e_i(x_1,x_2,…,x_n)$为只含有布尔逻辑运算的表达式，简单举几个例子，以下的表达式都属于线性MBA：</p>
+<p>$$<br>\begin{align*}<br>f(x,y) &amp;&#x3D; (x \lor y) - (x \land y) - (x \oplus y)<br>\newline<br>f(x,y) &amp;&#x3D; x-3*(x \land y)-(x \oplus y)+(\lnot y)-(\lnot(x \land y)) + 2*y<br>\end{align*}<br>$$</p>
 <h3 id="位独立性"><a href="#位独立性" class="headerlink" title="位独立性"></a>位独立性</h3><p>线性MBA的特点是具有位独立性，即由加号相连接的每一项，只含有布尔逻辑运算，变量的每一位的运算不会影响到前一位或后一位，这就是位独立性。以int类型的变量举例来说：</p>
 <pre><code class="cpp">int x = 1, y = 1
 int z = x + y // 01 + 01 = 10 低位向高位进位
@@ -743,11 +744,15 @@ int t = x &amp; y // 01 &amp; 01 = 01 不会存在进位
 <h2 id="多项式MBA"><a href="#多项式MBA" class="headerlink" title="多项式MBA"></a>多项式MBA</h2><p>多项式MBA是线性MBA的更一般形式，简单点说就是把线性MBA作为乘数相乘并展开。它的数学定义如下：</p>
 <p>$$<br>\sum_{i \in I}a_i (\prod_{j \in J_i} e_{(i,j)} (x_1,x_2,…,x_t))<br>$$</p>
 <p>以下几个例子都是多项式MBA：</p>
-<p>$$<br>f(x,y) &#x3D; (x \land y)*(x \lor y)+(x \land \lnot y)*(\lnot x \land y)<br>\newline<br>f(x,y) &#x3D; (x - (x \land y)-(x \lor y))*(-x-1)<br>$$</p>
+<p>$$<br>\begin{align*}<br>f(x,y) &amp;&#x3D; (x \land y)*(x \lor y)+(x \land \lnot y)*(\lnot x \land y)<br>\newline<br>f(x,y) &amp;&#x3D; (x - (x \land y)-(x \lor y))*(-x-1)<br>\end{align*}<br>$$</p>
 <p>多项式MBA可以按照变量个数和乘法次数进行分类，上面的两个式子都是二元二次多项式MBA，线性MBA是一种特殊的多项式MBA，线性MBA也可以称为n元一次多项式MBA。</p>
 <h3 id="乘一法构造多项式MBA"><a href="#乘一法构造多项式MBA" class="headerlink" title="乘一法构造多项式MBA"></a>乘一法构造多项式MBA</h3><p>基于线性MBA混淆构造多项式MBA混淆的最简单方法是乘一法。我们知道有些线性MBA表达式的值恒为1（使用上文介绍的方法也可以轻松构造），那么我们对某个基础线性MBA乘1，将1替换为值恒为1的线性MBA即可构造多项式MBA，下面为一个简单示例：<br>$$<br>\lnot x &#x3D; -x-1 \rightarrow 1&#x3D;-x-\lnot x<br>\newline<br>x+y &#x3D; (x+y)*1&#x3D;(x+y)*(-x-\lnot x)<br>&#x3D;-x^2-x*y-\lnot x*x-\lnot x*y<br>$$</p>
 <p>但是这样构造存在一个问题，构造后的多项式MBA能够轻易被还原为因式相乘的形式（通过提取公因式还原），进而化简去掉值恒为1的因式。</p>
-<p>我们可以将乘1法进行改进，改进的方法是加值恒为0且与上述构造存在相同子式的MBA，举个简单例子：<br>$$<br>(x \land y) − y − (x \lor \lnot y) &#x3D; 1<br>\newline<br>e_1&#x3D;x+y&#x3D;(x\land y)+(x \lor y),e_2&#x3D;(x \land y) − y − (x \lor \lnot y)<br>\newline<br>e_3&#x3D;(x\land y)-(x \lor y),e_4&#x3D;(x \land y) − y +(\lnot x \land y)&#x3D;0<br>\newline<br>e_1&#x3D;e_1*e_2+e_3*e_4&#x3D;2∗ (x \lor y) ∗ ((x \land y) − y) − (x \lor \lnot y) ∗ ((x \lor y)<br>\newline +(x \land y)) +(\lnot x \land y) ∗ ((x \lor y) − (x \land y))<br>$$<br>上例中$e_3$与$e_1$中的项完全相同，但是符号相反。$e_4$与$e_2$中有部分项相同，这就保证了相乘相加后有部分展开项被消掉了，从而破坏了因式相乘的结构，使得前文提到的化简方法失效。</p>
+<p>我们可以将乘1法进行改进，改进的方法是加值恒为0且与上述构造存在相同子式的MBA，举个简单例子：<br>$$<br>(x \land y) − y − (x \lor \lnot y) &#x3D; 1<br>\newline<br>\begin{align*}<br>e_1&amp;&#x3D;x + y&#x3D;(x\land y)+(x \lor y)<br>\newline<br>e_2&amp;&#x3D;(x \land y) − y − (x \lor \lnot y)<br>\newline<br>e_3&amp;&#x3D;(x\land y)-(x \lor y)<br>\newline<br>e_4&amp;&#x3D;(x \land y) − y +(\lnot x \land y)&#x3D;0<br>\end{align*}<br>\newline<br>e_1&#x3D;e_1*e_2+e_3*e_4&#x3D;2∗ (x \lor y) ∗ ((x \land y) − y) − (x \lor \lnot y) ∗ ((x \lor y)<br>\newline +(x \land y)) +(\lnot x \land y) ∗ ((x \lor y) − (x \land y))<br>$$<br>上例中$e_3$与$e_1$中的项完全相同，但是符号相反。$e_4$与$e_2$中有部分项相同，这就保证了相乘相加后有部分展开项被消掉了，从而破坏了因式相乘的结构，使得前文提到的化简方法失效。</p>
+<h2 id="非多项式MBA"><a href="#非多项式MBA" class="headerlink" title="非多项式MBA"></a>非多项式MBA</h2><p>顾名思义，不属于上述两种形式的MBA都属于非多项式MBA。目前学界对于非多项式MBA的研究较少，对于任意一个非多项式MBA，我们不知道它是否能够化简。当然非多项式MBA中也有一些特殊的存在，这类MBA可以通过还原法进行化简，举例如下：<br>$$<br>\begin{align*}<br>((y −\lnot x) \lor −1) + ((y −\lnot x) \land −1)<br>&amp;&#x3D; (t\lor -1)+(t\land -1)<br>\newline<br>&amp;&#x3D;t - 1 \newline<br>&amp;&#x3D;y-\lnot x -1 \newline<br>&amp;&#x3D;x+y<br>\end{align*}<br>$$</p>
+<p>如何通过已有的知识构造可以化简的非多项式MBA进行运算混淆，下面主要介绍两种方法。</p>
+<h3 id="递归混淆法"><a href="#递归混淆法" class="headerlink" title="递归混淆法"></a>递归混淆法</h3><p>该方法首先将待混淆的表达式转换为线性MBA表达式，然后递归地应用线性MBA恒等式规则进一步转换为复杂的非线性MBA格式，举例如下：<br>$$<br>\begin{align*}<br>规则1&amp;：x + y &#x3D; y −\lnot x − 1<br>\newline<br>规则2&amp;：x + y &#x3D; (x \land y)+(x \lor y)<br>\newline<br>规则3&amp;：x + y &#x3D; y +(x \land \lnot y)+(x \land  y)<br>\end{align*}<br>\newline<br>混淆过程：x + y &#x3D; y −\lnot x − 1 &#x3D; ((y −\lnot x) \lor −1) + ((y −\lnot x) \land −1) \newline<br>&#x3D;(((−\lnot x)+(y \land \lnot (−\lnot x)) + (y \land  (−\lnot x))) \lor −1) + (((−\lnot x)+(y \land \lnot (−\lnot x)) + (y \land  (−\lnot x))) \land −1)<br>$$</p>
+<h3 id="子表达式替换法"><a href="#子表达式替换法" class="headerlink" title="子表达式替换法"></a>子表达式替换法</h3><p>该方法用等效的但更复杂的MBA表达式替换原始表达式的部分子表达式，举例如下：<br>$$<br>\begin{align*}<br>x + y &amp;&#x3D; y −\lnot x − 1<br>\newline<br>x + y &amp;&#x3D; (x\land y)+(x\lor y)<br>\newline<br>&amp;&#x3D;((-(\lnot x)-1)\land y) +(x\lor y)<br>\end{align*}<br>$$</p>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Liu, Binbin, Junfu Shen, Jiang Ming, Qilong Zheng, Jing Li, and Dongpeng Xu. “MBA-Blast: Unveiling and Simplifying Mixed Boolean-Arithmetic Obfuscation,” 2021.</p>
 <p>[2] Liu, Binbin, Weijie Feng, Qilong Zheng, Jing Li, and Dongpeng Xu. “Software Obfuscation with Non-Linear Mixed Boolean-Arithmetic Expressions.” In Information and Communications Security, edited by Debin Gao, Qi Li, Xiaohong Guan, and Xiaofeng Liao, 276–92. Lecture Notes in Computer Science. Cham: Springer International Publishing, 2021.</p>
 
