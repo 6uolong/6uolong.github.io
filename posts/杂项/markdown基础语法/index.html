@@ -1,0 +1,474 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>MD语法介绍 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="1、标题的写法：
+这是一级标题
+这是二级标题
+这是三级标题
+这是四级标题
+这是五级标题
+这是最低的六级标题
+2、列表
+无序列表可以用用* ， &#43; ， —三种符号来创建
+
+列表元素1
+
+
+列表元素2
+
+
+列表元素3
+有序列表用数字直接创建
+
+
+列表元素1
+列表元素2
+列表元素3
+
+3、区块引用
+比如说，你想对某个部分做的内容做一些说明或者引用某某的话等，可以进行区块引用
+
+谁终将声震人间，必长久深自缄默。
+
+
+尼采他老人家说的
+
+其实后面还有一句的。
+
+
+4、华丽的分割线
+
+看见上面那个没，那就是华丽丽的分割线
+5、链接
+有2种链接方式：行内式和参数式
+行内式即这是一个行内式
+参数式
+6、图片加载
+
+7、代码
+print(&quot;hello world!&quot;)
+这是多行注释
+#include&lt;stdio.h&gt;
+int main()
+{
+    printf(&#34;Hello World!&#34;);
+    return 0;
+}
+8、表格
+介绍一种比较好写的表格写法
+
+  
+      
+          学生姓名
+          分数
+      
+  
+  
+      
+          小明
+          90
+      
+      
+          小红
+          99
+      
+      
+          小浩
+          100
+      
+  
+
+9、强调
+一个星号或者是一个下划线包起来，会转换为 &lt;em&gt; 倾斜，如果是2个，会转换为 &lt;strong&gt; 加粗
+删除掉我吧" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">MD语法介绍</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Nov 3, 2019</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>1、标题的写法：</p>
+<h1 id="这是一级标题">这是一级标题</h1>
+<h2 id="这是二级标题">这是二级标题</h2>
+<h3 id="这是三级标题">这是三级标题</h3>
+<h4 id="这是四级标题">这是四级标题</h4>
+<h5 id="这是五级标题">这是五级标题</h5>
+<h6 id="这是最低的六级标题">这是最低的六级标题</h6>
+<p>2、列表
+无序列表可以用用* ， + ， —三种符号来创建</p>
+<ul>
+<li>列表元素1</li>
+</ul>
+<ul>
+<li>列表元素2</li>
+</ul>
+<ul>
+<li>列表元素3
+有序列表用数字直接创建</li>
+</ul>
+<ol>
+<li>列表元素1</li>
+<li>列表元素2</li>
+<li>列表元素3</li>
+</ol>
+<p>3、区块引用
+比如说，你想对某个部分做的内容做一些说明或者引用某某的话等，可以进行区块引用</p>
+<ul>
+<li>谁终将声震人间，必长久深自缄默。</li>
+</ul>
+<blockquote>
+<p>尼采他老人家说的</p>
+<blockquote>
+<p>其实后面还有一句的。</p>
+</blockquote>
+</blockquote>
+<p>4、华丽的分割线</p>
+<hr>
+<p>看见上面那个没，那就是华丽丽的分割线</p>
+<p>5、链接
+有2种链接方式：行内式和参数式
+<a href="http://www.google.com">行内式</a>即这是一个行内式
+参数式</p>
+<p>6、图片加载
+<img src="https://img2018.cnblogs.com/blog/1197364/201908/1197364-20190826182458729-2062223622.png" alt="这是一个图片"></p>
+<p>7、代码
+<code>print(&quot;hello world!&quot;)</code>
+这是多行注释</p>
+<pre tabindex="0"><code>#include&lt;stdio.h&gt;
+int main()
+{
+    printf(&#34;Hello World!&#34;);
+    return 0;
+}
+</code></pre><p>8、表格
+介绍一种比较好写的表格写法</p>
+<table>
+  <thead>
+      <tr>
+          <th>学生姓名</th>
+          <th>分数</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>小明</td>
+          <td>90</td>
+      </tr>
+      <tr>
+          <td>小红</td>
+          <td>99</td>
+      </tr>
+      <tr>
+          <td>小浩</td>
+          <td>100</td>
+      </tr>
+  </tbody>
+</table>
+<p>9、强调
+一个星号或者是一个下划线包起来，会转换为 &lt;em&gt; 倾斜，如果是2个，会转换为 &lt;strong&gt; 加粗
+<del>删除掉我吧</del></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/%E7%88%AC%E8%99%AB%E5%8E%9F%E7%90%86/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>爬虫原理</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/python%E9%9A%8F%E6%9C%BA%E5%88%A0%E9%99%A4/"
+      ><span>突发奇想的THANOS程序</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

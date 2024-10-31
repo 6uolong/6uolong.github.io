@@ -1,0 +1,423 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>编译优化 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。
+常量折叠和常量传播
+编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。
+常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：
+double a, b;
+a = b &#43; 1.0 / 3.0;
+替换为：
+double a, b;
+a = b &#43; 0.33333;
+常量传播会将值已经确定值的变量替换为具体值，例如：
+int x = 14;
+int y = 7 - x / 2;
+转换为：
+int x = 14;
+int y = 7 - 14 / 2;
+常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。
+函数内联
+函数内联会将函数调用替换为具体的函数体代码，例如：
+float square(float a) 
+{ return a * a;}
+float x = square(1.2);
+替换为：
+float x = 1.2 * 1.2;
+函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：
+
+消除了调用、返回和参数传递的开销。
+如果只有一个内联函数调用，代码就会变小。
+函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。
+
+函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">编译优化</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Aug 25, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。</p>
+<h3 id="常量折叠和常量传播">常量折叠和常量传播</h3>
+<p>编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。</p>
+<p>常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：</p>
+<pre tabindex="0"><code>double a, b;
+a = b + 1.0 / 3.0;
+</code></pre><p>替换为：
+double a, b;
+a = b + 0.33333;</p>
+<p>常量传播会将值已经确定值的变量替换为具体值，例如：</p>
+<pre tabindex="0"><code>int x = 14;
+int y = 7 - x / 2;
+</code></pre><p>转换为：</p>
+<pre tabindex="0"><code>int x = 14;
+int y = 7 - 14 / 2;
+</code></pre><p>常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。</p>
+<h3 id="函数内联">函数内联</h3>
+<p>函数内联会将函数调用替换为具体的函数体代码，例如：</p>
+<pre tabindex="0"><code>float square(float a) 
+{ return a * a;}
+float x = square(1.2);
+</code></pre><p>替换为：</p>
+<pre tabindex="0"><code>float x = 1.2 * 1.2;
+</code></pre><p>函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：</p>
+<ol>
+<li>消除了调用、返回和参数传递的开销。</li>
+<li>如果只有一个内联函数调用，代码就会变小。</li>
+<li>函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。</li>
+</ol>
+<p>函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。</p>
+<h3 id="公共子表达式消除">公共子表达式消除</h3>
+<p>如果同一个子表达式出现多次，那么编译器可以通过优化只计算一次，例如：</p>
+<pre tabindex="0"><code>int a, b, c;
+b = (a+1) * (a+1);
+c = (a+1) / 4;
+</code></pre><p>编译器会替换成这样：</p>
+<pre tabindex="0"><code>int a, b, c, temp;
+temp = a + 1;
+b = temp * temp;
+c = temp / 4;
+</code></pre><p>需要注意的是公共子表达式消除可能会带来一些寄存器压力，因为需要定义更多的变量。</p>
+<h3 id="死代码消除">死代码消除</h3>
+<p>编译器在编译时会将不会被执行的代码消除掉，移除这类的代码有两种优点，首先可以减少程序的大小，其次还可以避免程序在运行中进行不相关的运算行为，缩减运行时间。
+举例如下：</p>
+<pre tabindex="0"><code>int a  = 10;
+int b = a * 10;
+return 0;
+</code></pre><p>优化为：</p>
+<pre tabindex="0"><code>return 0;
+</code></pre><h3 id="循环展开">循环展开</h3>
+<p>编译器在高度优化下，会将循环展开，它可以展开重复次数很低的循环，来避免循环的开销，例如：</p>
+<pre tabindex="0"><code>int i, a[2];
+for (i = 0; i &lt; 2; i++) 
+a[i] = i+1;
+</code></pre><p>展开为：</p>
+<pre tabindex="0"><code>int a[2];
+a[0] = 1;
+a[1] = 2;
+</code></pre><p>要注意过多的循环展开不一定是好事，因为它占用了代码缓存中太多的空间，同时也增大了程序的体积。</p>
+<h3 id="循环不变代码移除">循环不变代码移除</h3>
+<p>如果循环中的某些运算与循环计数器无关，可以将其移出循环体。例如：</p>
+<pre tabindex="0"><code>int a[10], b;
+for (int i = 0; i &lt; 10; i++) { a[i] = b * b;}
+</code></pre><p>编译器可以改变它为：</p>
+<pre tabindex="0"><code>int i, a[10], b, temp;
+temp = b * b;
+for (i = 0; i &lt; 10; i++) { a[i] = temp;}
+</code></pre><h3 id="计算规模缩减">计算规模缩减</h3>
+<p>编译器可以使用运算难度小的表达式来替换难度大的表达式，例如：</p>
+<pre tabindex="0"><code>int a;
+int b = a * 32;
+</code></pre><p>转化为：</p>
+<pre tabindex="0"><code>int a;
+int b = a &lt;&lt; 5;
+</code></pre><h3 id="llvm提供的pass">llvm提供的pass</h3>
+<p>llvm框架提供了一系列用于进行代码变换的pass，这些pass工作在ir层面</p>
+<h3 id="编译器优化选项">编译器优化选项</h3>
+<p>一般我们开发的程序都有两个版本，Debug版本和Release版本，Debug版本是调试版本，该版本通常不带任何优化，发布程序的时候会使用Release版本，该版本会对程序做很多优化。优化有两个方向，一个是优化程序体积，一个优化运行速度，当速度优化到极致时，有可能程序体积不是最小，当程序体积优化到最小时，一般程序执行速度不是最快的。
+以clang编译器为例，存在O0、O1、O2、O3等优化选项，O0为默认选项，采取很少的优化措施，一般来说使用O2级别优化即可，从O0到O1、O2、O3随着优化级别的提升，能够得到的提升越来越不明显，甚至可能出现更高级别的优化反而不如低级别优化的情况。</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>LLVM框架开发（二）</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/"
+      ><span>Xposed模块入门</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

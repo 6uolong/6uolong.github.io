@@ -1,0 +1,422 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Android抓包对抗 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="Android抓包原理
+Android抓包的原理其实和中间人攻击的原理差不多，用下面一张图概括一下：
+
+经过这么一通操作后中间人与客户端建立了一个加密连接，也与服务器建立了一个加密连接，中间的流量内容是什么便一清二楚了。
+反抓包第一计，找代理
+应用想要知道自己是不是处于一个被抓包的环境，最容易的方法就是查找有没有代理的存在。
+检测WiFi代理
+通过配置WiFi代理，并将抓包软件的证书以magisk模块的方式安装到系统中，就可以抓Android应用的数据包。相关的Java层API如下:
+
+Proxy.getDefaultHost
+ConnectivityManager.getDefaultProxy
+System.getProperty(&ldquo;http.proxyHost&rdquo;)
+
+private void getWiFiProxyStatus() {  
+    ConnectivityManager cm = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);  
+    NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();  
+    if(activeNetworkInfo!=null &amp;&amp;activeNetworkInfo.isConnected())  
+    {  
+        Log.d(TAG, &#34;getWiFiProxyStatus: &#34;&#43; activeNetworkInfo.getTypeName());  
+        Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34; &#43; Proxy.getDefaultHost()&#43; &#34; Port: &#34; &#43;Proxy.getDefaultPort());  
+        if(cm.getDefaultProxy() != null)  
+            Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34; &#43; cm.getDefaultProxy().getHost() &#43; &#34; Port: &#34; &#43; cm.getDefaultProxy().getPort());  
+        Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34;&#43; System.getProperty(&#34;http.proxyHost&#34;)&#43;&#34; Port: &#34;&#43; System.getProperty(&#34;http.proxyPort&#34;));  
+    }  
+}
+值得注意的是第一种方法和第三种方法其实是重复的，Proxy.getDefaultHost方法内部其实调用了System.getProperty(&quot;http.proxyHost&quot;)。
+检测VPN存在
+除了通过配置WiFi代理进行抓包，很多情况下还会通过VPN协议将流量发送到中间人进行抓包，因此检测VPN是否存在也是一种反抓包的方法。相关的Java层API如下：
+
+ConnectivityManager.getNetworkInfo(17).isConnected()
+ConnectivityManager.getNetworkCapabilities(cm.getActiveNetwork()).hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+ConnectivityManager.getActiveNetworkInfo().getType()==cm.TYPE_VPN
+NetworkInterface.getNetworkInterfaces()
+
+private void getVPNStatus() {  
+    ConnectivityManager cm = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);  
+    Log.d(TAG, &#34;getVPNStatus: &#34;&#43; cm.getNetworkInfo(17).isConnected());  
+    Log.d(TAG, &#34;getVPNStatus: Transport VPN: &#34; &#43; cm.getNetworkCapabilities(cm.getActiveNetwork()).hasTransport(NetworkCapabilities.TRANSPORT_VPN));  
+    Log.d(TAG, &#34;getVPNStatus: TYPE_VPN: &#34;&#43; (cm.getActiveNetworkInfo().getType()==cm.TYPE_VPN));  
+  
+    try {  
+        Enumeration&lt;NetworkInterface&gt; networkInterfaces = NetworkInterface.getNetworkInterfaces();  
+		  \\ 枚举网卡，如果存在tun0或ppp0，可能存在VPN
+        while (networkInterfaces.hasMoreElements()) {  
+            NetworkInterface networkInterface = networkInterfaces.nextElement();  
+            if(networkInterface.toString().contains(&#34;ppp&#34;) || networkInterface.toString().contains(&#34;tun&#34;))  
+                Log.d(TAG, &#34;getVPNStatus: networkInterface: true&#34;);  
+        }  
+    } catch (Exception e) {  
+        e.printStackTrace();  
+    }  
+}
+反抓包第二计，判证书
+在Android抓包原理图中我们可以发现，中间人会将自己的证书发给客户端，客户端可以通过判断证书的合法性来判断是否处于被抓包的状态。" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Android抓包对抗</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jul 20, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="android抓包原理">Android抓包原理</h2>
+<p>Android抓包的原理其实和中间人攻击的原理差不多，用下面一张图概括一下：
+<img src="%E6%8A%93%E5%8C%85%E6%B5%81%E7%A8%8B%E5%9B%BE.png" alt="">
+经过这么一通操作后中间人与客户端建立了一个加密连接，也与服务器建立了一个加密连接，中间的流量内容是什么便一清二楚了。</p>
+<h2 id="反抓包第一计找代理">反抓包第一计，找代理</h2>
+<p>应用想要知道自己是不是处于一个被抓包的环境，最容易的方法就是查找有没有代理的存在。</p>
+<h3 id="检测wifi代理">检测WiFi代理</h3>
+<p>通过配置WiFi代理，并将抓包软件的证书以magisk模块的方式安装到系统中，就可以抓Android应用的数据包。相关的Java层API如下:</p>
+<ul>
+<li>Proxy.getDefaultHost</li>
+<li>ConnectivityManager.getDefaultProxy</li>
+<li>System.getProperty(&ldquo;http.proxyHost&rdquo;)</li>
+</ul>
+<pre tabindex="0"><code>private void getWiFiProxyStatus() {  
+    ConnectivityManager cm = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);  
+    NetworkInfo activeNetworkInfo = cm.getActiveNetworkInfo();  
+    if(activeNetworkInfo!=null &amp;&amp;activeNetworkInfo.isConnected())  
+    {  
+        Log.d(TAG, &#34;getWiFiProxyStatus: &#34;+ activeNetworkInfo.getTypeName());  
+        Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34; + Proxy.getDefaultHost()+ &#34; Port: &#34; +Proxy.getDefaultPort());  
+        if(cm.getDefaultProxy() != null)  
+            Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34; + cm.getDefaultProxy().getHost() + &#34; Port: &#34; + cm.getDefaultProxy().getPort());  
+        Log.d(TAG, &#34;getWiFiProxyStatus: Host: &#34;+ System.getProperty(&#34;http.proxyHost&#34;)+&#34; Port: &#34;+ System.getProperty(&#34;http.proxyPort&#34;));  
+    }  
+}
+</code></pre><p>值得注意的是第一种方法和第三种方法其实是重复的，<code>Proxy.getDefaultHost</code>方法内部其实调用了<code>System.getProperty(&quot;http.proxyHost&quot;)</code>。</p>
+<h3 id="检测vpn存在">检测VPN存在</h3>
+<p>除了通过配置WiFi代理进行抓包，很多情况下还会通过VPN协议将流量发送到中间人进行抓包，因此检测VPN是否存在也是一种反抓包的方法。相关的Java层API如下：</p>
+<ul>
+<li>ConnectivityManager.getNetworkInfo(17).isConnected()</li>
+<li>ConnectivityManager.getNetworkCapabilities(cm.getActiveNetwork()).hasTransport(NetworkCapabilities.TRANSPORT_VPN)</li>
+<li>ConnectivityManager.getActiveNetworkInfo().getType()==cm.TYPE_VPN</li>
+<li>NetworkInterface.getNetworkInterfaces()</li>
+</ul>
+<pre tabindex="0"><code>private void getVPNStatus() {  
+    ConnectivityManager cm = (ConnectivityManager) getSystemService(Service.CONNECTIVITY_SERVICE);  
+    Log.d(TAG, &#34;getVPNStatus: &#34;+ cm.getNetworkInfo(17).isConnected());  
+    Log.d(TAG, &#34;getVPNStatus: Transport VPN: &#34; + cm.getNetworkCapabilities(cm.getActiveNetwork()).hasTransport(NetworkCapabilities.TRANSPORT_VPN));  
+    Log.d(TAG, &#34;getVPNStatus: TYPE_VPN: &#34;+ (cm.getActiveNetworkInfo().getType()==cm.TYPE_VPN));  
+  
+    try {  
+        Enumeration&lt;NetworkInterface&gt; networkInterfaces = NetworkInterface.getNetworkInterfaces();  
+		  \\ 枚举网卡，如果存在tun0或ppp0，可能存在VPN
+        while (networkInterfaces.hasMoreElements()) {  
+            NetworkInterface networkInterface = networkInterfaces.nextElement();  
+            if(networkInterface.toString().contains(&#34;ppp&#34;) || networkInterface.toString().contains(&#34;tun&#34;))  
+                Log.d(TAG, &#34;getVPNStatus: networkInterface: true&#34;);  
+        }  
+    } catch (Exception e) {  
+        e.printStackTrace();  
+    }  
+}
+</code></pre><h2 id="反抓包第二计判证书">反抓包第二计，判证书</h2>
+<p>在Android抓包原理图中我们可以发现，中间人会将自己的证书发给客户端，客户端可以通过判断证书的合法性来判断是否处于被抓包的状态。</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E6%A3%80%E6%B5%8B/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Frida检测</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/"
+      ><span>基于雪崩猜想的混淆构造</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

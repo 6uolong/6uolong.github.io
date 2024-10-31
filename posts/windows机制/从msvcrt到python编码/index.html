@@ -1,0 +1,385 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Python编码问题 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="起因
+估计正常人很难想到这两者之间的关系,又是折腾的一天,我对mingw-w64的编译器如何链接msvcrt.dll文件产生一些疑问,在看Windows网络编程的时候,开头要加上一句命令:
+
+#pragma comment(lib,&ldquo;WS2_32&rdquo;)
+
+通过这条命令来链接dll库,那么编译器是如何链接msvcrt.dll的,翻找了一些头文件,并未看到有相关的语句,一个个找又太麻烦,还是让脚本来帮我找一下吧,python撸一个脚本.
+import os
+path = &#34;D:\\mingw\\mingw64\\x86_64-w64-mingw32\\include&#34; #文件夹目录
+files= os.listdir(path) 
+s = []
+for file in files: #遍历文件夹
+     if os.path.isfile(path&#43;&#34;\\&#34;&#43;file): 
+          f = open(path&#43;&#34;\\&#34;&#43;file,&#39;r&#39;) #打开文件
+          str_f = f.readlines() 
+          str = &#34;#pragma comment&#34;
+          if str in str_f:
+               s.append(file) 
+print(s) #打印结果
+然后顺利发生异常,UnicodeDecodeError:&lsquo;gbk&rsquo; codec can&rsquo;t decode byte 0x99 in position 2613: illegal multibyte sequence
+python编码问题
+一些基本概念
+
+编码：将人类可识别的字符转换为机器可识别的字节码 / 字节序列
+解码：编码的反向过程叫解码
+字符集: 某个范围内字符的集合，不同的字符集规定了字符的个数，比如 ASCII 字符集总共有128个字符，包含了英文字母、阿拉伯数字、标点符号和控制符。而 GB2312 字符集定义了7445个字符，包含了绝大部分汉字字符。
+字符是以字节为存储单位保存在文件中，文件保存在内存 / 物理磁盘中
+编码和解码: 编码的过程是将字符转换成字节流，解码的过程是将字节流解析为字符。
+
+编码问题的解决
+python中使用open()函数,默认的解码方式取决于平台,在Windows平台下是gbk,如图" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Python编码问题</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Nov 7, 2020</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="起因">起因</h3>
+<p>估计正常人很难想到这两者之间的关系,又是折腾的一天,我对mingw-w64的编译器如何链接msvcrt.dll文件产生一些疑问,在看Windows网络编程的时候,开头要加上一句命令:</p>
+<blockquote>
+<p>#pragma comment(lib,&ldquo;WS2_32&rdquo;)</p>
+</blockquote>
+<p>通过这条命令来链接dll库,那么编译器是如何链接msvcrt.dll的,翻找了一些头文件,并未看到有相关的语句,一个个找又太麻烦,还是让脚本来帮我找一下吧,python撸一个脚本.</p>
+<pre tabindex="0"><code>import os
+path = &#34;D:\\mingw\\mingw64\\x86_64-w64-mingw32\\include&#34; #文件夹目录
+files= os.listdir(path) 
+s = []
+for file in files: #遍历文件夹
+     if os.path.isfile(path+&#34;\\&#34;+file): 
+          f = open(path+&#34;\\&#34;+file,&#39;r&#39;) #打开文件
+          str_f = f.readlines() 
+          str = &#34;#pragma comment&#34;
+          if str in str_f:
+               s.append(file) 
+print(s) #打印结果
+</code></pre><p>然后顺利发生异常,UnicodeDecodeError:&lsquo;gbk&rsquo; codec can&rsquo;t decode byte 0x99 in position 2613: illegal multibyte sequence</p>
+<h3 id="python编码问题">python编码问题</h3>
+<h4 id="一些基本概念">一些基本概念</h4>
+<ul>
+<li>编码：将人类可识别的字符转换为机器可识别的字节码 / 字节序列</li>
+<li>解码：编码的反向过程叫解码</li>
+<li>字符集: 某个范围内字符的集合，不同的字符集规定了字符的个数，比如 ASCII 字符集总共有128个字符，包含了英文字母、阿拉伯数字、标点符号和控制符。而 GB2312 字符集定义了7445个字符，包含了绝大部分汉字字符。</li>
+<li>字符是以字节为存储单位保存在文件中，文件保存在内存 / 物理磁盘中</li>
+<li>编码和解码: 编码的过程是将字符转换成字节流，解码的过程是将字节流解析为字符。</li>
+</ul>
+<h4 id="编码问题的解决">编码问题的解决</h4>
+<p>python中使用open()函数,默认的解码方式取决于平台,在Windows平台下是gbk,如图</p>
+<pre tabindex="0"><code>import locale
+print(locale.getdefaultlocale())
+</code></pre><p>输出结果:(&lsquo;zh_CN&rsquo;, &lsquo;cp936&rsquo;),cp936就是gbk编码了.而文本文档的编码方式已经是utf-8了(这个变化我也不知道什么时候出现,很神奇,之前一直是默认ANSI,或者说gbk).我们需要使用utf-8格式来解码.
+解决方法就是修改一行代码:</p>
+<blockquote>
+<p>f = open(path+&quot;\&quot;+file,&lsquo;r&rsquo;,encoding=&lsquo;utf-8&rsquo;)</p>
+</blockquote>
+<h3 id="补充">补充</h3>
+<p>Windows平台下在内存中编码方式是utf-16 le(little endian),保存到磁盘(文本文档)或者用于网络传输时的编码方式是utf-8,他们两个都是unicode字符集标准的一种实现,但是utf-8是变长编码,与ASCII兼容,utf-16 le则是双字节编码,长度是2字节或者4字节.
+至于可执行文件的编码方式则是ANSI,中文操作系统环境下ANSI是GBK.</p>
+<p>忘了说最后最后的搜索结果了,没有哪个文件包含这个句子,所以说有哪位大佬说一下它是怎么链接msvcrt.dll库的吗&hellip;.</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E5%AF%B9unicode%E7%9A%84%E6%94%AF%E6%8C%81/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows编程中的Unicode问题</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/%E7%88%AC%E8%99%AB%E5%8E%9F%E7%90%86/"
+      ><span>爬虫原理</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

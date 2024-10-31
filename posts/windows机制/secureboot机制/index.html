@@ -1,0 +1,358 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>SecureBoot机制 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="从用户态恶意软件说起
+随着攻防技术在对抗中彼此不断进步,微软在对用户态恶意软件的防护已经很成熟了,对于微软商店中的软件(虽然微软商店的软件不是主流,涵盖的软件也相对较少,但这是一种趋势),本身就是运行在沙盒环境中,很难掀起什么风浪,而对于传统的桌面端软件,有Windows defender的签名检测,smartscreen对于不信任软件的提醒,以及uac对软件提权请求的拦截。
+对于内核态恶意软件呢?用户态的恶意软件能做的事情其实很有限,只有到达内核态,与操作系统拥有相同的权限,才能做更多的事情,微软对这些rootkits有哪些防御措施
+rootkit的简明分类
+
+Firmware rootkit:这种恶意软件通过patch BIOS以及其他固件,达到在Windows之前启动的目的,从而达到隐藏和进行恶意操作的目的
+Bootkit:对bootloader动手脚,bootloader是引导Windows系统的一个关键程序,以达到在Windows之前启动的目的
+Kernel rootkit:替换部分Windows的系统关键驱动,以便达到和Windows一起启动的效果
+Driver rootkit:伪装成受Windows信任的第三方驱动程序,进行恶意活动
+
+对应措施
+
+Secure Boot:带有UEFI固件和可信平台模块(TPM)的PC可以配置为只加载可信操作系统引导加载程序
+Trusted Boot:Windows会在加载启动之前检查每个组件的完整性。
+Early Launch Anti-Malware (ELAM):在加载之前,杀毒驱动会先加载测试所有驱动程序,并防止未经批准的驱动程序加载。
+Measured Boot:PC的固件记录引导过程可以被发送到可信的服务器,从而客观地评估PC的健康状况
+
+一些细节
+当装有UEFI的PC启动时,PC首先验证固件是数字签名的,从而降低firmware rootkit的风险。如果启用了secure boot,固件将检查bootloader的数字签名,以保证它没有被修改,并在随后检查其是否有受信任证书,如果这些成功,secure boot的工作就完成了,对于secure boot来说,它可以使用TPM但不要求必须有TPM,而Measured Boot则需要TPM支持
+之后,bootloader在加载内核之前会对其进行数字签名验证, 随后内核依次验证Windows启动过程中的所有其他组件,包括启动驱动程序,启动文件和ELAM等,如果文件已被修改则拒绝加载损坏的组件,Windows 10通常可以自动修复损坏的组件,恢复Windows的完整性并允许PC正常启动
+ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件的驱动,这样一来恶意软件即使伪装成驱动,权限也不会有杀毒软件的高,杀毒软件可以轻松干掉它,从而继续这条信任链。 由于操作系统尚未启动，并且Windows需要尽快启动，因此ELAM的任务很简单：检查每个要加载的驱动并确定其是否在受信任的驱动程序列表中,如果不受信任,就不会加载它。
+至于Measured Boot,没有TPM的情况下不会生效" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">SecureBoot机制</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jul 20, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="从用户态恶意软件说起">从用户态恶意软件说起</h3>
+<p>随着攻防技术在对抗中彼此不断进步,微软在对用户态恶意软件的防护已经很成熟了,对于微软商店中的软件(虽然微软商店的软件不是主流,涵盖的软件也相对较少,但这是一种趋势),本身就是运行在沙盒环境中,很难掀起什么风浪,而对于传统的桌面端软件,有Windows defender的签名检测,smartscreen对于不信任软件的提醒,以及uac对软件提权请求的拦截。</p>
+<p>对于内核态恶意软件呢?用户态的恶意软件能做的事情其实很有限,只有到达内核态,与操作系统拥有相同的权限,才能做更多的事情,微软对这些rootkits有哪些防御措施</p>
+<h3 id="rootkit的简明分类">rootkit的简明分类</h3>
+<ol>
+<li>Firmware rootkit:这种恶意软件通过patch BIOS以及其他固件,达到在Windows之前启动的目的,从而达到隐藏和进行恶意操作的目的</li>
+<li>Bootkit:对bootloader动手脚,bootloader是引导Windows系统的一个关键程序,以达到在Windows之前启动的目的</li>
+<li>Kernel rootkit:替换部分Windows的系统关键驱动,以便达到和Windows一起启动的效果</li>
+<li>Driver rootkit:伪装成受Windows信任的第三方驱动程序,进行恶意活动</li>
+</ol>
+<h3 id="对应措施">对应措施</h3>
+<ol>
+<li>Secure Boot:带有UEFI固件和可信平台模块(TPM)的PC可以配置为只加载可信操作系统引导加载程序</li>
+<li>Trusted Boot:Windows会在加载启动之前检查每个组件的完整性。</li>
+<li>Early Launch Anti-Malware (ELAM):在加载之前,杀毒驱动会先加载测试所有驱动程序,并防止未经批准的驱动程序加载。</li>
+<li>Measured Boot:PC的固件记录引导过程可以被发送到可信的服务器,从而客观地评估PC的健康状况</li>
+</ol>
+<h3 id="一些细节">一些细节</h3>
+<p>当装有UEFI的PC启动时,PC首先验证固件是数字签名的,从而降低firmware rootkit的风险。如果启用了secure boot,固件将检查bootloader的数字签名,以保证它没有被修改,并在随后检查其是否有受信任证书,如果这些成功,secure boot的工作就完成了,对于secure boot来说,它可以使用TPM但不要求必须有TPM,而Measured Boot则需要TPM支持</p>
+<p>之后,bootloader在加载内核之前会对其进行数字签名验证, 随后内核依次验证Windows启动过程中的所有其他组件,包括启动驱动程序,启动文件和ELAM等,如果文件已被修改则拒绝加载损坏的组件,Windows 10通常可以自动修复损坏的组件,恢复Windows的完整性并允许PC正常启动</p>
+<p>ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件的驱动,这样一来恶意软件即使伪装成驱动,权限也不会有杀毒软件的高,杀毒软件可以轻松干掉它,从而继续这条信任链。 由于操作系统尚未启动，并且Windows需要尽快启动，因此ELAM的任务很简单：检查每个要加载的驱动并确定其是否在受信任的驱动程序列表中,如果不受信任,就不会加载它。</p>
+<p>至于Measured Boot,没有TPM的情况下不会生效</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E7%9A%84%E5%90%84%E7%A7%8D%E9%93%BE%E6%8E%A5/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows系统下各种链接</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/msvcrt%E7%9A%84%E9%93%BE%E6%8E%A5/"
+      ><span>msvcrt的链接</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,358 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>位操作杂项 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="移位和乘除法
+移位分为左移、逻辑右移、算术右移三种，他们和乘除法有着很密切的关系：
+x &laquo; n 等价于 x * 2^n，算术右移是除以2后向下取整，整除在C语言中是向0取整，在python中则是向下取整。
+以C语言转为的汇编为例，除2^n的算术经常优化为右移运算加符号位：
+@ int s = a &gt;&gt; 1
+movl %eax,%ecx
+sarl $1,%ecx
+@ int d = a / 2;
+movl %eax,%edx
+shrl $31,%edx // fix: %edx=(%edx&lt;0?1:0)
+addl %edx,%eax // fix: add one if a&lt;0
+sarl $1,%eax
+无溢出的平均数求法
+x&#43;y == ((x&amp;y)&lt;&lt;1) &#43; (x^y)
+// sum == carries &#43; sum_without_carries
+(x&#43;y)/2 == (x&amp;y) &#43; ((x^y)&gt;&gt;1)
+需要特别注意在C语言中，(x&#43;y)/2 != x/2&#43;y/2，等号只有在x，y中有任意一个为偶数的时候成立。
+x&#43;y == ((x|y)&lt;&lt;1) - (x^y)
+// ceil_average(x,y) == average(x,y) &#43; ((x^y)&amp;1))
+((x&#43;y - x|y)&laquo;1) == x&#43;y-(x^y)
+(x&#43;y) == (x|y)&laquo;1 - (x^y) 
+x&#43;y = (x&amp;y)*2 &#43; x^y" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">位操作杂项</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jul 10, 2023</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="移位和乘除法">移位和乘除法</h3>
+<p>移位分为左移、逻辑右移、算术右移三种，他们和乘除法有着很密切的关系：
+x &laquo; n 等价于 x * 2^n，算术右移是除以2后向下取整，整除在C语言中是向0取整，在python中则是向下取整。
+以C语言转为的汇编为例，除2^n的算术经常优化为右移运算加符号位：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">@</span> <span style="color:#66d9ef">int</span> s <span style="color:#f92672">=</span> a <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>movl <span style="color:#f92672">%</span>eax,<span style="color:#f92672">%</span>ecx
+</span></span><span style="display:flex;"><span>sarl <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>,<span style="color:#f92672">%</span>ecx
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">@</span> <span style="color:#66d9ef">int</span> d <span style="color:#f92672">=</span> a <span style="color:#f92672">/</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>movl <span style="color:#f92672">%</span>eax,<span style="color:#f92672">%</span>edx
+</span></span><span style="display:flex;"><span>shrl <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">31</span>,<span style="color:#f92672">%</span>edx <span style="color:#75715e">// fix: %edx=(%edx&lt;0?1:0)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>addl <span style="color:#f92672">%</span>edx,<span style="color:#f92672">%</span>eax <span style="color:#75715e">// fix: add one if a&lt;0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>sarl <span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">1</span>,<span style="color:#f92672">%</span>eax
+</span></span></code></pre></div><h3 id="无溢出的平均数求法">无溢出的平均数求法</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>x<span style="color:#f92672">+</span>y <span style="color:#f92672">==</span> ((x<span style="color:#f92672">&amp;</span>y)<span style="color:#f92672">&lt;&lt;</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> (x<span style="color:#f92672">^</span>y)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// sum == carries + sum_without_carries
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>(x<span style="color:#f92672">+</span>y)<span style="color:#f92672">/</span><span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> (x<span style="color:#f92672">&amp;</span>y) <span style="color:#f92672">+</span> ((x<span style="color:#f92672">^</span>y)<span style="color:#f92672">&gt;&gt;</span><span style="color:#ae81ff">1</span>)
+</span></span></code></pre></div><p>需要特别注意在C语言中，(x+y)/2 != x/2+y/2，等号只有在x，y中有任意一个为偶数的时候成立。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>x<span style="color:#f92672">+</span>y <span style="color:#f92672">==</span> ((x<span style="color:#f92672">|</span>y)<span style="color:#f92672">&lt;&lt;</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">-</span> (x<span style="color:#f92672">^</span>y)
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ceil_average(x,y) == average(x,y) + ((x^y)&amp;1))
+</span></span></span></code></pre></div><p>((x+y - x|y)&laquo;1) == x+y-(x^y)
+(x+y) == (x|y)&laquo;1 - (x^y) 
+x+y = (x&amp;y)*2 + x^y</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84mba%E6%B7%B7%E6%B7%861/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>从零开始的MBA混淆(1)</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/root%E6%A3%80%E6%B5%8B/"
+      ><span>Root检测</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

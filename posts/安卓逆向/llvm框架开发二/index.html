@@ -1,0 +1,411 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>LLVM框架开发（二） - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="指令替换pass编写
+上一节介绍了如何使用新旧PassManager进行Pass编写，本节则真正上手一个Pass的编写过程中去。
+该Pass的主要目标是将加减乘除等简单运算替换为更复杂但效果等价的操作，提高逆向分析的难度。以下代码将运算a&#43;b替换为：a-(-b)
+void subAddInst(Function &amp;f)
+{
+    Function *tmp = &amp;f;
+    BinaryOperator *work = nullptr;
+    // 遍历函数中的基本块
+    for (Function::iterator bb = tmp-&gt;begin(); bb != tmp-&gt;end(); &#43;&#43;bb)
+    {
+        // 遍历基本块中的命令
+        for (BasicBlock::iterator ins = bb-&gt;begin(); ins != bb-&gt;end(); &#43;&#43;ins)
+        {
+            if (ins-&gt;isBinaryOp())
+            {
+                if (ins-&gt;getOpcode() == Instruction::Add)
+                {
+                    errs() &lt;&lt; &#34;find add op&#34; &lt;&lt; &#39;\n&#39;;
+                    BinaryOperator *op = dyn_cast&lt;BinaryOperator&gt;(ins);
+                    IRBuilder&lt;&gt; builder(op);
+                    Value *negInst = builder.CreateNeg(op-&gt;getOperand(1));
+                    Value *newInst = builder.CreateSub(op-&gt;getOperand(0), negInst);
+                    op-&gt;replaceAllUsesWith(newInst);
+                    work = op;
+                }
+            }
+        }
+    }
+    // 注意原命令脱离基本块操作不要在迭代中实现，否则会破坏迭代结构进而报错
+    work-&gt;eraseFromParent();
+}
+函数空壳化pass编写
+恶作剧形式的一个Pass，功能为将传入的函数除了return命令以外的所有命令移除，达到该函数没有功能的作用（目前只对main函数起作用）。" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">LLVM框架开发（二）</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Sep 6, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="指令替换pass编写">指令替换pass编写</h3>
+<p>上一节介绍了如何使用新旧PassManager进行Pass编写，本节则真正上手一个Pass的编写过程中去。
+该Pass的主要目标是将加减乘除等简单运算替换为更复杂但效果等价的操作，提高逆向分析的难度。以下代码将运算a+b替换为：a-(-b)</p>
+<pre tabindex="0"><code>void subAddInst(Function &amp;f)
+{
+    Function *tmp = &amp;f;
+    BinaryOperator *work = nullptr;
+    // 遍历函数中的基本块
+    for (Function::iterator bb = tmp-&gt;begin(); bb != tmp-&gt;end(); ++bb)
+    {
+        // 遍历基本块中的命令
+        for (BasicBlock::iterator ins = bb-&gt;begin(); ins != bb-&gt;end(); ++ins)
+        {
+            if (ins-&gt;isBinaryOp())
+            {
+                if (ins-&gt;getOpcode() == Instruction::Add)
+                {
+                    errs() &lt;&lt; &#34;find add op&#34; &lt;&lt; &#39;\n&#39;;
+                    BinaryOperator *op = dyn_cast&lt;BinaryOperator&gt;(ins);
+                    IRBuilder&lt;&gt; builder(op);
+                    Value *negInst = builder.CreateNeg(op-&gt;getOperand(1));
+                    Value *newInst = builder.CreateSub(op-&gt;getOperand(0), negInst);
+                    op-&gt;replaceAllUsesWith(newInst);
+                    work = op;
+                }
+            }
+        }
+    }
+    // 注意原命令脱离基本块操作不要在迭代中实现，否则会破坏迭代结构进而报错
+    work-&gt;eraseFromParent();
+}
+</code></pre><h3 id="函数空壳化pass编写">函数空壳化pass编写</h3>
+<p>恶作剧形式的一个Pass，功能为将传入的函数除了return命令以外的所有命令移除，达到该函数没有功能的作用（目前只对main函数起作用）。</p>
+<pre tabindex="0"><code>void hollow(Function &amp;f)
+{
+    vector&lt;Instruction *&gt; vectorIns;
+    vector&lt;BasicBlock *&gt; vectorBB;
+    for (BasicBlock &amp;bb : f)
+    {
+        vectorBB.push_back(&amp;bb);
+    }
+    // 移除函数中除了最后一个块以外的所有块
+    for (auto bb = vectorBB.begin(); bb &lt; vectorBB.end() - 1; bb++)
+    {
+        (*bb)-&gt;eraseFromParent();
+    }
+    BasicBlock *end = vectorBB[vectorBB.size()-1];
+    for(Instruction &amp;ins: *end)
+    {
+        if(isa&lt;ReturnInst&gt;(&amp;ins))
+        {
+            continue;
+        }
+        else
+        {
+            vectorIns.push_back(&amp;ins);
+        }
+    }
+    // 移除最后一个块中除了return以外的所有命令
+    for(Instruction *ins: vectorIns)
+    {
+        ins-&gt;eraseFromParent();
+    }
+}
+</code></pre></section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Frida踩坑笔记</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/"
+      ><span>编译优化</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

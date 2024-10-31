@@ -1,0 +1,342 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>控制流图 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="定义
+控制流图（control-flow graph）简称CFG，它使用数学中的图来表示计算机程序的执行流程。CFG中的每一个顶点对应一个程序基本块，基本块是一段中间不包含分支指令，但以分支指令结尾的代码块。CFG使用有向边来表示分支，在大多数情况下会有两个比较特殊的基本块，一个是开始块（entry block），另一个是结束块（exit block）。
+可到达性
+可到达性是图论中的性质，经常用在程序优化中，若某一个子图没有与包含开始块的子图相连接，那么称该子图为不可执行块，移除不可执行块不会对程序有任何影响，编译器中常见的死代码消除（dead code elimination）就是在做这件事。如果开始块执行不可到达结束块，那么程序有可能出现死循环。
+支配关系
+若从开始块到达基本块N的所有路径，都会在到达基本块N之前先到达基本块M，则基本块M支配（dominates）基本块N，记作M dom N。
+从支配基本块N的所有块中去除基本块本身，其余的所有基本块都严格支配基本块N，记作M sdom N。
+若基本块M支配基本块N，且其中间没有任何其他基本块，则基本块M直接支配（immediately dominates）基本块N，每个基本块都会有一个直接支配者，记作 M idom N。
+与支配关系对应的还有后支配，即从N到控制流图结束块的所有路径均经过M，记作M pdom N。
+支配树（dominator tree）是描述支配关系的数据结构。
+规约性
+常见分支语句的控制流图
+如下图所示，其中until语句和do-while语句的控制流图相似：
+" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">控制流图</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Sep 23, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="定义">定义</h3>
+<p>控制流图（control-flow graph）简称CFG，它使用数学中的图来表示计算机程序的执行流程。CFG中的每一个顶点对应一个程序基本块，基本块是一段中间不包含分支指令，但以分支指令结尾的代码块。CFG使用有向边来表示分支，在大多数情况下会有两个比较特殊的基本块，一个是开始块（entry block），另一个是结束块（exit block）。</p>
+<h3 id="可到达性">可到达性</h3>
+<p>可到达性是图论中的性质，经常用在程序优化中，若某一个子图没有与包含开始块的子图相连接，那么称该子图为不可执行块，移除不可执行块不会对程序有任何影响，编译器中常见的死代码消除（dead code elimination）就是在做这件事。如果开始块执行不可到达结束块，那么程序有可能出现死循环。</p>
+<h3 id="支配关系">支配关系</h3>
+<p>若从开始块到达基本块N的所有路径，都会在到达基本块N之前先到达基本块M，则基本块M支配（dominates）基本块N，记作M dom N。</p>
+<p>从支配基本块N的所有块中去除基本块本身，其余的所有基本块都严格支配基本块N，记作M sdom N。</p>
+<p>若基本块M支配基本块N，且其中间没有任何其他基本块，则基本块M直接支配（immediately dominates）基本块N，每个基本块都会有一个直接支配者，记作 M idom N。</p>
+<p>与支配关系对应的还有后支配，即从N到控制流图结束块的所有路径均经过M，记作M pdom N。</p>
+<p>支配树（dominator tree）是描述支配关系的数据结构。</p>
+<h3 id="规约性">规约性</h3>
+<h3 id="常见分支语句的控制流图">常见分支语句的控制流图</h3>
+<p>如下图所示，其中until语句和do-while语句的控制流图相似：</p>
+<p><img src="cfg.png" alt=""></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/root%E6%A3%80%E6%B5%8B/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Root检测</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c&#43;&#43;%E4%B8%AD%E7%9A%84%E9%87%8D%E5%86%99%E9%9A%90%E8%97%8F%E9%87%8D%E8%BD%BD/"
+      ><span>C&#43;&#43;中的重写、隐藏与重载的区别</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

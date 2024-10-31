@@ -1,0 +1,395 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Frida检测 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="
+
+直接检测frida文件，frida文件一般会放在/data/local/tmp目录下，可以直接查找该目录下的文件判断是否存在frida。较老版本的frida会在运行后在当前目录下释放一个名为re.frida.server的文件，不过新版本已经改进了这一问题。
+
+
+识别指定端口，frida server启动后默认会在27042端口监听。
+
+
+检测ptrace状态，frida是基于ptrace技术发挥作用的，而ptrace操作是独占式的，故程序可以通过尝试对自身进行ptrace来检测frida。
+
+
+检测maps文件，frida（以64位为例）注入进程后会加载frida-agent-64.so，故进程可以通过访问/proc/self/maps查找是否加载该库判断frida的存在。
+
+
+检测线程status，frida注入进程后会启动多个新线程，通过查询/proc/self/task/number_for_tid/status下的线程信息判断是否被frida注入。以下为常见的frida会启动的新线程名次：
+
+gmain：Frida 使用 Glib 库，其中的主事件循环被称为 GMainLoop。在 Frida 中，gmain 表示 GMainLoop 的线程。
+gdbus：GDBus 是 Glib 提供的一个用于 D-Bus 通信的库。在 Frida 中，gdbus 表示 GDBus 相关的线程。
+gum-js-loop：Gum 是 Frida 的运行时引擎，用于执行注入的 JavaScript 代码。gum-js-loop 表示 Gum 引擎执行 JavaScript 代码的线程。
+pool-frida：Frida 中的某些功能可能会使用线程池来处理任务，pool-frida 表示 Frida 中的线程池。
+linjector：一种用于 Android 设备的开源工具，它允许用户在运行时向 Android 应用程序注入动态链接库（DLL）文件。通过注入 DLL 文件，用户可以修改应用程序的行为、调试应用程序、监视函数调用等，这在逆向工程、安全研究和动态分析中是非常有用的。
+
+
+
+检测native代码是否被inlinehook。inlinehook是一种代码hook技术，通常用于native层代码的控制，原理可以简单概括为修改函数代码开头的几个字节为跳转指令，跳转到一段由攻击者控制的内存执行额外的操作。因此被inlinehook代码的开头几个字节会发生变化，通过判断文件中的代码和内存中的代码开头是否发生变化可以用于检测frida。
+
+
+frida在attach进程注入动态链接库时会显式地校验ELF_magic字段，如果不对则直接报错退出，可以手动在内存中抹掉SO的magic字段，达到反调试的效果。
+
+
+FILE *fp=fopen(&#34;/proc/self/maps&#34;,&#34;r&#34;);
+while (fgets(line, sizeof(line), fp)) {     
+	if (strstr(line, &#34;linker64&#34;) ) {           
+		start = reinterpret_cast&lt;int *&gt;(strtoul(strtok(line, &#34;-&#34;), NULL, 16));
+		*(int*)start=*(int*)start^0x7f;   // 抹除Magic       
+		}      
+	}
+
+Frida源码中多次调用somain结构体,但它在调用前不会判断是否为空，只要手动置空后Frida一附加就会崩溃。
+
+int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#34;);
+*(int*)((void*)start&#43;getsomainoff)=0; // 修改somain指针
+" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Frida检测</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Oct 3, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><ol>
+<li>
+<p>直接检测frida文件，frida文件一般会放在/data/local/tmp目录下，可以直接查找该目录下的文件判断是否存在frida。较老版本的frida会在运行后在当前目录下释放一个名为re.frida.server的文件，不过新版本已经改进了这一问题。</p>
+</li>
+<li>
+<p>识别指定端口，frida server启动后默认会在27042端口监听。</p>
+</li>
+<li>
+<p>检测ptrace状态，frida是基于ptrace技术发挥作用的，而ptrace操作是独占式的，故程序可以通过尝试对自身进行ptrace来检测frida。</p>
+</li>
+<li>
+<p>检测maps文件，frida（以64位为例）注入进程后会加载frida-agent-64.so，故进程可以通过访问/proc/self/maps查找是否加载该库判断frida的存在。</p>
+</li>
+<li>
+<p>检测线程status，frida注入进程后会启动多个新线程，通过查询/proc/self/task/number_for_tid/status下的线程信息判断是否被frida注入。以下为常见的frida会启动的新线程名次：</p>
+<ul>
+<li>gmain：Frida 使用 Glib 库，其中的主事件循环被称为 GMainLoop。在 Frida 中，gmain 表示 GMainLoop 的线程。</li>
+<li>gdbus：GDBus 是 Glib 提供的一个用于 D-Bus 通信的库。在 Frida 中，gdbus 表示 GDBus 相关的线程。</li>
+<li>gum-js-loop：Gum 是 Frida 的运行时引擎，用于执行注入的 JavaScript 代码。gum-js-loop 表示 Gum 引擎执行 JavaScript 代码的线程。</li>
+<li>pool-frida：Frida 中的某些功能可能会使用线程池来处理任务，pool-frida 表示 Frida 中的线程池。</li>
+<li>linjector：一种用于 Android 设备的开源工具，它允许用户在运行时向 Android 应用程序注入动态链接库（DLL）文件。通过注入 DLL 文件，用户可以修改应用程序的行为、调试应用程序、监视函数调用等，这在逆向工程、安全研究和动态分析中是非常有用的。</li>
+</ul>
+</li>
+<li>
+<p>检测native代码是否被inlinehook。inlinehook是一种代码hook技术，通常用于native层代码的控制，原理可以简单概括为修改函数代码开头的几个字节为跳转指令，跳转到一段由攻击者控制的内存执行额外的操作。因此被inlinehook代码的开头几个字节会发生变化，通过判断文件中的代码和内存中的代码开头是否发生变化可以用于检测frida。</p>
+</li>
+<li>
+<p>frida在attach进程注入动态链接库时会显式地校验ELF_magic字段，如果不对则直接报错退出，可以手动在内存中抹掉SO的magic字段，达到反调试的效果。</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>FILE <span style="color:#f92672">*</span>fp<span style="color:#f92672">=</span>fopen(<span style="color:#e6db74">&#34;/proc/self/maps&#34;</span>,<span style="color:#e6db74">&#34;r&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span> (fgets(line, <span style="color:#66d9ef">sizeof</span>(line), fp)) {     
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (strstr(line, <span style="color:#e6db74">&#34;linker64&#34;</span>) ) {           
+</span></span><span style="display:flex;"><span>		start <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span> <span style="color:#f92672">*&gt;</span>(strtoul(strtok(line, <span style="color:#e6db74">&#34;-&#34;</span>), NULL, <span style="color:#ae81ff">16</span>));
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">*</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span>)start<span style="color:#f92672">=*</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span>)start<span style="color:#f92672">^</span><span style="color:#ae81ff">0x7f</span>;   <span style="color:#75715e">// 抹除Magic       
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		}      
+</span></span><span style="display:flex;"><span>	}
+</span></span></code></pre></div><ol start="8">
+<li>Frida源码中多次调用somain结构体,但它在调用前不会判断是否为空，只要手动置空后Frida一附加就会崩溃。</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> getsomainoff <span style="color:#f92672">=</span> findsym(<span style="color:#e6db74">&#34;/system/bin/linker64&#34;</span>,<span style="color:#e6db74">&#34;__dl__ZL6somain&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span>)((<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)start<span style="color:#f92672">+</span>getsomainoff)<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 修改somain指针
+</span></span></span></code></pre></div></section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/android%E6%8A%93%E5%8C%85%E5%AF%B9%E6%8A%97/"
+      ><span>Android抓包对抗</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

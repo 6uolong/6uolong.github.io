@@ -1,0 +1,475 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Java网络编程 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="url解析
+当我们在浏览器内输入一段网址的时候,比如 http://www.google.com 进行访问的时候,真实发送出去的可能并非如此,可能是
+http://www.google.com:80/search?q=test&amp;safe=strict
+协议   域名/IP地址    端口 路径   问号后为参数
+DNS解析(Domain Name System)
+如果我们要访问谷歌,只需要输入域名或者IP(这个一般没人会去做)就好了,但是谷歌是相当大的,不可能只有一台服务器,我们是怎么找到它其中一台服务器的哪?这就用到了DNS解析.即将输入的域名解析为IP地址.为了说清楚域名解析的过程,我们来看看域名都包含哪些东西:
+www.google.com.
+. 根域名
+.com  顶级域名(还有.org .edu等)
+.google 次级域名(这个就比较自由了,依照自己需要发挥)
+此处没有三级域名   三级域名
+www  主机名(根据需求可变比如:news.163.com)
+DNS解析方法主要有两种:递归和迭代
+大体方向:浏览器-&gt;dns客户端(本地程序)-&gt;各级DNS服务器
+另外一个域名是可以对应一个或多个IP的
+各级协议
+真实网络层级分为5层(OSI七层是模型,因某些原因真实情况并不是7层):
+应用层(用户所接触到的应用对数据处理格式)
+传输层(端口到端口的连接,同一主机上有许多程序被分配了不同的端口)
+网络层(主机到主机之间的联系,发送地到目的地)
+数据链路层(网卡和网卡之间信息传输,关系到mac地址,传输信息采用广播这种比较原始的方法)
+物理层(过于底层,真实的物理连接,电缆光缆等等)
+
+分层思想(计组第一章内容)使得大家能够各司其职,在本层做出改动只要不影响向上一层的接口,那么对于上一层来说就没有影响。
+
+每一层有每一层使用的协议(即数据组织格式),举例来说:
+应用层协议: HTTP协议(传输网页内容) SMTP(收发邮件) FTP(文件传输) DNS(域名解析)
+传输层协议: TCP协议(较为可靠,但是比较繁琐) UDP(不太可靠,相对简单)
+网络层协议: IP协议(每个主机都有一个IP)
+数据链路层协议: Ethernet协议 ARP(IP地址和mac地址转换)
+物理层: 电信号(一般没人到这步吧&hellip;.)
+协议格式简述:
+
+Web基础概念
+
+
+软件架构
+C/S类型:客户端/服务器端&ndash;&gt; QQ,360客户端
+B/S类型:浏览器/服务器端&ndash;&gt; 各种网站
+
+
+资源分类
+静态资源:所有用户访问时得到的结果都是一样的,静态资源可以直接被浏览器解析。比如:html,css,jpg等等
+动态资源:不同用户访问得到的结果可能是不一样的,浏览器无法被浏览器直接解析,必须经过服务器端处理后转换为静态资源返回给浏览器才能解析。比如:php,asp,jsp等等
+
+
+
+
+
+网络通信三要素
+IP:计算机在网络中的唯一标识
+端口:应用程序监听的端口在计算机中是唯一的
+传输协议:规定了数据传输的格式,比如TCP,UDP,HTTP协议
+
+
+常见的web服务器
+服务器:安装了服务器软件的计算机
+服务器软件:接收用户的请求,处理请求做出回应
+web服务器软件:tomcat,weblogic等等" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Java网络编程</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jan 20, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="url解析">url解析</h3>
+<p>当我们在浏览器内输入一段网址的时候,比如 <a href="http://www.google.com">http://www.google.com</a> 进行访问的时候,真实发送出去的可能并非如此,可能是</p>
+<p><a href="http://www.google.com:80/search?q=test&amp;safe=strict">http://www.google.com:80/search?q=test&amp;safe=strict</a>
+协议   域名/IP地址    端口 路径   问号后为参数</p>
+<h3 id="dns解析domain-name-system">DNS解析(Domain Name System)</h3>
+<p>如果我们要访问谷歌,只需要输入域名或者IP(这个一般没人会去做)就好了,但是谷歌是相当大的,不可能只有一台服务器,我们是怎么找到它其中一台服务器的哪?这就用到了DNS解析.即将输入的域名解析为IP地址.为了说清楚域名解析的过程,我们来看看域名都包含哪些东西:
+<a href="https://www.google.com">www.google.com</a>.
+. 根域名
+.com  顶级域名(还有.org .edu等)
+.google 次级域名(这个就比较自由了,依照自己需要发挥)
+此处没有三级域名   三级域名
+www  主机名(根据需求可变比如:news.163.com)
+DNS解析方法主要有两种:递归和迭代
+大体方向:浏览器-&gt;dns客户端(本地程序)-&gt;各级DNS服务器
+另外一个域名是可以对应一个或多个IP的</p>
+<h3 id="各级协议">各级协议</h3>
+<p>真实网络层级分为5层(OSI七层是模型,因某些原因真实情况并不是7层):</p>
+<p>应用层(用户所接触到的应用对数据处理格式)
+传输层(端口到端口的连接,同一主机上有许多程序被分配了不同的端口)
+网络层(主机到主机之间的联系,发送地到目的地)
+数据链路层(网卡和网卡之间信息传输,关系到mac地址,传输信息采用广播这种比较原始的方法)
+物理层(过于底层,真实的物理连接,电缆光缆等等)</p>
+<blockquote>
+<p>分层思想(计组第一章内容)使得大家能够各司其职,在本层做出改动只要不影响向上一层的接口,那么对于上一层来说就没有影响。</p>
+</blockquote>
+<p>每一层有每一层使用的协议(即数据组织格式),举例来说:</p>
+<p>应用层协议: HTTP协议(传输网页内容) SMTP(收发邮件) FTP(文件传输) DNS(域名解析)</p>
+<p>传输层协议: TCP协议(较为可靠,但是比较繁琐) UDP(不太可靠,相对简单)</p>
+<p>网络层协议: IP协议(每个主机都有一个IP)</p>
+<p>数据链路层协议: Ethernet协议 ARP(IP地址和mac地址转换)</p>
+<p>物理层: 电信号(一般没人到这步吧&hellip;.)</p>
+<p>协议格式简述:
+<img src="protocol.png" alt=""></p>
+<h3 id="web基础概念">Web基础概念</h3>
+<ol>
+<li>
+<p>软件架构
+C/S类型:客户端/服务器端&ndash;&gt; QQ,360客户端
+B/S类型:浏览器/服务器端&ndash;&gt; 各种网站</p>
+</li>
+<li>
+<p>资源分类
+静态资源:所有用户访问时得到的结果都是一样的,静态资源可以直接被浏览器解析。比如:html,css,jpg等等
+动态资源:不同用户访问得到的结果可能是不一样的,浏览器无法被浏览器直接解析,必须经过服务器端处理后转换为静态资源返回给浏览器才能解析。比如:php,asp,jsp等等</p>
+</li>
+</ol>
+<p><img src="CSArch.png" alt=""></p>
+<ol>
+<li>
+<p>网络通信三要素
+IP:计算机在网络中的唯一标识
+端口:应用程序监听的端口在计算机中是唯一的
+传输协议:规定了数据传输的格式,比如TCP,UDP,HTTP协议</p>
+</li>
+<li>
+<p>常见的web服务器
+服务器:安装了服务器软件的计算机
+服务器软件:接收用户的请求,处理请求做出回应
+web服务器软件:tomcat,weblogic等等</p>
+</li>
+</ol>
+<h3 id="tcp协议和udp协议的区别">TCP协议和UDP协议的区别</h3>
+<p>TCP和UDP服务实现如下:</p>
+<p>TCP编程的服务器端一般步骤是：</p>
+<ol>
+<li>创建一个socket，用函数socket()；</li>
+<li>设置socket属性，用函数setsockopt(); * 可选</li>
+<li>绑定IP地址、端口等信息到socket上，用函数bind();</li>
+<li>开启监听，用函数listen()；</li>
+<li>接收客户端上来的连接，用函数accept()；</li>
+<li>收发数据，用函数send()和recv()，或者read()和write();</li>
+<li>关闭网络连接；</li>
+<li>关闭监听；</li>
+</ol>
+<p>TCP编程的客户端一般步骤是：</p>
+<ol>
+<li>创建一个socket，用函数socket()；</li>
+<li>设置socket属性，用函数setsockopt();* 可选</li>
+<li>绑定IP地址、端口等信息到socket上，用函数bind();* 可选</li>
+<li>设置要连接的对方的IP地址和端口等属性；</li>
+<li>连接服务器，用函数connect()；</li>
+<li>收发数据，用函数send()和recv()，或者read()和write();</li>
+<li>关闭网络连接</li>
+</ol>
+<p>与之对应的UDP编程步骤要简单许多，分别如下：
+UDP编程的服务器端一般步骤是：</p>
+<ol>
+<li>创建一个socket，用函数socket()；</li>
+<li>设置socket属性，用函数setsockopt();* 可选</li>
+<li>绑定IP地址、端口等信息到socket上，用函数bind();</li>
+<li>循环接收数据，用函数recvfrom();</li>
+<li>关闭网络连接；</li>
+</ol>
+<p>UDP客户端一般步骤是：</p>
+<ol>
+<li>创建一个socket，用函数socket()；</li>
+<li>设置socket属性，用函数setsockopt();* 可选</li>
+<li>绑定IP地址、端口等信息到socket上，用函数bind();* 可选</li>
+<li>设置对方的IP地址和端口等属性;</li>
+<li>发送数据，用函数sendto();</li>
+<li>关闭网络连接；</li>
+</ol>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/http%E5%8D%8F%E8%AE%AE%E8%AF%A6%E8%A7%A3/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>HTTP详解</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E/"
+      ><span>C语言零碎</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

@@ -1,0 +1,590 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>dll注入与hook - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="使用dll的方法
+
+隐式链接(lib&#43;dll&#43;头文件)
+#pragma comment(lib,&ldquo;libname.lib&rdquo;)
+#include&lt;libname.h&gt;
+调用
+只有dll文件(显式链接)
+LoadLibrary hModule
+GetProcAddress funcName
+FreeLibrary
+或在.h文件中: extern &ldquo;C&rdquo; funcName()
+
+在动态链接库项目被编译后,会生成lib文件和dll文件
+.lib文件: 存储了导出函数的名称和位置
+.dll文件: 包含实际的函数代码和数据
+dll劫持
+原理:程序调用loadlibrary载入库时,如果使用了相对路径,可能会加载同名其他恶意dll
+dll加载目录搜索顺序:
+
+程序所在目录
+加载dll时所在的当前目录(比如在桌面打开图片,桌面就是当前目录)
+系统目录system32
+Windows目录
+Path环境变量下的目录
+
+微软的应对措施:
+
+开启safedllsearchmode,改变加载顺序,即将上表中的第二加载改为倒数第二加载
+注册表中knowndlls项规定了某些特殊的dll,这些dll必须在system32目录中寻找并加载
+微软还提供了一个ExcludeFromKnownDlls项,重启生效
+
+防御:
+
+使用绝对路径
+白名单,签名机制
+SetDllDirectory把当前目录一项去掉
+
+全局钩子
+HHOOK WINAPI SetWindowsHookEx(
+int idhook;\钩子类型
+HOOKPROC lpfn;\回调函数地址
+HINSTANCE hMod;\包含lpfn的实例句柄
+DWORD dwThreadid;\线程ID,如果是零,则监控所有线程的全局钩子
+)
+钩子类型:
+
+  
+      
+          值
+          含义
+      
+  
+  
+      
+          WH_CALLWNDPROC
+          安装钩子程序，在系统将消息发送到目标窗口过程之前监视消息。
+      
+      
+          WH_CALLWNDPROCRET
+          安装钩子程序，在目标窗口过程处理消息后监视消息。
+      
+      
+          WH_CBT
+          安装接收对CBT应用程序有用的通知的挂钩程序。
+      
+      
+          WH_DEBUG
+          安装可用于调试其他挂钩程序的挂钩程序。
+      
+      
+          WH_FOREGROUNDIDLE
+          安装将在应用程序的前台线程即将变为空闲时调用的钩子过程。该挂钩对于在空闲时执行低优先级任务很有用。
+      
+      
+          WH_GETMESSAGE
+          安装一个监视发送到消息队列的消息的挂钩过程。
+      
+      
+          WH_JOURNALPLAYBACK
+          安装一个挂钩过程，用于发布先前由WH_JOURNALRECORD挂钩过程记录的消息。
+      
+      
+          WH_JOURNALRECORD
+          安装一个挂钩过程，记录发布到系统消息队列的输入消息。这个钩子对于录制宏很有用。
+      
+      
+          WH_KEYBOARD
+          安装监视按键消息的挂钩过程。
+      
+      
+          WH_KEYBOARD_LL
+          安装监视低级别键盘输入事件的挂钩过程。
+      
+      
+          WH_MOUSE
+          安装监视鼠标消息的挂钩过程。
+      
+      
+          WH_MOUSE_LL
+          安装监视低级别鼠标输入事件的挂钩过程。
+      
+      
+          WH_MSGFILTER
+          安装钩子程序，用于监视在对话框，消息框，菜单或滚动条中由于输入事件而生成的消息。
+      
+      
+          WH_SHELL
+          安装接收对shell应用程序有用的通知的挂钩程序。
+      
+      
+          WH_SYSMSGFILTER
+          安装钩子程序，用于监视在对话框，消息框，菜单或滚动条中由于输入事件而生成的消息。钩子程序监视与调用线程相同的桌面中的所有应用程序的这些消息。
+      
+  
+
+普通的钩子需要写在dll程序中才能执行,但是低级键盘钩子可以在无dll的情况下运行,比如低级键盘钩子和低级鼠标钩子,判断钩子的优先级遵循一个原则,后下的钩子先执行,WH_DEBUG&gt;WH_KEYBOARD_LL&gt;WH_KEYBOARD,即调试钩子&gt;低级钩子&gt;普通钩子" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">dll注入与hook</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Apr 10, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="使用dll的方法">使用dll的方法</h3>
+<ol>
+<li>隐式链接(lib+dll+头文件)
+#pragma comment(lib,&ldquo;libname.lib&rdquo;)
+#include&lt;libname.h&gt;
+调用</li>
+<li>只有dll文件(显式链接)
+LoadLibrary hModule
+GetProcAddress funcName
+FreeLibrary
+或在.h文件中: extern &ldquo;C&rdquo; funcName()</li>
+</ol>
+<p>在动态链接库项目被编译后,会生成lib文件和dll文件
+.lib文件: 存储了导出函数的名称和位置
+.dll文件: 包含实际的函数代码和数据</p>
+<h3 id="dll劫持">dll劫持</h3>
+<p>原理:程序调用loadlibrary载入库时,如果使用了相对路径,可能会加载同名其他恶意dll
+dll加载目录搜索顺序:</p>
+<ol>
+<li>程序所在目录</li>
+<li>加载dll时所在的当前目录(比如在桌面打开图片,桌面就是当前目录)</li>
+<li>系统目录system32</li>
+<li>Windows目录</li>
+<li>Path环境变量下的目录</li>
+</ol>
+<p>微软的应对措施:</p>
+<ul>
+<li>开启safedllsearchmode,改变加载顺序,即将上表中的第二加载改为倒数第二加载</li>
+<li>注册表中knowndlls项规定了某些特殊的dll,这些dll必须在system32目录中寻找并加载</li>
+<li>微软还提供了一个ExcludeFromKnownDlls项,重启生效</li>
+</ul>
+<p>防御:</p>
+<ul>
+<li>使用绝对路径</li>
+<li>白名单,签名机制</li>
+<li>SetDllDirectory把当前目录一项去掉</li>
+</ul>
+<h3 id="全局钩子">全局钩子</h3>
+<p>HHOOK WINAPI SetWindowsHookEx(
+int idhook;\钩子类型
+HOOKPROC lpfn;\回调函数地址
+HINSTANCE hMod;\包含lpfn的实例句柄
+DWORD dwThreadid;\线程ID,如果是零,则监控所有线程的全局钩子
+)
+钩子类型:</p>
+<table>
+  <thead>
+      <tr>
+          <th>值</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>WH_CALLWNDPROC</td>
+          <td>安装钩子程序，在系统将消息发送到目标窗口过程之前监视消息。</td>
+      </tr>
+      <tr>
+          <td>WH_CALLWNDPROCRET</td>
+          <td>安装钩子程序，在目标窗口过程处理消息后监视消息。</td>
+      </tr>
+      <tr>
+          <td>WH_CBT</td>
+          <td>安装接收对CBT应用程序有用的通知的挂钩程序。</td>
+      </tr>
+      <tr>
+          <td>WH_DEBUG</td>
+          <td>安装可用于调试其他挂钩程序的挂钩程序。</td>
+      </tr>
+      <tr>
+          <td>WH_FOREGROUNDIDLE</td>
+          <td>安装将在应用程序的前台线程即将变为空闲时调用的钩子过程。该挂钩对于在空闲时执行低优先级任务很有用。</td>
+      </tr>
+      <tr>
+          <td>WH_GETMESSAGE</td>
+          <td>安装一个监视发送到消息队列的消息的挂钩过程。</td>
+      </tr>
+      <tr>
+          <td>WH_JOURNALPLAYBACK</td>
+          <td>安装一个挂钩过程，用于发布先前由WH_JOURNALRECORD挂钩过程记录的消息。</td>
+      </tr>
+      <tr>
+          <td>WH_JOURNALRECORD</td>
+          <td>安装一个挂钩过程，记录发布到系统消息队列的输入消息。这个钩子对于录制宏很有用。</td>
+      </tr>
+      <tr>
+          <td>WH_KEYBOARD</td>
+          <td>安装监视按键消息的挂钩过程。</td>
+      </tr>
+      <tr>
+          <td>WH_KEYBOARD_LL</td>
+          <td>安装监视低级别键盘输入事件的挂钩过程。</td>
+      </tr>
+      <tr>
+          <td>WH_MOUSE</td>
+          <td>安装监视鼠标消息的挂钩过程。</td>
+      </tr>
+      <tr>
+          <td>WH_MOUSE_LL</td>
+          <td>安装监视低级别鼠标输入事件的挂钩过程。</td>
+      </tr>
+      <tr>
+          <td>WH_MSGFILTER</td>
+          <td>安装钩子程序，用于监视在对话框，消息框，菜单或滚动条中由于输入事件而生成的消息。</td>
+      </tr>
+      <tr>
+          <td>WH_SHELL</td>
+          <td>安装接收对shell应用程序有用的通知的挂钩程序。</td>
+      </tr>
+      <tr>
+          <td>WH_SYSMSGFILTER</td>
+          <td>安装钩子程序，用于监视在对话框，消息框，菜单或滚动条中由于输入事件而生成的消息。钩子程序监视与调用线程相同的桌面中的所有应用程序的这些消息。</td>
+      </tr>
+  </tbody>
+</table>
+<p>普通的钩子需要写在dll程序中才能执行,但是低级键盘钩子可以在无dll的情况下运行,比如低级键盘钩子和低级鼠标钩子,判断钩子的优先级遵循一个原则,后下的钩子先执行,WH_DEBUG&gt;WH_KEYBOARD_LL&gt;WH_KEYBOARD,即调试钩子&gt;低级钩子&gt;普通钩子</p>
+<p>早期QQ的防止记录措施,登录前每秒hook和unhook钩子,保证自己的钩子最后下,最先拿到数据,防止其他钩子获取到正确密码</p>
+<h3 id="pe共享节及dll注入">PE共享节及dll注入</h3>
+<p>#pragma data_seg(&quot;.shared&quot;)
+ULONG g_ulNum
+#pragma data_seg()
+#pragma comment(linker,&quot;/SECTION:.shared,RWS&quot;)
+RWS即为写/读/共享
+共享段内的数据可供多个进程访问,普通的全局变量只能一个进程内部访问,共享段可用于多个进程间通信
+dll注入的几种方法:</p>
+<ol>
+<li>CreateRemoteThread() 最常用的注入方法,缺点是对于session 0的服务无能为力,无法注入</li>
+<li>NtCreateThreadEx() 该函数是ntdll.dll中的未文档化的函数,能够突破session 0的限制
+函数原型为: DWORD WINAPI ZwCreateThreadEx(
+PHANDLE ThreadHandle,
+ACCESS_MASK DesiredAccess,
+LPVOID ObjectAttributes,  <br>
+HANDLE ProcessHandle, <br>
+LPTHREAD_START_ROUTINE lpStartAddress,<br>
+LPVOID lpParameter,   <br>
+BOOL CreateSuspended,
+SIZE_T ZeroBits,
+SIZE_T StackSize,
+SIZE_T MaximumStackSize,
+LPVOID pUnkown
+)
+其中比较重要的参数是CreateSuspended这一个,表示创建线程后是否挂起</li>
+<li>QueueUserAPC()</li>
+<li>SetWindowsHookEx()</li>
+<li>RtlCreateUserThread() 该函数也是未导出函数,同样也可以突破session 0的限制,函数原型:
+DWORD WINAPI RtlCreateUserThread(<br>
+HANDLE Process,   //句柄
+PSECURITY_DESCRIPTOR ThreadSecurityDescriptor,  //线程安全描述符          <br>
+BOOLEAN CreateSuspended,  //创建挂起标志
+ULONG ZeroBits,
+SIZE_T MaximumStackSize,
+SIZE_T CommittedStackSize,
+PUSER_THREAD_START_ROUTINE StartAddress, //远程线程函数
+PVOID Parameter OPTIONAL, //参数
+PHANDLE Thread OPTIONAL,
+PCLIENT_ID ClientId OPTIONAL
+);</li>
+<li>SetThreadContext()</li>
+<li>反射式dll注入</li>
+</ol>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/confusing-x86-64/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>x86和x64汇编传参问题</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E8%BF%9B%E7%A8%8B%E5%88%9B%E5%BB%BA/"
+      ><span>Windows进程创建过程</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

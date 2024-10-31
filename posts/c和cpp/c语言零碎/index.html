@@ -1,0 +1,467 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>C语言零碎 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="C 语言中的输入输出
+
+gets()函数和puts()函数一起处理字符串非常方便，gets()函数会自动将最后的回车“干掉”，这样就不用担心下次输入时发现缓冲区里面有个\n了。而puts()则会自动换行，配合使用very nice！
+for(int i=0;i&lt;N;i&#43;&#43;)在for中定义的i变量也只在for的作用域中生效，如果i只是为了让{}中语句重复执行几次而没有什么特殊意义，这样写是可以的。
+可能令人吃惊，\n在scanf格式串中不表示等待换行符，而是读取并放弃连续的空白字符。（事实上，scanf格式串中的任何空白字符都表示读取并放弃空白字符。而且，诸如%d这样的格式也会扔掉前边的空白，因此你通常根本不需要在scanf格式串中加入显式的空白。）scanf()函数有些大坑，有些非常规输入你要懂得一些缓冲区的知识才能解释，因此如果你有拿这个玩意实现一些非常规操作的话，最好掂量一下。
+fgets()函数和gets()函数很像，别指望这个函数读取\n，它和gets一个尿性，无非是把stdin改成了任意FILE指针指向的地址，不过虽然不能读取\n，读取空格还是可以的。fgets(string,n,stdin)与gets(string)在一定范围内是等价的。
+stdin,stdout,stderr就是FILE类型的指针，不过他是随着计算机系统的开启默认打开的，其中0就是stdin，表示输入流，指从键盘输入，1代表stdout，2代表stderr，1,2默认是显示器。printf（）其实就是向stdout中输出，等同于fprintf（stdout，&ldquo;xxxx&rdquo;），perror()其实就是向stderr中输出，相当于fprintf（stderr，&ldquo;xxxx&rdquo;）
+关于缓冲区的理解：
+
+
+全缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，只要1024个字节都放满了，那么程序会立即来读取这1024个字节的数据。只要1024个字节没有放满，哪怕只放了1023个字节，程序都不会来读取，这就是全缓冲的意思。
+行缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，假如放了10个字节的数据，你敲了回车键，那么程序就马上来读取了。假如放了20个字节，你敲了回车键，程序也会来读取。所以即使1024个字节没有放满，但是你敲了回车键，程序就会来读取，这个就叫做行缓冲。典型代表是标准输入(stdin)和标准输出(stdout)，scanf()的诸多坑就是因为它的存在导致。
+无缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，刚放了1个字节，程序就马上来读取了；又放了一个字节，程序又马上来读取了，这就是没有缓冲。比如getch()函数。
+
+
+linux与Windows上通用的清除缓冲区的方法，我们知道在Windows下清除缓冲区的方法是fflush(stdin)，但是该方法在linux下不一定能够奏效，我们可以使用scanf(&quot;%*[^\n]%c&quot;);%[^\n]将逐个读取缓冲区中的 &lsquo;\n&rsquo; 字符之前的其它字符，% 后面的 * 表示将读取的这些字符丢弃，遇到 &lsquo;\n&rsquo; 字符时便停止读取。此时，缓冲区中尚有一个 &lsquo;\n&rsquo; 字符遗留，所以后面的%*c 将读取并丢弃这个遗留的换行符，这里的星号和前面的星号作用相同。由于所有从键盘的输入都是以回车结束的，而回车会产生一个 &lsquo;\n&rsquo; 字符，所以将 &lsquo;\n&rsquo; 连同它之前的字符全部读取并丢弃之后，也就相当于清除了输入缓冲区。
+C语言数组的初始化：C语言会在初始化数组的时候把未赋值的元素赋值为0，注意在对字符串进行初始化的时候不要让字符串长度正好等于元素个数，否则在输出的时候可能发生错误(原因：&rsquo;\0&rsquo;为字符串结束的标志，因为长度和元素个数正好相等，结尾没有&rsquo;\0&rsquo;，系统不知道什么时候字符串结束，可能会多输出)
+
+格式化输出
+%n存在的内存泄漏和修改漏洞
+%n可以再printf函数中对变量赋值,值的大小为printf执行到%n处打印的字符数目
+#include&lt;stdio.h&gt;
+int main()
+{
+	char* p = &#34;hello,world&#34;;
+	int len = 0;
+	printf(&#34;helloworld%n&#34;,&amp;len);
+	printf(&#34;%d&#34;, len);
+	return 0;
+}
+因为它能够修改内存,故从很早之前开始在VS编程中使用%n会导致程序无法运行
+结构体所占内存问题
+#include&lt;stdio.h&gt;
+typedef struct 
+{
+	char c1;
+	long i;
+	char c2;
+	double f;
+}a;
+typedef struct
+{
+	char c1;
+	char c2;
+	long i;
+	double f;
+}b;
+int main()
+{
+	printf(&#34;%d %d&#34;, sizeof(a),sizeof(b));
+	return 0;
+}
+输出结果猜猜是什么? 24和16
+结构体所占大小的两条准则:" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">C语言零碎</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jan 6, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="c-语言中的输入输出">C 语言中的输入输出</h3>
+<ol>
+<li>gets()函数和puts()函数一起处理字符串非常方便，gets()函数会自动将最后的回车“干掉”，这样就不用担心下次输入时发现缓冲区里面有个\n了。而puts()则会自动换行，配合使用very nice！</li>
+<li><code>for(int i=0;i&lt;N;i++)</code>在for中定义的i变量也只在for的作用域中生效，如果i只是为了让{}中语句重复执行几次而没有什么特殊意义，这样写是可以的。</li>
+<li>可能令人吃惊，\n在scanf格式串中不表示等待换行符，而是读取并放弃连续的空白字符。（事实上，scanf格式串中的任何空白字符都表示读取并放弃空白字符。而且，诸如%d这样的格式也会扔掉前边的空白，因此你通常根本不需要在scanf格式串中加入显式的空白。）scanf()函数有些大坑，有些非常规输入你要懂得一些缓冲区的知识才能解释，因此如果你有拿这个玩意实现一些非常规操作的话，最好掂量一下。</li>
+<li>fgets()函数和gets()函数很像，别指望这个函数读取\n，它和gets一个尿性，无非是把stdin改成了任意FILE指针指向的地址，不过虽然不能读取\n，读取空格还是可以的。fgets(string,n,stdin)与gets(string)在一定范围内是等价的。</li>
+<li>stdin,stdout,stderr就是FILE类型的指针，不过他是随着计算机系统的开启默认打开的，其中0就是stdin，表示输入流，指从键盘输入，1代表stdout，2代表stderr，1,2默认是显示器。printf（）其实就是向stdout中输出，等同于fprintf（stdout，&ldquo;xxxx&rdquo;），perror()其实就是向stderr中输出，相当于fprintf（stderr，&ldquo;xxxx&rdquo;）</li>
+<li>关于缓冲区的理解：</li>
+</ol>
+<ul>
+<li>全缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，只要1024个字节都放满了，那么程序会立即来读取这1024个字节的数据。只要1024个字节没有放满，哪怕只放了1023个字节，程序都不会来读取，这就是全缓冲的意思。</li>
+<li>行缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，假如放了10个字节的数据，你敲了回车键，那么程序就马上来读取了。假如放了20个字节，你敲了回车键，程序也会来读取。所以即使1024个字节没有放满，但是你敲了回车键，程序就会来读取，这个就叫做行缓冲。典型代表是标准输入(stdin)和标准输出(stdout)，scanf()的诸多坑就是因为它的存在导致。</li>
+<li>无缓冲
+内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，刚放了1个字节，程序就马上来读取了；又放了一个字节，程序又马上来读取了，这就是没有缓冲。比如getch()函数。</li>
+</ul>
+<ol start="8">
+<li>linux与Windows上通用的清除缓冲区的方法，我们知道在Windows下清除缓冲区的方法是fflush(stdin)，但是该方法在linux下不一定能够奏效，我们可以使用scanf(&quot;%*[^\n]%<em>c&quot;);%</em>[^\n]将逐个读取缓冲区中的 &lsquo;\n&rsquo; 字符之前的其它字符，% 后面的 * 表示将读取的这些字符丢弃，遇到 &lsquo;\n&rsquo; 字符时便停止读取。此时，缓冲区中尚有一个 &lsquo;\n&rsquo; 字符遗留，所以后面的%*c 将读取并丢弃这个遗留的换行符，这里的星号和前面的星号作用相同。由于所有从键盘的输入都是以回车结束的，而回车会产生一个 &lsquo;\n&rsquo; 字符，所以将 &lsquo;\n&rsquo; 连同它之前的字符全部读取并丢弃之后，也就相当于清除了输入缓冲区。</li>
+<li>C语言数组的初始化：C语言会在初始化数组的时候把未赋值的元素赋值为0，注意在对字符串进行初始化的时候不要让字符串长度正好等于元素个数，否则在输出的时候可能发生错误(原因：&rsquo;\0&rsquo;为字符串结束的标志，因为长度和元素个数正好相等，结尾没有&rsquo;\0&rsquo;，系统不知道什么时候字符串结束，可能会多输出)</li>
+</ol>
+<h3 id="格式化输出">格式化输出</h3>
+<p>%n存在的内存泄漏和修改漏洞
+%n可以再printf函数中对变量赋值,值的大小为printf执行到%n处打印的字符数目</p>
+<pre tabindex="0"><code>#include&lt;stdio.h&gt;
+int main()
+{
+	char* p = &#34;hello,world&#34;;
+	int len = 0;
+	printf(&#34;helloworld%n&#34;,&amp;len);
+	printf(&#34;%d&#34;, len);
+	return 0;
+}
+</code></pre><p>因为它能够修改内存,故从很早之前开始在VS编程中使用%n会导致程序无法运行</p>
+<h3 id="结构体所占内存问题">结构体所占内存问题</h3>
+<pre tabindex="0"><code>#include&lt;stdio.h&gt;
+typedef struct 
+{
+	char c1;
+	long i;
+	char c2;
+	double f;
+}a;
+typedef struct
+{
+	char c1;
+	char c2;
+	long i;
+	double f;
+}b;
+int main()
+{
+	printf(&#34;%d %d&#34;, sizeof(a),sizeof(b));
+	return 0;
+}
+</code></pre><p>输出结果猜猜是什么? 24和16
+结构体所占大小的两条准则:</p>
+<ol>
+<li>结构体变量中成员的偏移量必须是成员大小的整数倍（0被认为是任何数的整数倍）</li>
+<li>结构体大小必须是所有成员大小的整数倍。</li>
+</ol>
+<p>除此之外还有栈对齐,x86平台上,栈上的参数都是4字节的,在x64平台上则是8字节,并且栈的大小为16的整数倍</p>
+<p>现代计算机中内存空间都是按照byte划分的，从理论上讲似乎对任何类型的变量的访问可以从任何地址开始，但实际情况是在访问特定类型变量的时候经常在特 定的内存地址访问，这就需要各种类型数据按照一定的规则在空间上排列，而不是顺序的一个接一个的排放，这就是对齐。
+对齐的作用和原因：各个硬件平台对存储空间的处理上有很大的不同。一些平台对某些特定类型的数据只能从某些特定地址开始存取。比如有些架构的CPU在访问一个没有进行对齐的变量的时候会发生错误,那么在这种架构下编程必须保证字节对齐.其他平台可能没有这种情况，但是最常见的是如果不按照适合其平台要求对数据存放进行对齐，会在存取效率上带来损失。比如有些平台每次读都是从偶地址开始，如果一个int型（假设为32位系统）如果存放在偶地址开始的地方，那么一个读周期就可以读出这32bit，而如果存放在奇地址开始的地方，就需要2个读周期，并对两次读出的结果的高低字节进行拼凑才能得到该32bit数据。显然在读取效率上下降很多。</p>
+<h3 id="c语言中变量存储区域">C语言中变量存储区域</h3>
+<p>先来看一段代码:</p>
+<pre tabindex="0"><code>#include&lt;stdio.h&gt;
+#include&lt;stdlib.h&gt;
+int a = 0;
+char* p1;
+static int x = 10;
+int main()
+{
+	int b = 0;
+	char s1[] = &#34;1234&#34;;
+	char* p2;
+	char* s2 = &#34;123&#34;;
+	static int c = 0;
+	p1 = (char*)malloc(128);
+	p2 = (char*)malloc(256);	
+	free(p1);
+	free(p2);
+}
+</code></pre><p>变量a存储在.data段
+变量p1存储在.bss段
+变量x存储在.data段
+变量b存储在栈上
+变量s1是一个数组,存储在栈上
+变量p2在.bss段
+变量s2是一个指针,指向&quot;123&quot;字符串常量,而&quot;123&quot;存储在.rdata段
+malloc分配的内存在堆上
+注意static和const的区别</p>
+<h3 id="内存的寻址模式">内存的寻址模式</h3>
+<p>实模式分段模型和保护模式扁平模型
+实模式是通过段机制加偏移的方式直接得到物理地址
+保护模式下则是通过段描述符,段描述符是分段单元的一部分,用于将逻辑地址转换为线性地址,线性地址通过分页机制,通过二级映射或四级映射获得最终得到物理地址</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Java网络编程</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+      ><span>C语言预处理机制</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

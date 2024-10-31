@@ -1,0 +1,439 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>从零开始的MBA混淆(1) - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="MBA运算
+MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（&#43;、-、*、/）的运算系统。以下为一个C语言实现的MBA运算示例：
+int a, b;
+int c = (a &amp; b) &#43; (a | b); // 等价于c=a&#43;b
+线性MBA
+线性MBA常用于运算混淆中，它的定义如下：
+$$
+\sum_{i \in I}a_i e_i (x_1,x_2,&hellip;,x_t)
+$$
+其中$a_i$为整数，$e_i(x_1,x_2,&hellip;,x_n)$为只含有布尔逻辑运算的表达式，简单举几个例子，以下的表达式都属于线性MBA：
+$$
+f(x,y) = (x \lor y) - (x \land y) - (x \oplus y)
+\newline
+f(x,y) = x-3*(x \land y)-(x \oplus y)&#43;(\lnot y)-(\lnot(x \land y)) &#43; 2*y
+$$
+位独立性
+线性MBA的特点是具有位独立性，即由加号相连接的每一项，只含有布尔逻辑运算，变量的每一位的运算不会影响到前一位或后一位，这就是位独立性。以int类型的变量举例来说：
+int x = 1, y = 1
+int z = x &#43; y // 01 &#43; 01 = 10 低位向高位进位
+int t = x &amp; y // 01 &amp; 01 = 01 不会存在进位
+位独立性保证了每一位的运算规律相同，使得我们可以将变量的取值空间由32bit缩小至1bit，在1bit空间对变量的取值进行枚举来构造线性MBA等式，例如：" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">从零开始的MBA混淆(1)</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Oct 23, 2023</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h2 id="mba运算">MBA运算</h2>
+<p>MBA运算（Mixed Boolean-Arithmetic）是一种定义在模$2^n$下的混合了布尔逻辑运算（与&amp;、或|、非~、异或^）和代数运算（+、-、*、/）的运算系统。以下为一个C语言实现的MBA运算示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> a, b;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> c <span style="color:#f92672">=</span> (a <span style="color:#f92672">&amp;</span> b) <span style="color:#f92672">+</span> (a <span style="color:#f92672">|</span> b); <span style="color:#75715e">// 等价于c=a+b
+</span></span></span></code></pre></div><h2 id="线性mba">线性MBA</h2>
+<p>线性MBA常用于运算混淆中，它的定义如下：
+$$
+\sum_{i \in I}a_i e_i (x_1,x_2,&hellip;,x_t)
+$$
+其中$a_i$为整数，$e_i(x_1,x_2,&hellip;,x_n)$为只含有布尔逻辑运算的表达式，简单举几个例子，以下的表达式都属于线性MBA：
+$$
+f(x,y) = (x \lor y) - (x \land y) - (x \oplus y)
+\newline
+f(x,y) = x-3*(x \land y)-(x \oplus y)+(\lnot y)-(\lnot(x \land y)) + 2*y
+$$</p>
+<h3 id="位独立性">位独立性</h3>
+<p>线性MBA的特点是具有位独立性，即由加号相连接的每一项，只含有布尔逻辑运算，变量的每一位的运算不会影响到前一位或后一位，这就是位独立性。以int类型的变量举例来说：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> x <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, y <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> z <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> y <span style="color:#75715e">// 01 + 01 = 10 低位向高位进位
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> t <span style="color:#f92672">=</span> x <span style="color:#f92672">&amp;</span> y <span style="color:#75715e">// 01 &amp; 01 = 01 不会存在进位
+</span></span></span></code></pre></div><p>位独立性保证了每一位的运算规律相同，使得我们可以将变量的取值空间由32bit缩小至1bit，在1bit空间对变量的取值进行枚举来构造线性MBA等式，例如：</p>
+<table>
+  <thead>
+      <tr>
+          <th>x</th>
+          <th>y</th>
+          <th>x&amp;y</th>
+          <th>x丨y</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+      </tr>
+      <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>1</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>1</td>
+      </tr>
+      <tr>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+      </tr>
+  </tbody>
+</table>
+<p>记上述矩阵为M，每一项的系数记作C，解下列线性方程，即可得到一个MBA恒等式:
+$$
+Mc = 0
+\newline
+c = [1,1,-1,-1]^{T}
+\newline
+1*x + 1*y + (-1)*(x\land y)+(-1)*(x\lor y)=0
+\newline
+x+y=(x\land y)+(x\lor y)
+$$</p>
+<p>则$x+y$便可以用$(x\land y)+(x\lor y)$进行混淆，使用上述方法，我们可以轻易地构造出许多线性MBA恒等式，进而构造出相应的混淆。</p>
+<h2 id="多项式mba">多项式MBA</h2>
+<p>多项式MBA是线性MBA的更一般形式，简单点说就是把线性MBA作为乘数相乘并展开。它的数学定义如下：</p>
+<p>$$
+\sum_{i \in I}a_i (\prod_{j \in J_i} e_{(i,j)} (x_1,x_2,&hellip;,x_t))
+$$</p>
+<p>以下几个例子都是多项式MBA：</p>
+<p>$$
+f(x,y) = (x \land y)*(x \lor y)+(x \land \lnot y)*(\lnot x \land y)
+\newline
+f(x,y) = (x - (x \land y)-(x \lor y))*(-x-1)
+$$</p>
+<p>多项式MBA可以按照变量个数和乘法次数进行分类，上面的两个式子都是二元二次多项式MBA，线性MBA是一种特殊的多项式MBA，线性MBA也可以称为n元一次多项式MBA。</p>
+<h3 id="乘一法构造多项式mba">乘一法构造多项式MBA</h3>
+<p>基于线性MBA混淆构造多项式MBA混淆的最简单方法是乘一法。我们知道有些线性MBA表达式的值恒为1（使用上文介绍的方法也可以轻松构造），那么我们对某个基础线性MBA乘1，将1替换为值恒为1的线性MBA即可构造多项式MBA，下面为一个简单示例：
+$$
+\lnot x = -x-1 \rightarrow 1=-x-\lnot x
+\newline
+x+y = (x+y)*1=(x+y)*(-x-\lnot x)
+=-x^2-x*y-\lnot x*x-\lnot x*y
+$$</p>
+<p>但是这样构造存在一个问题，构造后的多项式MBA能够轻易被还原为因式相乘的形式（通过提取公因式还原），进而化简去掉值恒为1的因式。</p>
+<p>我们可以将乘1法进行改进，改进的方法是加值恒为0且与上述构造存在相同子式的MBA，举个简单例子：
+$$
+(x \land y) − y − (x \lor \lnot y) = 1
+\newline
+e_1=x+y=(x\land y)+(x \lor y),e_2=(x \land y) − y − (x \lor \lnot y)
+\newline
+e_3=(x\land y)-(x \lor y),e_4=(x \land y) − y +(\lnot x \land y)=0
+\newline
+e_1=e_1*e_2+e_3*e_4=2∗ (x \lor y) ∗ ((x \land y) − y) − (x \lor \lnot y) ∗ ((x \lor y)
+\newline +(x \land y)) +(\lnot x \land y) ∗ ((x \lor y) − (x \land y))
+$$
+上例中$e_3$与$e_1$中的项完全相同，但是符号相反。$e_4$与$e_2$中有部分项相同，这就保证了相乘相加后有部分展开项被消掉了，从而破坏了因式相乘的结构，使得前文提到的化简方法失效。</p>
+<h2 id="参考文献">参考文献</h2>
+<p>[1] Liu, Binbin, Junfu Shen, Jiang Ming, Qilong Zheng, Jing Li, and Dongpeng Xu. “MBA-Blast: Unveiling and Simplifying Mixed Boolean-Arithmetic Obfuscation,” 2021.</p>
+<p>[2] Liu, Binbin, Weijie Feng, Qilong Zheng, Jing Li, and Dongpeng Xu. “Software Obfuscation with Non-Linear Mixed Boolean-Arithmetic Expressions.” In Information and Communications Security, edited by Debin Gao, Qi Li, Xiaohong Guan, and Xiaofeng Liao, 276–92. Lecture Notes in Computer Science. Cham: Springer International Publishing, 2021.</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E5%9F%BA%E4%BA%8E%E9%9B%AA%E5%B4%A9%E7%8C%9C%E6%83%B3%E7%9A%84%E6%B7%B7%E6%B7%86%E6%9E%84%E9%80%A0/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>基于雪崩猜想的混淆构造</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86/%E4%BD%8D%E6%93%8D%E4%BD%9C%E6%9D%82%E9%A1%B9/"
+      ><span>位操作杂项</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

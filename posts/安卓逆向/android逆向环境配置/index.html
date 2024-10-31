@@ -1,0 +1,426 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>Android逆向环境配置 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="手机Root权限获取
+
+解锁BootLoader，此处推荐小米、一加等比较容易解锁的手机，小米需要等14天才能解锁，一加到手就能解锁，且这两个牌子解锁后仍然保修。
+根据手机型号下载TWRP，使用fastboot刷入。
+到 https://github.com/topjohnwu/Magisk 下载Magisk框架，修改后缀为.zip文件
+进入Recovery，可以看到此时已经被替换为TWRP，刷入类原生ROM（比较知名的有PE、crdroid、Dotos等等，注意型号）或者AOSP，这样做是为了减少出厂系统的深度魔改造成一些难以解决的错误。
+找到Magisk的zip文件，刷入Magisk框架，此时便获得了Root权限
+
+更加详细的教程参见 https://www.bilibili.com/video/BV1BY4y1H7Mc
+ro.debuggable属性修改
+通过magisk修改（重启失效），连接电脑输入以下指令：
+adb shell
+su
+magisk resetprop ro.debuggable 1
+stop;start;
+除此之外还可以使用MagiskHide Props Config模块，安装后在adb shell中输入props，按照提示将ro.debuggable改为1即可，该方法修改后即使手机重启也不会失效。
+通过这样的配置之后Jadx，jeb等软件就可以动态调试手机上的软件了。
+lsposed框架安装
+Xposed框架在很早以前就已经停止更新，目前仍然维护的Xposed实现是lsposed框架，安装过程很简单，访问 https://github.com/LSPosed/LSPosed 下载zip包，在magisk管理器中安装即可（可以选择riru版或者zygisk版，建议安装zygisk版本，riru已经停更，预计不久riru版本的lsposed也会停更），需要注意的是zygisk版本的lsposed框架需要打开magisk的zygisk功能支持才能正常运行，注意在magisk设置中打开。
+安装成功后显示如下：
+
+frida环境安装
+这是我们分析Java层代码的主力军之一，配合Jadx等静态分析工具能够做到快速定位目标功能代码，安装和配置步骤如下：
+
+首先在电脑上安装Python，推荐3.8.x版本，这是目前frida支持的最新版本，之后安装frida库和frida-tools库。命令如下：
+
+pip install frida
+pip install frida-tools
+
+在已经安装magisk的手机上安装frida是很简单的一件事，访问 https://github.com/ViRb3/magisk-frida/releases 获取Magiskfrida模块，在Magisk管理器中安装即可。
+
+测试是否安装成功只需首先将手机通过USB连接到电脑上，注意允许USB调试，之后在电脑上打开终端输入命令frida-ps -U，输出结果如下即为成功：
+
+
+在安装frida成功的基础上，安装objection库，该库是一个基于frida的扩展，提供了无代码hook，内存漫游和主动调用等等功能，安装只需一行命令：
+
+pip install objection
+
+另外objection还有一些扩展插件可以按需安装：
+wallbreaker https://github.com/hluwa/Wallbreaker 能够快捷的列出内存中的对象的字段属性，方法等等。
+Frida-Dexdump https://github.com/hluwa/FRIDA-DEXDump 抓取内存中的dex文件达到快速脱壳的功能。
+
+apktool安装
+利用apktool能够便捷解码Android apk压缩包，使我们能够修改dex，Manifest，xml等等文件并重打包。
+官方网站说的很详细，安装地址如下： https://ibotpeaches.github.io/Apktool/install/
+利用apktool重打包后需要配置密钥进行应用签名，签名步骤如下：
+
+首先生成签名，进入JDK/bin, 输入命令 keytool -genkeypair -keystore 密钥库名 -alias 密钥别名 -validity 天数 -keyalg RSA 
+进入目录Android SDK/build-tools/SDK版本/zipalign.exe，使用zipalign令APK包内未压缩的数据有序排列对齐，命令如下：zipalign -p -f -v 4 infile.apk outfile.apk
+进入Android SDK/build-tools/SDK版本目录下，输入命令apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk
+
+进行应用签名后，该重打包后的应用便可以在手机上安装运行了，不过建议现在大部分apk都有各种的重打包检测（主要是用签名信息做文章），apk的持久化修改还是使用lsposed框架省事点。" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">Android逆向环境配置</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>May 3, 2022</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="手机root权限获取">手机Root权限获取</h3>
+<ol>
+<li>解锁BootLoader，此处推荐小米、一加等比较容易解锁的手机，小米需要等14天才能解锁，一加到手就能解锁，且这两个牌子解锁后仍然保修。</li>
+<li>根据手机型号下载TWRP，使用fastboot刷入。</li>
+<li>到 <a href="https://github.com/topjohnwu/Magisk">https://github.com/topjohnwu/Magisk</a> 下载Magisk框架，修改后缀为.zip文件</li>
+<li>进入Recovery，可以看到此时已经被替换为TWRP，刷入类原生ROM（比较知名的有PE、crdroid、Dotos等等，注意型号）或者AOSP，这样做是为了减少出厂系统的深度魔改造成一些难以解决的错误。</li>
+<li>找到Magisk的zip文件，刷入Magisk框架，此时便获得了Root权限</li>
+</ol>
+<p>更加详细的教程参见 <a href="https://www.bilibili.com/video/BV1BY4y1H7Mc">https://www.bilibili.com/video/BV1BY4y1H7Mc</a></p>
+<h3 id="rodebuggable属性修改">ro.debuggable属性修改</h3>
+<p>通过magisk修改（重启失效），连接电脑输入以下指令：</p>
+<pre tabindex="0"><code>adb shell
+su
+magisk resetprop ro.debuggable 1
+stop;start;
+</code></pre><p>除此之外还可以使用MagiskHide Props Config模块，安装后在adb shell中输入props，按照提示将ro.debuggable改为1即可，该方法修改后即使手机重启也不会失效。</p>
+<p>通过这样的配置之后Jadx，jeb等软件就可以动态调试手机上的软件了。</p>
+<h3 id="lsposed框架安装">lsposed框架安装</h3>
+<p>Xposed框架在很早以前就已经停止更新，目前仍然维护的Xposed实现是lsposed框架，安装过程很简单，访问 <a href="https://github.com/LSPosed/LSPosed">https://github.com/LSPosed/LSPosed</a> 下载zip包，在magisk管理器中安装即可（可以选择riru版或者zygisk版，建议安装zygisk版本，riru已经停更，预计不久riru版本的lsposed也会停更），需要注意的是zygisk版本的lsposed框架需要打开magisk的zygisk功能支持才能正常运行，注意在magisk设置中打开。</p>
+<p>安装成功后显示如下：
+<img src="lsp_success.jpg" alt=""></p>
+<h3 id="frida环境安装">frida环境安装</h3>
+<p>这是我们分析Java层代码的主力军之一，配合Jadx等静态分析工具能够做到快速定位目标功能代码，安装和配置步骤如下：</p>
+<ol>
+<li>首先在电脑上安装Python，推荐3.8.x版本，这是目前frida支持的最新版本，之后安装frida库和frida-tools库。命令如下：</li>
+</ol>
+<pre tabindex="0"><code>pip install frida
+pip install frida-tools
+</code></pre><ol start="2">
+<li>在已经安装magisk的手机上安装frida是很简单的一件事，访问 <a href="https://github.com/ViRb3/magisk-frida/releases">https://github.com/ViRb3/magisk-frida/releases</a> 获取Magiskfrida模块，在Magisk管理器中安装即可。</li>
+</ol>
+<p>测试是否安装成功只需首先将手机通过USB连接到电脑上，注意允许USB调试，之后在电脑上打开终端输入命令<code>frida-ps -U</code>，输出结果如下即为成功：</p>
+<p><img src="frida_success.jpg" alt=""></p>
+<ol>
+<li>在安装frida成功的基础上，安装objection库，该库是一个基于frida的扩展，提供了无代码hook，内存漫游和主动调用等等功能，安装只需一行命令：</li>
+</ol>
+<p><code>pip install objection</code></p>
+<ol start="4">
+<li>另外objection还有一些扩展插件可以按需安装：
+wallbreaker <a href="https://github.com/hluwa/Wallbreaker">https://github.com/hluwa/Wallbreaker</a> 能够快捷的列出内存中的对象的字段属性，方法等等。
+Frida-Dexdump <a href="https://github.com/hluwa/FRIDA-DEXDump">https://github.com/hluwa/FRIDA-DEXDump</a> 抓取内存中的dex文件达到快速脱壳的功能。</li>
+</ol>
+<h3 id="apktool安装">apktool安装</h3>
+<p>利用apktool能够便捷解码Android apk压缩包，使我们能够修改dex，Manifest，xml等等文件并重打包。
+官方网站说的很详细，安装地址如下： <a href="https://ibotpeaches.github.io/Apktool/install/">https://ibotpeaches.github.io/Apktool/install/</a></p>
+<p>利用apktool重打包后需要配置密钥进行应用签名，签名步骤如下：</p>
+<ol>
+<li>首先生成签名，进入JDK/bin, 输入命令 <code>keytool -genkeypair -keystore 密钥库名 -alias 密钥别名 -validity 天数 -keyalg RSA </code></li>
+<li>进入目录Android SDK/build-tools/SDK版本/zipalign.exe，使用zipalign令APK包内未压缩的数据有序排列对齐，命令如下：<code>zipalign -p -f -v 4 infile.apk outfile.apk</code></li>
+<li>进入Android SDK/build-tools/SDK版本目录下，输入命令<code>apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk</code></li>
+</ol>
+<p>进行应用签名后，该重打包后的应用便可以在手机上安装运行了，不过建议现在大部分apk都有各种的重打包检测（主要是用签名信息做文章），apk的持久化修改还是使用lsposed框架省事点。</p>
+<h3 id="其他工具安装">其他工具安装</h3>
+<ul>
+<li>platform-tools 主要是用到其中的adb调试工具，这个在谷歌官方网站就可以下载，地址如下： <a href="https://developer.android.com/studio/releases/platform-tools">https://developer.android.com/studio/releases/platform-tools</a></li>
+<li>Jadx是用来分析Java代码最好的选择之一，安装也很简单，只需要在 <a href="https://github.com/skylot/jadx">https://github.com/skylot/jadx</a> 下载即可，建议下载with-jre的版本。</li>
+<li>lsposed框架隐藏模块shamiko，这个怎么安装使用我没有深究，有兴趣的可以上酷安上搜索一下，另外这个东西是闭源的，安全性自己鉴别。</li>
+<li>IDA下载，这个没啥好说的，用来分析Native层代码，怎么下载，网上找找吧。</li>
+<li>Ghidra下载，免费开源的二进制分析器，功能也在不断完善，现在好像可以分析dex文件了，功能请自行测试。地址如下： <a href="https://github.com/NationalSecurityAgency/ghidra/releases">https://github.com/NationalSecurityAgency/ghidra/releases</a></li>
+</ul>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Xposed模块入门</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/%E9%A9%B1%E5%8A%A8%E6%A1%86%E6%9E%B6/"
+      ><span>NT驱动框架</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

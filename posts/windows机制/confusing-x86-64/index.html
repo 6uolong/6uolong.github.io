@@ -1,0 +1,419 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>x86和x64汇编传参问题 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="先看看x86的传参
+push eax
+call xxx
+
+xxx fun proc
+
+push        ebp          保存栈底
+mov         ebp,esp      设置ebp
+sub         esp,0C0h     开辟局部变量空间
+push        ebx          保存寄存器环境
+push        esi  
+push        edi  
+
+pop         edi          恢复寄存器环境
+pop         esi  
+pop         ebx          
+mov         esp,ebp      释放局部变量空间
+pop         ebp          恢复栈底
+ret                      返回,平栈,如果是c的调用方式 则add esp,xxx在外部平栈, stdcall 则内部平栈 ret 4
+总结一下就是:
+
+往栈中存放参数
+将返回地址入栈
+保存栈底
+栈内部进行自己的 申请空间 保存环境 以及释放.
+
+再看看x64下的参数传递
+调用者部分:
+sub rsp,0x28
+mov r9,1
+mov r8,2
+mov rdx,3
+mov rcx,4
+call xxx
+add rsp,0x28
+被调函数:
+xxx                 
+
+mov qword ptr [rsp &#43; 0x20],r9
+mov qword ptr [rsp &#43; 0x18],r8
+mov qword ptr [rsp &#43; 0x10],rdx
+mov qword ptr [rsp &#43; 8],rcx
+push rbp
+
+xxx 
+注意:" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">x86和x64汇编传参问题</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>May 10, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="先看看x86的传参">先看看x86的传参</h3>
+<pre tabindex="0"><code>push eax
+call xxx
+
+xxx fun proc
+
+push        ebp          保存栈底
+mov         ebp,esp      设置ebp
+sub         esp,0C0h     开辟局部变量空间
+push        ebx          保存寄存器环境
+push        esi  
+push        edi  
+
+pop         edi          恢复寄存器环境
+pop         esi  
+pop         ebx          
+mov         esp,ebp      释放局部变量空间
+pop         ebp          恢复栈底
+ret                      返回,平栈,如果是c的调用方式 则add esp,xxx在外部平栈, stdcall 则内部平栈 ret 4
+</code></pre><p>总结一下就是:</p>
+<ol>
+<li>往栈中存放参数</li>
+<li>将返回地址入栈</li>
+<li>保存栈底</li>
+<li>栈内部进行自己的 申请空间 保存环境 以及释放.</li>
+</ol>
+<h3 id="再看看x64下的参数传递">再看看x64下的参数传递</h3>
+<p>调用者部分:</p>
+<pre tabindex="0"><code>sub rsp,0x28
+mov r9,1
+mov r8,2
+mov rdx,3
+mov rcx,4
+call xxx
+add rsp,0x28
+</code></pre><p>被调函数:</p>
+<pre tabindex="0"><code>xxx                 
+
+mov qword ptr [rsp + 0x20],r9
+mov qword ptr [rsp + 0x18],r8
+mov qword ptr [rsp + 0x10],rdx
+mov qword ptr [rsp + 8],rcx
+push rbp
+
+xxx 
+</code></pre><p>注意:</p>
+<ol>
+<li>在 64位 以前，参数是把所有参数从右到左依次压栈。在 64 位后，Windows 下是依次使用 rcx、rdx、r8、r9 这四个寄存器传递从左到右四个参数，如果参数大于 4 个，再从右到左依次压栈，最后还有留下 32 字节的空间才能调用函数(空着的这32字节，通过看编译 C 语言生成的汇编代码，发现被用来存放那四个在寄存器里的参数。参数不足 4 个，也会预留 32 字节的空间).</li>
+<li>而在64位linux下对于普通函数调用是把前 6 个参数，依次用 rdi、rsi、rdx、rcx、r8、r9。对于系统调用是把前 6 个参数，依次用 rdi、rsi、rdx、r10、r8、r9。然后剩下的参数从右到左依次压栈。</li>
+<li>Windows下调用者在每个栈帧中提供了一个“寄存器参数区”。在调用一个函数时，在返回地址之前，在栈上最后分配的是用于至少4个寄存器（每个8字节）的空间。这个区域对被调用者可用，而无需显式地分配它。这对可变参数函数以及调试（提供参数已知的位置，与此同时寄存器可能重用于其他目的）是有用的。尽管这个区域最初的设想是用作存储在寄存器中传递的4个参数，现在编译器也为其他优化目的而使用它（例如，如果函数的局部变量需要少于32字节的栈空间，可以使用这个区域，而无需触碰rsp）。</li>
+<li>栈按照16字节对齐,所以需要sub rsp,0x28。</li>
+</ol>
+<h3 id="可有可无的帧指针">可有可无的帧指针</h3>
+<p>64位的大部分的程序，都加了优化编译选项：-O2，这几乎是普遍的选择。在这种优化级别，甚至更低的优化级别-O1，都已经去除了帧指针，也就是%ebp中再也不是保存帧指针，而且另作他途。</p>
+<p>在x86-32时代，当前栈帧总是从保存%ebp开始，空间由运行时决定，通过不断push和pop改变当前栈帧空间；x86-64开始，GCC有了新的选择，优化编译选项-O1，可以让GCC不再使用栈帧指针，下面引用 gcc manual 一段话 ：</p>
+<blockquote>
+<p>-O also turns on -fomit-frame-pointer on machines where doing so does not interfere with debugging.</p>
+</blockquote>
+<p>这样一来，所有空间在函数开始处就预分配好，不需要栈帧指针；通过%rsp的偏移就可以访问所有的局部变量。</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/ntdll%E5%86%85%E7%9A%84%E6%8F%90%E6%9D%83%E5%87%BD%E6%95%B0/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>ntdll提权函数使用</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/dll%E6%B3%A8%E5%85%A5%E5%92%8Chook/"
+      ><span>dll注入与hook</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

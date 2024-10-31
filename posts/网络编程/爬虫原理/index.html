@@ -1,0 +1,420 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>爬虫原理 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="什么是爬虫
+爬虫是请求网站提取数据的自动化程序
+关键点:1.发送请求(HTTP请求)2.获取服务器响应的内容(HTML代码,Json字符串,二进制数据等)3.解析内容4.保存数据
+发送请求
+我们在向服务器端发送的Request中包含哪些东西呢?
+
+请求方式:主要是GET和POST两种请求方法,还有一些HEAD,PUT,DELETE等等。
+请求URL:URL的全程是统一资源定位符,一个网页文档,一个视频,一张图片都可以由此确定,浏览器在渲染网页过程中会使用到URL。
+请求头:包含了一些请求时需要的配置信息,比如User-Agent,Cookies等等.服务器会依据这些信息来判断请求是否合法
+请求体:在做POST请求时会需要请求体这一部分,以键值对的形式发送。
+
+服务器响应
+Response中包含哪些内容:
+
+状态码(标识响应状态):200(请求成功),404(请求的资源不存在),301(重定位),502(服务器处理错误)
+响应头:保存内容类型,内容长度,服务器信息,设置cookie等等.
+响应体:最主要部分,包含了请求的资源,比如图片,网页源代码等等.
+
+解析内容
+可以通过JSON解析,正则表达式解析,利用python解析库来进行解析
+
+为什么抓取的数据和浏览器中看到的不一样呢?
+
+浏览器会将拿到的数据进行渲染,故会有很大不同,为了解决这一问题,我们可以分析Ajax请求,利用webdriver等库来自动化操作浏览器,调用splash库来进行js渲染等.
+保存数据
+可以存取为纯文本,图片,音视频,或者存到数据库中
+什么是正则表达式
+正则表达式是对字符串操作的一种逻辑公式,由普通字符（例如字符a到z）以及特殊字符（称为&quot;元字符&quot;）组成文字模式,模式描述在搜索文本时要匹配的一个或多个字符串,正则表达式作为一个模板,将某个字符模式与所搜索的字符串进行匹配。
+正则表达式在爬虫编写中的作用
+通过正则表达式提取出网页中的有用信息,是爬虫程序最原始最灵活的写法,后续衍生出了无穷多的变体.
+常见匹配模式
+\w 匹配字母数字及下划线
+\W 匹配非字母数字下划线
+\s 匹配空白字符,等价于[\t\n\r\f]
+\S 匹配非空白字符
+\d 匹配数字,等价于[0-9]
+\D 匹配任意非数字
+^ 匹配字符串的开头
+$ 匹配字符串的末尾
+. 匹配任意除换行符以外的字符
+[&hellip;] 匹配中括号中包含的字符
+[^&hellip;] 匹配除中括号包含的字符以外的任意字符
+
+匹配0个或多个表达式,贪婪匹配
+
+
+匹配1个或多个表达式,贪婪匹配
+? 匹配0个或者1个字符,非贪婪匹配
+{n} 匹配n个前面的表达式.
+{n,m} 匹配n次到m次前面的表达式,贪婪匹配
+a|b 匹配a或b
+() 匹配括号内的表达式,也表示一个组
+" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">爬虫原理</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Apr 10, 2020</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="什么是爬虫">什么是爬虫</h3>
+<p><code>爬虫是请求网站提取数据的自动化程序</code>
+关键点:1.发送请求(HTTP请求)2.获取服务器响应的内容(HTML代码,Json字符串,二进制数据等)3.解析内容4.保存数据</p>
+<h3 id="发送请求">发送请求</h3>
+<p>我们在向服务器端发送的Request中包含哪些东西呢?</p>
+<ol>
+<li>请求方式:主要是GET和POST两种请求方法,还有一些HEAD,PUT,DELETE等等。</li>
+<li>请求URL:URL的全程是统一资源定位符,一个网页文档,一个视频,一张图片都可以由此确定,浏览器在渲染网页过程中会使用到URL。</li>
+<li>请求头:包含了一些请求时需要的配置信息,比如User-Agent,Cookies等等.服务器会依据这些信息来判断请求是否合法</li>
+<li>请求体:在做POST请求时会需要请求体这一部分,以键值对的形式发送。</li>
+</ol>
+<h3 id="服务器响应">服务器响应</h3>
+<p>Response中包含哪些内容:</p>
+<ol>
+<li>状态码(标识响应状态):200(请求成功),404(请求的资源不存在),301(重定位),502(服务器处理错误)</li>
+<li>响应头:保存内容类型,内容长度,服务器信息,设置cookie等等.</li>
+<li>响应体:最主要部分,包含了请求的资源,比如图片,网页源代码等等.</li>
+</ol>
+<h3 id="解析内容">解析内容</h3>
+<p>可以通过JSON解析,正则表达式解析,利用python解析库来进行解析</p>
+<blockquote>
+<p>为什么抓取的数据和浏览器中看到的不一样呢?</p>
+</blockquote>
+<p>浏览器会将拿到的数据进行渲染,故会有很大不同,为了解决这一问题,我们可以分析Ajax请求,利用webdriver等库来自动化操作浏览器,调用splash库来进行js渲染等.</p>
+<h3 id="保存数据">保存数据</h3>
+<p>可以存取为纯文本,图片,音视频,或者存到数据库中</p>
+<h3 id="什么是正则表达式">什么是正则表达式</h3>
+<p>正则表达式是对字符串操作的一种逻辑公式,由普通字符（例如字符a到z）以及特殊字符（称为&quot;元字符&quot;）组成文字模式,模式描述在搜索文本时要匹配的一个或多个字符串,正则表达式作为一个模板,将某个字符模式与所搜索的字符串进行匹配。</p>
+<h3 id="正则表达式在爬虫编写中的作用">正则表达式在爬虫编写中的作用</h3>
+<p>通过正则表达式提取出网页中的有用信息,是爬虫程序最原始最灵活的写法,后续衍生出了无穷多的变体.</p>
+<h3 id="常见匹配模式">常见匹配模式</h3>
+<p>\w 匹配字母数字及下划线
+\W 匹配非字母数字下划线
+\s 匹配空白字符,等价于[\t\n\r\f]
+\S 匹配非空白字符
+\d 匹配数字,等价于[0-9]
+\D 匹配任意非数字
+^ 匹配字符串的开头
+$ 匹配字符串的末尾
+. 匹配任意除换行符以外的字符
+[&hellip;] 匹配中括号中包含的字符
+[^&hellip;] 匹配除中括号包含的字符以外的任意字符</p>
+<ul>
+<li>匹配0个或多个表达式,贪婪匹配</li>
+</ul>
+<ul>
+<li>匹配1个或多个表达式,贪婪匹配
+? 匹配0个或者1个字符,非贪婪匹配
+{n} 匹配n个前面的表达式.
+{n,m} 匹配n次到m次前面的表达式,贪婪匹配
+a|b 匹配a或b
+() 匹配括号内的表达式,也表示一个组</li>
+</ul>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/%E4%BB%8Emsvcrt%E5%88%B0python%E7%BC%96%E7%A0%81/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Python编码问题</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/markdown%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/"
+      ><span>MD语法介绍</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

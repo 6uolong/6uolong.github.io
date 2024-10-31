@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>编译原理 on huolong blog</title>
+    <link>http://localhost:1313/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/</link>
+    <description>Recent content in 编译原理 on huolong blog</description>
+    <generator>Hugo</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 23 Sep 2022 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>控制流图</title>
+      <link>http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E6%8E%A7%E5%88%B6%E6%B5%81%E5%9B%BE/</link>
+      <pubDate>Fri, 23 Sep 2022 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E6%8E%A7%E5%88%B6%E6%B5%81%E5%9B%BE/</guid>
+      <description>&lt;h3 id=&#34;定义&#34;&gt;定义&lt;/h3&gt;&#xA;&lt;p&gt;控制流图（control-flow graph）简称CFG，它使用数学中的图来表示计算机程序的执行流程。CFG中的每一个顶点对应一个程序基本块，基本块是一段中间不包含分支指令，但以分支指令结尾的代码块。CFG使用有向边来表示分支，在大多数情况下会有两个比较特殊的基本块，一个是开始块（entry block），另一个是结束块（exit block）。&lt;/p&gt;&#xA;&lt;h3 id=&#34;可到达性&#34;&gt;可到达性&lt;/h3&gt;&#xA;&lt;p&gt;可到达性是图论中的性质，经常用在程序优化中，若某一个子图没有与包含开始块的子图相连接，那么称该子图为不可执行块，移除不可执行块不会对程序有任何影响，编译器中常见的死代码消除（dead code elimination）就是在做这件事。如果开始块执行不可到达结束块，那么程序有可能出现死循环。&lt;/p&gt;&#xA;&lt;h3 id=&#34;支配关系&#34;&gt;支配关系&lt;/h3&gt;&#xA;&lt;p&gt;若从开始块到达基本块N的所有路径，都会在到达基本块N之前先到达基本块M，则基本块M支配（dominates）基本块N，记作M dom N。&lt;/p&gt;&#xA;&lt;p&gt;从支配基本块N的所有块中去除基本块本身，其余的所有基本块都严格支配基本块N，记作M sdom N。&lt;/p&gt;&#xA;&lt;p&gt;若基本块M支配基本块N，且其中间没有任何其他基本块，则基本块M直接支配（immediately dominates）基本块N，每个基本块都会有一个直接支配者，记作 M idom N。&lt;/p&gt;&#xA;&lt;p&gt;与支配关系对应的还有后支配，即从N到控制流图结束块的所有路径均经过M，记作M pdom N。&lt;/p&gt;&#xA;&lt;p&gt;支配树（dominator tree）是描述支配关系的数据结构。&lt;/p&gt;&#xA;&lt;h3 id=&#34;规约性&#34;&gt;规约性&lt;/h3&gt;&#xA;&lt;h3 id=&#34;常见分支语句的控制流图&#34;&gt;常见分支语句的控制流图&lt;/h3&gt;&#xA;&lt;p&gt;如下图所示，其中until语句和do-while语句的控制流图相似：&lt;/p&gt;&#xA;&lt;p&gt;&lt;img src=&#34;cfg.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>编译优化</title>
+      <link>http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Thu, 25 Aug 2022 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</guid>
+      <description>&lt;p&gt;优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。&lt;/p&gt;&#xA;&lt;h3 id=&#34;常量折叠和常量传播&#34;&gt;常量折叠和常量传播&lt;/h3&gt;&#xA;&lt;p&gt;编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。&lt;/p&gt;&#xA;&lt;p&gt;常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;double a, b;&#xA;a = b + 1.0 / 3.0;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;替换为：&#xA;double a, b;&#xA;a = b + 0.33333;&lt;/p&gt;&#xA;&lt;p&gt;常量传播会将值已经确定值的变量替换为具体值，例如：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;int x = 14;&#xA;int y = 7 - x / 2;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;转换为：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;int x = 14;&#xA;int y = 7 - 14 / 2;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。&lt;/p&gt;&#xA;&lt;h3 id=&#34;函数内联&#34;&gt;函数内联&lt;/h3&gt;&#xA;&lt;p&gt;函数内联会将函数调用替换为具体的函数体代码，例如：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;float square(float a) &#xA;{ return a * a;}&#xA;float x = square(1.2);&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;替换为：&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;float x = 1.2 * 1.2;&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;消除了调用、返回和参数传递的开销。&lt;/li&gt;&#xA;&lt;li&gt;如果只有一个内联函数调用，代码就会变小。&lt;/li&gt;&#xA;&lt;li&gt;函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

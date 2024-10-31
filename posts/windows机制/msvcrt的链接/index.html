@@ -1,0 +1,474 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="en-us"
+  dir="ltr"
+>
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>msvcrt的链接 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="运行时库
+运行时库（Runtime library）通俗的说就是我们的程序运行的时候所依赖的库文件，从形式上来讲和我们自己开发的静态库、动态库没什么两样，只是它们由微软开发和维护，并提供了一些常用的功能支持（如malloc,free, printf等等），如果我们的程序需要使用这些功能（事实上，只要是C/C&#43;&#43;程序就一定会用到运行时库提供的功能），就要链接C/C&#43;&#43;运行时库。上次弄了半天也没找到链接msvcrt的方法,今天在又一次学习静态库和静态库的时候发现了.
+这是c语言链接的方式,VS已经在背地里偷偷帮你做了,你只需要#include&lt;头文件&gt;就可以调用函数了,通过命令行命令VS自动帮你#pragma comment()了.
+
+  
+      
+          C语言标准库
+          特征
+          选项
+          预处理器指令
+      
+  
+  
+      
+          libcmt.lib
+          将本机 CRT 启动静态链接到你的代码。
+          /MT
+          _MT
+      
+      
+          libcmtd.lib
+          静态链接本机 CRT 启动的调试版本。 不可再发行。
+          /MTd
+          _DEBUG, _MT
+      
+      
+          msvcrt.lib 和 msvcrxxx.dll
+          与 DLL UCRT 和 vcruntime 一起使用的本机 CRT 启动的静态库。
+          /MD
+          _MT, _DLL
+      
+      
+          msvcrtd.lib 和 msvcrxxxd.dll
+          与 DLL UCRT 和 vcruntime 一起使用的本机 CRT 启动调试版本的静态库, 不可再发行。
+          /MDd
+          _DEBUG, _MT, _DLL
+      
+  
+
+下面是C&#43;&#43;运行时的标准库链接方法
+
+  
+      
+          C&#43;&#43; 标准库
+          特征
+          选项
+          预处理器指令
+      
+  
+  
+      
+          libcpmt.lib
+          多线程, 静态链接
+          /MT
+          _MT
+      
+      
+          msvcprt.lib 和 msvcpxxx.dll
+          多线程动态链接（MSVCPversion.dll 的导入库）
+          /MD
+          _MT, _DLL
+      
+      
+          libcpmtd.lib
+          多线程, 静态链接
+          /MTd
+          _DEBUG, _MT
+      
+      
+          msvcprtd.lib 和 msvcpxxxd.dll
+          多线程动态链接（MSVCPversionD.DLL 的导入库）
+          /MDd
+          _DEBUG, _MT, _DLL
+      
+  
+
+xxx代表版本,cp的意思就是c&#43;&#43;,d就是debug版本的意思,最后没有d就是release版了.
+同样也是VS偷偷帮我们做的." />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="http://localhost:1313/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="http://localhost:1313/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="http://localhost:1313/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">msvcrt的链接</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Jul 19, 2021</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><h3 id="运行时库">运行时库</h3>
+<p>运行时库（Runtime library）通俗的说就是我们的程序运行的时候所依赖的库文件，从形式上来讲和我们自己开发的静态库、动态库没什么两样，只是它们由微软开发和维护，并提供了一些常用的功能支持（如malloc,free, printf等等），如果我们的程序需要使用这些功能（事实上，只要是C/C++程序就一定会用到运行时库提供的功能），就要链接C/C++运行时库。上次弄了半天也没找到链接msvcrt的方法,今天在又一次学习静态库和静态库的时候发现了.</p>
+<p>这是c语言链接的方式,VS已经在背地里偷偷帮你做了,你只需要#include&lt;头文件&gt;就可以调用函数了,通过命令行命令VS自动帮你#pragma comment()了.</p>
+<table>
+  <thead>
+      <tr>
+          <th>C语言标准库</th>
+          <th>特征</th>
+          <th>选项</th>
+          <th>预处理器指令</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>libcmt.lib</td>
+          <td>将本机 CRT 启动静态链接到你的代码。</td>
+          <td>/MT</td>
+          <td>_MT</td>
+      </tr>
+      <tr>
+          <td>libcmtd.lib</td>
+          <td>静态链接本机 CRT 启动的调试版本。 不可再发行。</td>
+          <td>/MTd</td>
+          <td>_DEBUG, _MT</td>
+      </tr>
+      <tr>
+          <td>msvcrt.lib 和 msvcrxxx.dll</td>
+          <td>与 DLL UCRT 和 vcruntime 一起使用的本机 CRT 启动的静态库。</td>
+          <td>/MD</td>
+          <td>_MT, _DLL</td>
+      </tr>
+      <tr>
+          <td>msvcrtd.lib 和 msvcrxxxd.dll</td>
+          <td>与 DLL UCRT 和 vcruntime 一起使用的本机 CRT 启动调试版本的静态库, 不可再发行。</td>
+          <td>/MDd</td>
+          <td>_DEBUG, _MT, _DLL</td>
+      </tr>
+  </tbody>
+</table>
+<p>下面是C++运行时的标准库链接方法</p>
+<table>
+  <thead>
+      <tr>
+          <th>C++ 标准库</th>
+          <th>特征</th>
+          <th>选项</th>
+          <th>预处理器指令</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>libcpmt.lib</td>
+          <td>多线程, 静态链接</td>
+          <td>/MT</td>
+          <td>_MT</td>
+      </tr>
+      <tr>
+          <td>msvcprt.lib 和 msvcpxxx.dll</td>
+          <td>多线程动态链接（MSVCPversion.dll 的导入库）</td>
+          <td>/MD</td>
+          <td>_MT, _DLL</td>
+      </tr>
+      <tr>
+          <td>libcpmtd.lib</td>
+          <td>多线程, 静态链接</td>
+          <td>/MTd</td>
+          <td>_DEBUG, _MT</td>
+      </tr>
+      <tr>
+          <td>msvcprtd.lib 和 msvcpxxxd.dll</td>
+          <td>多线程动态链接（MSVCPversionD.DLL 的导入库）</td>
+          <td>/MDd</td>
+          <td>_DEBUG, _MT, _DLL</td>
+      </tr>
+  </tbody>
+</table>
+<p>xxx代表版本,cp的意思就是c++,d就是debug版本的意思,最后没有d就是release版了.
+同样也是VS偷偷帮我们做的.</p>
+<p>具体链接什么库取决于源文件后缀是.c还是.cpp(即/TC,还是/TP选项).</p>
+<p><img src="VS.jpg" alt=""></p>
+<p>更加详细的内容见微软文档,部分内容我现在还是理解不了的.比如文档特征部分.
+<a href="https://docs.microsoft.com/zh-cn/cpp/c-runtime-library/crt-library-features?view=vs-2019">点这里</a></p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/secureboot%E6%9C%BA%E5%88%B6/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>SecureBoot机制</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/ntdll%E5%86%85%E7%9A%84%E6%8F%90%E6%9D%83%E5%87%BD%E6%95%B0/"
+      ><span>ntdll提权函数使用</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="http://localhost:1313/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>
