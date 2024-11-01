@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -126,14 +126,14 @@ public class Crack implements IXposedHookLoadPackage {
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -149,7 +149,7 @@ public class Crack implements IXposedHookLoadPackage {
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -200,11 +200,11 @@ public class Crack implements IXposedHookLoadPackage {
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -213,12 +213,66 @@ public class Crack implements IXposedHookLoadPackage {
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="Xposed模块入门">
+  <meta itemprop="description" content="编辑Mainfest文件 在AndroidMainfest文件中Application项中加入以下数据
+&lt;meta-data android:name=&#34;xposedmodule&#34; android:value=&#34;true&#34; /&gt; &lt;meta-data android:name=&#34;xposeddescription&#34; android:value=&#34;xposed模块描述&#34; /&gt; &lt;meta-data android:name=&#34;xposedminversion&#34; android:value=&#34;82&#34; /&gt; 插入以上数据的目的是使得Xposed框架能够知道这个apk是一个模块文件
+加载jar包 1.手动添加：将jar下载到本地后自行添加。手动下载XposedBridgeApi-82.jar文件，拖放到“项目名称/app/libs/”，然后右键“Add As Library” 自行添加这个jar包。之后在build.gradle的dependencies目录下添加命令 compileOnly files(&#39;libs\\api-82.jar&#39;)
+2.自动同步：如果网络情况允许的话，可以直接在gradle文件下的dependencies下添加：compileOnly &#39;de.robv.android.xposed:api:82&#39;，这样可以免去事先下载jar包的步骤，需要注意的是随着jcenter仓库关闭，目前直接使用该配置gradle会报错，所以需要在settings.gradle配置文件中做如下配置：
+添加入口点 没有添加入口点的xposed模块可以被xposed管理器识别，但是不可以启用，必须指明入口点，启用的方法也很简单：
+在\src\main目录下创建assets文件夹，在该文件夹下创建入口点文件xposed_init，内容为编写的Hook类类名。
+编写主要类文件 这是hook类代码的一个实例：
+package com.huol.sswcrack; import android.app.Activity; import android.content.Intent; import android.os.Bundle; import de.robv.android.xposed.IXposedHookLoadPackage; import de.robv.android.xposed.XC_MethodHook; import de.robv.android.xposed.XposedBridge; import de.robv.android.xposed.XposedHelpers; import de.robv.android.xposed.callbacks.XC_LoadPackage; public class Crack implements IXposedHookLoadPackage { public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable { if (lpparam.packageName.equals(&#34;com.qq.ssw1&#34;)) { ClassLoader classLoader = lpparam.classLoader; XposedBridge.log(&#34;Loaded app: &#34; &#43; lpparam.packageName); Class clazz = XposedHelpers.findClass(&#34;com.qq.ssw.v2.splash.SplashActivityV2&#34;, lpparam.classLoader); XposedHelpers.findAndHookMethod(clazz, &#34;onCreate&#34;, Bundle.class, new XC_MethodHook() { @Override protected void beforeHookedMethod(MethodHookParam param) throws Throwable { super.beforeHookedMethod(param); Class mainActivity = XposedHelpers.findClass(&#34;com.qq.ssw.v2.main.MainActivityV2&#34;, lpparam.classLoader); Activity activity = (Activity) param.thisObject; Intent mIntent = new Intent(activity, mainActivity); activity.startActivity(mIntent); } }); // 去开屏广告和不必要权限要求 XposedHelpers.findAndHookMethod(&#34;tencent.io.b&#34;, classLoader, &#34;i&#34;, new XC_MethodHook() { @Override protected void afterHookedMethod(MethodHookParam param) throws Throwable { super.afterHookedMethod(param); param.setResult(true); } }); //破解会员 } } }">
+  <meta itemprop="datePublished" content="2022-05-04T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-05-04T00:00:00+00:00">
+  <meta itemprop="wordCount" content="136">
+  <meta itemprop="keywords" content="安卓逆向">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="Xposed模块入门">
+  <meta property="og:description" content="编辑Mainfest文件 在AndroidMainfest文件中Application项中加入以下数据
+&lt;meta-data android:name=&#34;xposedmodule&#34; android:value=&#34;true&#34; /&gt; &lt;meta-data android:name=&#34;xposeddescription&#34; android:value=&#34;xposed模块描述&#34; /&gt; &lt;meta-data android:name=&#34;xposedminversion&#34; android:value=&#34;82&#34; /&gt; 插入以上数据的目的是使得Xposed框架能够知道这个apk是一个模块文件
+加载jar包 1.手动添加：将jar下载到本地后自行添加。手动下载XposedBridgeApi-82.jar文件，拖放到“项目名称/app/libs/”，然后右键“Add As Library” 自行添加这个jar包。之后在build.gradle的dependencies目录下添加命令 compileOnly files(&#39;libs\\api-82.jar&#39;)
+2.自动同步：如果网络情况允许的话，可以直接在gradle文件下的dependencies下添加：compileOnly &#39;de.robv.android.xposed:api:82&#39;，这样可以免去事先下载jar包的步骤，需要注意的是随着jcenter仓库关闭，目前直接使用该配置gradle会报错，所以需要在settings.gradle配置文件中做如下配置：
+添加入口点 没有添加入口点的xposed模块可以被xposed管理器识别，但是不可以启用，必须指明入口点，启用的方法也很简单：
+在\src\main目录下创建assets文件夹，在该文件夹下创建入口点文件xposed_init，内容为编写的Hook类类名。
+编写主要类文件 这是hook类代码的一个实例：
+package com.huol.sswcrack; import android.app.Activity; import android.content.Intent; import android.os.Bundle; import de.robv.android.xposed.IXposedHookLoadPackage; import de.robv.android.xposed.XC_MethodHook; import de.robv.android.xposed.XposedBridge; import de.robv.android.xposed.XposedHelpers; import de.robv.android.xposed.callbacks.XC_LoadPackage; public class Crack implements IXposedHookLoadPackage { public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable { if (lpparam.packageName.equals(&#34;com.qq.ssw1&#34;)) { ClassLoader classLoader = lpparam.classLoader; XposedBridge.log(&#34;Loaded app: &#34; &#43; lpparam.packageName); Class clazz = XposedHelpers.findClass(&#34;com.qq.ssw.v2.splash.SplashActivityV2&#34;, lpparam.classLoader); XposedHelpers.findAndHookMethod(clazz, &#34;onCreate&#34;, Bundle.class, new XC_MethodHook() { @Override protected void beforeHookedMethod(MethodHookParam param) throws Throwable { super.beforeHookedMethod(param); Class mainActivity = XposedHelpers.findClass(&#34;com.qq.ssw.v2.main.MainActivityV2&#34;, lpparam.classLoader); Activity activity = (Activity) param.thisObject; Intent mIntent = new Intent(activity, mainActivity); activity.startActivity(mIntent); } }); // 去开屏广告和不必要权限要求 XposedHelpers.findAndHookMethod(&#34;tencent.io.b&#34;, classLoader, &#34;i&#34;, new XC_MethodHook() { @Override protected void afterHookedMethod(MethodHookParam param) throws Throwable { super.afterHookedMethod(param); param.setResult(true); } }); //破解会员 } } }">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-05-04T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-05-04T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Xposed模块入门">
+  <meta name="twitter:description" content="编辑Mainfest文件 在AndroidMainfest文件中Application项中加入以下数据
+&lt;meta-data android:name=&#34;xposedmodule&#34; android:value=&#34;true&#34; /&gt; &lt;meta-data android:name=&#34;xposeddescription&#34; android:value=&#34;xposed模块描述&#34; /&gt; &lt;meta-data android:name=&#34;xposedminversion&#34; android:value=&#34;82&#34; /&gt; 插入以上数据的目的是使得Xposed框架能够知道这个apk是一个模块文件
+加载jar包 1.手动添加：将jar下载到本地后自行添加。手动下载XposedBridgeApi-82.jar文件，拖放到“项目名称/app/libs/”，然后右键“Add As Library” 自行添加这个jar包。之后在build.gradle的dependencies目录下添加命令 compileOnly files(&#39;libs\\api-82.jar&#39;)
+2.自动同步：如果网络情况允许的话，可以直接在gradle文件下的dependencies下添加：compileOnly &#39;de.robv.android.xposed:api:82&#39;，这样可以免去事先下载jar包的步骤，需要注意的是随着jcenter仓库关闭，目前直接使用该配置gradle会报错，所以需要在settings.gradle配置文件中做如下配置：
+添加入口点 没有添加入口点的xposed模块可以被xposed管理器识别，但是不可以启用，必须指明入口点，启用的方法也很简单：
+在\src\main目录下创建assets文件夹，在该文件夹下创建入口点文件xposed_init，内容为编写的Hook类类名。
+编写主要类文件 这是hook类代码的一个实例：
+package com.huol.sswcrack; import android.app.Activity; import android.content.Intent; import android.os.Bundle; import de.robv.android.xposed.IXposedHookLoadPackage; import de.robv.android.xposed.XC_MethodHook; import de.robv.android.xposed.XposedBridge; import de.robv.android.xposed.XposedHelpers; import de.robv.android.xposed.callbacks.XC_LoadPackage; public class Crack implements IXposedHookLoadPackage { public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable { if (lpparam.packageName.equals(&#34;com.qq.ssw1&#34;)) { ClassLoader classLoader = lpparam.classLoader; XposedBridge.log(&#34;Loaded app: &#34; &#43; lpparam.packageName); Class clazz = XposedHelpers.findClass(&#34;com.qq.ssw.v2.splash.SplashActivityV2&#34;, lpparam.classLoader); XposedHelpers.findAndHookMethod(clazz, &#34;onCreate&#34;, Bundle.class, new XC_MethodHook() { @Override protected void beforeHookedMethod(MethodHookParam param) throws Throwable { super.beforeHookedMethod(param); Class mainActivity = XposedHelpers.findClass(&#34;com.qq.ssw.v2.main.MainActivityV2&#34;, lpparam.classLoader); Activity activity = (Activity) param.thisObject; Intent mIntent = new Intent(activity, mainActivity); activity.startActivity(mIntent); } }); // 去开屏广告和不必要权限要求 XposedHelpers.findAndHookMethod(&#34;tencent.io.b&#34;, classLoader, &#34;i&#34;, new XC_MethodHook() { @Override protected void afterHookedMethod(MethodHookParam param) throws Throwable { super.afterHookedMethod(param); param.setResult(true); } }); //破解会员 } } }">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -386,12 +440,12 @@ public class Crack implements IXposedHookLoadPackage {
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>编译优化</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/android%E9%80%86%E5%90%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/android%E9%80%86%E5%90%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/"
       ><span>Android逆向环境配置</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -420,7 +474,7 @@ public class Crack implements IXposedHookLoadPackage {
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -106,14 +106,14 @@ printf(&#34;%d&#34;,LINK(a,b));
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -129,7 +129,7 @@ printf(&#34;%d&#34;,LINK(a,b));
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -180,11 +180,11 @@ printf(&#34;%d&#34;,LINK(a,b));
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -193,12 +193,54 @@ printf(&#34;%d&#34;,LINK(a,b));
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="C语言预处理机制">
+  <meta itemprop="description" content="宏定义 无参数宏定义 #define PI 3.1415926 #define _WINDOWS_ 需要注意的是宏只是简单的替换,宏常量没有数据类型,编译器不会对此进行检查,可能产生意想不到的错误.如果要定义常量,最好使用const定义常量. 宏定义末尾不必加分号，否则连分号一并替换. 预处理是在编译之前的处理，而编译工作的任务之一就是语法检查，预处理不做语法检查. 带参宏定义 #define MAX(x, y) (((x) &gt; (y)) ? (x) : (y)) 宏定义时建议所有的层次都要加括号,因为预处理只是把宏展开,不加括号可能造成意想不到的后果.比如数值计算出错. 带参数的宏定义可以部分替代函数的功能,相比函数的好处是用宏只会增加编译时间,不会增加内存的分配.而函数则会在栈上分配空间,占用内存. #define可以定义多条语句，以替代多行的代码，但应注意替换后的形式，避免出错。宏定义在换行时要加上一个反斜杠”\”，而且反斜杠后面直接回车，不能有空格。例子: #define TMAX_S(type, x, y) ({ type _x = (x); type _y = (y); _x &gt; _y ? _x: _y; }) 这是安全版的max函数. Gcc编译器将包含在圆括号和大括号双层括号内的复合语句看作是一个表达式，它可出现在任何允许表达式的地方；复合语句中可声明局部变量，判断循环条件等复杂处理。而表达式的最后一条语句必须是一个表达式，它的计算结果作为返回值。这样部分替代了函数的功能. 取消宏定义可用#undef命令 字符串化操作符# 下面开始就是我们在课堂上没怎么见过的用法了,在C语言的宏中，#的功能是将其后面的宏参数进行字符串化操作(Stringfication)，把随后的token(标识符,或者说变量名)转化为C语言的字符串,简单说就是将宏定义中的传入参数名转换成用一对双引号括起来参数名字符串.
+#define EXAMPLE(instr) printf(&#34;The input string is:%s\n&#34;, #instr) #define EXAMPLE2(instr) #instr EXAMPLE(Hello);会展开为printf(“The input string is:%s\n”,“Hello”);
+忽略传入参数名前面和后面的空格。 当传入参数名间存在多个空格时，编译器会自动连接各个子字符串，每个子字符串间只以一个空格连接。 符号连接操作符## ##运算符(Token Pasting Operator)连接两个token为一个token,即将两个变量名合成一个变量名. 例子:
+#define LINK(A,B) A##B int ab =9; printf(&#34;%d&#34;,LINK(a,b)); 输出结果就是9">
+  <meta itemprop="datePublished" content="2022-01-06T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-01-06T00:00:00+00:00">
+  <meta itemprop="wordCount" content="204">
+  <meta itemprop="keywords" content="C和CPP">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="C语言预处理机制">
+  <meta property="og:description" content="宏定义 无参数宏定义 #define PI 3.1415926 #define _WINDOWS_ 需要注意的是宏只是简单的替换,宏常量没有数据类型,编译器不会对此进行检查,可能产生意想不到的错误.如果要定义常量,最好使用const定义常量. 宏定义末尾不必加分号，否则连分号一并替换. 预处理是在编译之前的处理，而编译工作的任务之一就是语法检查，预处理不做语法检查. 带参宏定义 #define MAX(x, y) (((x) &gt; (y)) ? (x) : (y)) 宏定义时建议所有的层次都要加括号,因为预处理只是把宏展开,不加括号可能造成意想不到的后果.比如数值计算出错. 带参数的宏定义可以部分替代函数的功能,相比函数的好处是用宏只会增加编译时间,不会增加内存的分配.而函数则会在栈上分配空间,占用内存. #define可以定义多条语句，以替代多行的代码，但应注意替换后的形式，避免出错。宏定义在换行时要加上一个反斜杠”\”，而且反斜杠后面直接回车，不能有空格。例子: #define TMAX_S(type, x, y) ({ type _x = (x); type _y = (y); _x &gt; _y ? _x: _y; }) 这是安全版的max函数. Gcc编译器将包含在圆括号和大括号双层括号内的复合语句看作是一个表达式，它可出现在任何允许表达式的地方；复合语句中可声明局部变量，判断循环条件等复杂处理。而表达式的最后一条语句必须是一个表达式，它的计算结果作为返回值。这样部分替代了函数的功能. 取消宏定义可用#undef命令 字符串化操作符# 下面开始就是我们在课堂上没怎么见过的用法了,在C语言的宏中，#的功能是将其后面的宏参数进行字符串化操作(Stringfication)，把随后的token(标识符,或者说变量名)转化为C语言的字符串,简单说就是将宏定义中的传入参数名转换成用一对双引号括起来参数名字符串.
+#define EXAMPLE(instr) printf(&#34;The input string is:%s\n&#34;, #instr) #define EXAMPLE2(instr) #instr EXAMPLE(Hello);会展开为printf(“The input string is:%s\n”,“Hello”);
+忽略传入参数名前面和后面的空格。 当传入参数名间存在多个空格时，编译器会自动连接各个子字符串，每个子字符串间只以一个空格连接。 符号连接操作符## ##运算符(Token Pasting Operator)连接两个token为一个token,即将两个变量名合成一个变量名. 例子:
+#define LINK(A,B) A##B int ab =9; printf(&#34;%d&#34;,LINK(a,b)); 输出结果就是9">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-01-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-01-06T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="C语言预处理机制">
+  <meta name="twitter:description" content="宏定义 无参数宏定义 #define PI 3.1415926 #define _WINDOWS_ 需要注意的是宏只是简单的替换,宏常量没有数据类型,编译器不会对此进行检查,可能产生意想不到的错误.如果要定义常量,最好使用const定义常量. 宏定义末尾不必加分号，否则连分号一并替换. 预处理是在编译之前的处理，而编译工作的任务之一就是语法检查，预处理不做语法检查. 带参宏定义 #define MAX(x, y) (((x) &gt; (y)) ? (x) : (y)) 宏定义时建议所有的层次都要加括号,因为预处理只是把宏展开,不加括号可能造成意想不到的后果.比如数值计算出错. 带参数的宏定义可以部分替代函数的功能,相比函数的好处是用宏只会增加编译时间,不会增加内存的分配.而函数则会在栈上分配空间,占用内存. #define可以定义多条语句，以替代多行的代码，但应注意替换后的形式，避免出错。宏定义在换行时要加上一个反斜杠”\”，而且反斜杠后面直接回车，不能有空格。例子: #define TMAX_S(type, x, y) ({ type _x = (x); type _y = (y); _x &gt; _y ? _x: _y; }) 这是安全版的max函数. Gcc编译器将包含在圆括号和大括号双层括号内的复合语句看作是一个表达式，它可出现在任何允许表达式的地方；复合语句中可声明局部变量，判断循环条件等复杂处理。而表达式的最后一条语句必须是一个表达式，它的计算结果作为返回值。这样部分替代了函数的功能. 取消宏定义可用#undef命令 字符串化操作符# 下面开始就是我们在课堂上没怎么见过的用法了,在C语言的宏中，#的功能是将其后面的宏参数进行字符串化操作(Stringfication)，把随后的token(标识符,或者说变量名)转化为C语言的字符串,简单说就是将宏定义中的传入参数名转换成用一对双引号括起来参数名字符串.
+#define EXAMPLE(instr) printf(&#34;The input string is:%s\n&#34;, #instr) #define EXAMPLE2(instr) #instr EXAMPLE(Hello);会展开为printf(“The input string is:%s\n”,“Hello”);
+忽略传入参数名前面和后面的空格。 当传入参数名间存在多个空格时，编译器会自动连接各个子字符串，每个子字符串间只以一个空格连接。 符号连接操作符## ##运算符(Token Pasting Operator)连接两个token为一个token,即将两个变量名合成一个变量名. 例子:
+#define LINK(A,B) A##B int ab =9; printf(&#34;%d&#34;,LINK(a,b)); 输出结果就是9">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -428,12 +470,12 @@ user 选项
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>C语言零碎</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/%E6%B1%87%E7%BC%96%E5%AF%84%E5%AD%98%E5%99%A8/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/%E6%B1%87%E7%BC%96%E5%AF%84%E5%AD%98%E5%99%A8/"
       ><span>汇编中的寄存器</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -462,7 +504,7 @@ user 选项
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -169,14 +169,14 @@ jmp esp -&gt; e4ff" />
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -192,7 +192,7 @@ jmp esp -&gt; e4ff" />
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -243,11 +243,11 @@ jmp esp -&gt; e4ff" />
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -256,12 +256,54 @@ jmp esp -&gt; e4ff" />
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="汇编中的寄存器">
+  <meta itemprop="description" content="汇编中各式各样的寄存器 通用寄存器:eax,ebx,ecx,edx 源变址和目标变址寄存器:ESI,EDI 栈相关寄存器:SS,ESP,EBP 代码段相关寄存器:CS,EIP 数据段相关寄存器:DS(常与ESI寄存器结合使用) 附加段寄存器:ES(常与EDI寄存器结合使用) 控制寄存器:CR0-CR3 系统地址寄存器:GDTR,LDTR,IDTR,TR
+Flag寄存器标志位含义:
+ZF零标志,用来反映运算结果是否为零,如果为零则该标志位置为1 AF辅助进位标志,运算过程中第三位有进位,则置为1 PF奇偶标志,当运算结果中有偶数个1时,置为1 SF符号标志,当运算结果为负数时,置为1 CF进位标志,最高有效位产生进位时,置为1 OF溢出标志,若操作数结果超出了机器能够表示的范围,则产生溢出,置为1 CISC汇编和RISC汇编 CISC与RISC主要区别
+比较内容 CISC RISC 指令系统 复杂,庞大 精简 指令数目 一般大于200 一般小于100 指令长度 不固定 等长 可访存指令 不加限制 只有load和store 指令使用频率 相差很大 相差不大 指令执行时间 相差很大 大多在一个周期完成 优化编译实现 很难 较为容易 程序源代码长度 较短 较长 控制器实现方式 绝大多数为微程序控制 绝大多数为硬布线控制 系统软件开发时间 较短 较长 CISC指令集复杂丰富,功耗大,每条指令长度也不固定(1-6个字节),不适用于移动端,因此移动端几乎被RISC占据 在RISC中,CPU并不会对内存中的数据进行操作,所有的计算都要求在寄存器中完成,而寄存器和内存的通信则由单独指令完成,CISC中CPU可以直接对内存操作 RISC拥有更多的通用寄存器,每个寄存器都可以用作数据存储和寻址 RISC指令集能够非常有效地采用流水线,超流水线和超标量技术,实现指令级的并行操作,从而提高效率 x86指令讲解 mov指令 格式:mov reg/mem, reg/mem/imme 注意:段寄存器不能直接用mov指令传送,以下指令是错误的 mov ds, es mov ds, 5 常见汇编指令与机器码 short jump -&gt; eb (8位) near jump -&gt; e9 (16位) far jump -&gt; ea (32位) je/jz -&gt; 74 jne/jnz -&gt; 75 nop -&gt; 90 int 3 -&gt; cc ret -&gt; c3 call eax -&gt; d0ff jmp esp -&gt; e4ff">
+  <meta itemprop="datePublished" content="2021-12-01T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2021-12-01T00:00:00+00:00">
+  <meta itemprop="wordCount" content="107">
+  <meta itemprop="keywords" content="Windows机制">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/%E6%B1%87%E7%BC%96%E5%AF%84%E5%AD%98%E5%99%A8/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="汇编中的寄存器">
+  <meta property="og:description" content="汇编中各式各样的寄存器 通用寄存器:eax,ebx,ecx,edx 源变址和目标变址寄存器:ESI,EDI 栈相关寄存器:SS,ESP,EBP 代码段相关寄存器:CS,EIP 数据段相关寄存器:DS(常与ESI寄存器结合使用) 附加段寄存器:ES(常与EDI寄存器结合使用) 控制寄存器:CR0-CR3 系统地址寄存器:GDTR,LDTR,IDTR,TR
+Flag寄存器标志位含义:
+ZF零标志,用来反映运算结果是否为零,如果为零则该标志位置为1 AF辅助进位标志,运算过程中第三位有进位,则置为1 PF奇偶标志,当运算结果中有偶数个1时,置为1 SF符号标志,当运算结果为负数时,置为1 CF进位标志,最高有效位产生进位时,置为1 OF溢出标志,若操作数结果超出了机器能够表示的范围,则产生溢出,置为1 CISC汇编和RISC汇编 CISC与RISC主要区别
+比较内容 CISC RISC 指令系统 复杂,庞大 精简 指令数目 一般大于200 一般小于100 指令长度 不固定 等长 可访存指令 不加限制 只有load和store 指令使用频率 相差很大 相差不大 指令执行时间 相差很大 大多在一个周期完成 优化编译实现 很难 较为容易 程序源代码长度 较短 较长 控制器实现方式 绝大多数为微程序控制 绝大多数为硬布线控制 系统软件开发时间 较短 较长 CISC指令集复杂丰富,功耗大,每条指令长度也不固定(1-6个字节),不适用于移动端,因此移动端几乎被RISC占据 在RISC中,CPU并不会对内存中的数据进行操作,所有的计算都要求在寄存器中完成,而寄存器和内存的通信则由单独指令完成,CISC中CPU可以直接对内存操作 RISC拥有更多的通用寄存器,每个寄存器都可以用作数据存储和寻址 RISC指令集能够非常有效地采用流水线,超流水线和超标量技术,实现指令级的并行操作,从而提高效率 x86指令讲解 mov指令 格式:mov reg/mem, reg/mem/imme 注意:段寄存器不能直接用mov指令传送,以下指令是错误的 mov ds, es mov ds, 5 常见汇编指令与机器码 short jump -&gt; eb (8位) near jump -&gt; e9 (16位) far jump -&gt; ea (32位) je/jz -&gt; 74 jne/jnz -&gt; 75 nop -&gt; 90 int 3 -&gt; cc ret -&gt; c3 call eax -&gt; d0ff jmp esp -&gt; e4ff">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-12-01T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-12-01T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="汇编中的寄存器">
+  <meta name="twitter:description" content="汇编中各式各样的寄存器 通用寄存器:eax,ebx,ecx,edx 源变址和目标变址寄存器:ESI,EDI 栈相关寄存器:SS,ESP,EBP 代码段相关寄存器:CS,EIP 数据段相关寄存器:DS(常与ESI寄存器结合使用) 附加段寄存器:ES(常与EDI寄存器结合使用) 控制寄存器:CR0-CR3 系统地址寄存器:GDTR,LDTR,IDTR,TR
+Flag寄存器标志位含义:
+ZF零标志,用来反映运算结果是否为零,如果为零则该标志位置为1 AF辅助进位标志,运算过程中第三位有进位,则置为1 PF奇偶标志,当运算结果中有偶数个1时,置为1 SF符号标志,当运算结果为负数时,置为1 CF进位标志,最高有效位产生进位时,置为1 OF溢出标志,若操作数结果超出了机器能够表示的范围,则产生溢出,置为1 CISC汇编和RISC汇编 CISC与RISC主要区别
+比较内容 CISC RISC 指令系统 复杂,庞大 精简 指令数目 一般大于200 一般小于100 指令长度 不固定 等长 可访存指令 不加限制 只有load和store 指令使用频率 相差很大 相差不大 指令执行时间 相差很大 大多在一个周期完成 优化编译实现 很难 较为容易 程序源代码长度 较短 较长 控制器实现方式 绝大多数为微程序控制 绝大多数为硬布线控制 系统软件开发时间 较短 较长 CISC指令集复杂丰富,功耗大,每条指令长度也不固定(1-6个字节),不适用于移动端,因此移动端几乎被RISC占据 在RISC中,CPU并不会对内存中的数据进行操作,所有的计算都要求在寄存器中完成,而寄存器和内存的通信则由单独指令完成,CISC中CPU可以直接对内存操作 RISC拥有更多的通用寄存器,每个寄存器都可以用作数据存储和寻址 RISC指令集能够非常有效地采用流水线,超流水线和超标量技术,实现指令级的并行操作,从而提高效率 x86指令讲解 mov指令 格式:mov reg/mem, reg/mem/imme 注意:段寄存器不能直接用mov指令传送,以下指令是错误的 mov ds, es mov ds, 5 常见汇编指令与机器码 short jump -&gt; eb (8位) near jump -&gt; e9 (16位) far jump -&gt; ea (32位) je/jz -&gt; 74 jne/jnz -&gt; 75 nop -&gt; 90 int 3 -&gt; cc ret -&gt; c3 call eax -&gt; d0ff jmp esp -&gt; e4ff">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/%E6%B1%87%E7%BC%96%E5%AF%84%E5%AD%98%E5%99%A8/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -473,12 +515,12 @@ jmp esp -&gt; e4ff</p>
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>C语言预处理机制</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E7%9A%84%E5%90%84%E7%A7%8D%E9%93%BE%E6%8E%A5/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E7%9A%84%E5%90%84%E7%A7%8D%E9%93%BE%E6%8E%A5/"
       ><span>Windows系统下各种链接</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -507,7 +549,7 @@ jmp esp -&gt; e4ff</p>
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

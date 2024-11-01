@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -96,14 +96,14 @@ void subAddInst(Function &amp;f)
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -119,7 +119,7 @@ void subAddInst(Function &amp;f)
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -170,11 +170,11 @@ void subAddInst(Function &amp;f)
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -183,12 +183,48 @@ void subAddInst(Function &amp;f)
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="LLVM框架开发（二）">
+  <meta itemprop="description" content="指令替换pass编写 上一节介绍了如何使用新旧PassManager进行Pass编写，本节则真正上手一个Pass的编写过程中去。 该Pass的主要目标是将加减乘除等简单运算替换为更复杂但效果等价的操作，提高逆向分析的难度。以下代码将运算a&#43;b替换为：a-(-b)
+void subAddInst(Function &amp;f) { Function *tmp = &amp;f; BinaryOperator *work = nullptr; // 遍历函数中的基本块 for (Function::iterator bb = tmp-&gt;begin(); bb != tmp-&gt;end(); &#43;&#43;bb) { // 遍历基本块中的命令 for (BasicBlock::iterator ins = bb-&gt;begin(); ins != bb-&gt;end(); &#43;&#43;ins) { if (ins-&gt;isBinaryOp()) { if (ins-&gt;getOpcode() == Instruction::Add) { errs() &lt;&lt; &#34;find add op&#34; &lt;&lt; &#39;\n&#39;; BinaryOperator *op = dyn_cast&lt;BinaryOperator&gt;(ins); IRBuilder&lt;&gt; builder(op); Value *negInst = builder.CreateNeg(op-&gt;getOperand(1)); Value *newInst = builder.CreateSub(op-&gt;getOperand(0), negInst); op-&gt;replaceAllUsesWith(newInst); work = op; } } } } // 注意原命令脱离基本块操作不要在迭代中实现，否则会破坏迭代结构进而报错 work-&gt;eraseFromParent(); } 函数空壳化pass编写 恶作剧形式的一个Pass，功能为将传入的函数除了return命令以外的所有命令移除，达到该函数没有功能的作用（目前只对main函数起作用）。">
+  <meta itemprop="datePublished" content="2022-09-06T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-09-06T00:00:00+00:00">
+  <meta itemprop="wordCount" content="143">
+  <meta itemprop="keywords" content="安卓逆向">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="LLVM框架开发（二）">
+  <meta property="og:description" content="指令替换pass编写 上一节介绍了如何使用新旧PassManager进行Pass编写，本节则真正上手一个Pass的编写过程中去。 该Pass的主要目标是将加减乘除等简单运算替换为更复杂但效果等价的操作，提高逆向分析的难度。以下代码将运算a&#43;b替换为：a-(-b)
+void subAddInst(Function &amp;f) { Function *tmp = &amp;f; BinaryOperator *work = nullptr; // 遍历函数中的基本块 for (Function::iterator bb = tmp-&gt;begin(); bb != tmp-&gt;end(); &#43;&#43;bb) { // 遍历基本块中的命令 for (BasicBlock::iterator ins = bb-&gt;begin(); ins != bb-&gt;end(); &#43;&#43;ins) { if (ins-&gt;isBinaryOp()) { if (ins-&gt;getOpcode() == Instruction::Add) { errs() &lt;&lt; &#34;find add op&#34; &lt;&lt; &#39;\n&#39;; BinaryOperator *op = dyn_cast&lt;BinaryOperator&gt;(ins); IRBuilder&lt;&gt; builder(op); Value *negInst = builder.CreateNeg(op-&gt;getOperand(1)); Value *newInst = builder.CreateSub(op-&gt;getOperand(0), negInst); op-&gt;replaceAllUsesWith(newInst); work = op; } } } } // 注意原命令脱离基本块操作不要在迭代中实现，否则会破坏迭代结构进而报错 work-&gt;eraseFromParent(); } 函数空壳化pass编写 恶作剧形式的一个Pass，功能为将传入的函数除了return命令以外的所有命令移除，达到该函数没有功能的作用（目前只对main函数起作用）。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-09-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-09-06T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LLVM框架开发（二）">
+  <meta name="twitter:description" content="指令替换pass编写 上一节介绍了如何使用新旧PassManager进行Pass编写，本节则真正上手一个Pass的编写过程中去。 该Pass的主要目标是将加减乘除等简单运算替换为更复杂但效果等价的操作，提高逆向分析的难度。以下代码将运算a&#43;b替换为：a-(-b)
+void subAddInst(Function &amp;f) { Function *tmp = &amp;f; BinaryOperator *work = nullptr; // 遍历函数中的基本块 for (Function::iterator bb = tmp-&gt;begin(); bb != tmp-&gt;end(); &#43;&#43;bb) { // 遍历基本块中的命令 for (BasicBlock::iterator ins = bb-&gt;begin(); ins != bb-&gt;end(); &#43;&#43;ins) { if (ins-&gt;isBinaryOp()) { if (ins-&gt;getOpcode() == Instruction::Add) { errs() &lt;&lt; &#34;find add op&#34; &lt;&lt; &#39;\n&#39;; BinaryOperator *op = dyn_cast&lt;BinaryOperator&gt;(ins); IRBuilder&lt;&gt; builder(op); Value *negInst = builder.CreateNeg(op-&gt;getOperand(1)); Value *newInst = builder.CreateSub(op-&gt;getOperand(0), negInst); op-&gt;replaceAllUsesWith(newInst); work = op; } } } } // 注意原命令脱离基本块操作不要在迭代中实现，否则会破坏迭代结构进而报错 work-&gt;eraseFromParent(); } 函数空壳化pass编写 恶作剧形式的一个Pass，功能为将传入的函数除了return命令以外的所有命令移除，达到该函数没有功能的作用（目前只对main函数起作用）。">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -358,12 +394,12 @@ void subAddInst(Function &amp;f)
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Frida踩坑笔记</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/"
       ><span>编译优化</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -392,7 +428,7 @@ void subAddInst(Function &amp;f)
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

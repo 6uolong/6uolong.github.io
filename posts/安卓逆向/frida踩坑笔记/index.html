@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -87,14 +87,14 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -110,7 +110,7 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -161,11 +161,11 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -174,12 +174,54 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="Frida踩坑笔记">
+  <meta itemprop="description" content="慎用Js箭头函数 前段时间在逆向app时候需要hook onCreate函数，需要调用父类的onCreate的方法进行初始化，此时修改函数内部逻辑时候碰到了两个问题：
+父类的super函数如何获取 使用箭头函数时候this为null 需要注意调用父类函数正确写法为：this.$super 此外以下使用箭头函数hook的写法是错误的，此时获取的this值为null
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = (bundle)=&gt;{ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) } 正确写法如下：
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = function(bundle){ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) }">
+  <meta itemprop="datePublished" content="2022-09-06T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-09-06T00:00:00+00:00">
+  <meta itemprop="wordCount" content="32">
+  <meta itemprop="keywords" content="安卓逆向">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="Frida踩坑笔记">
+  <meta property="og:description" content="慎用Js箭头函数 前段时间在逆向app时候需要hook onCreate函数，需要调用父类的onCreate的方法进行初始化，此时修改函数内部逻辑时候碰到了两个问题：
+父类的super函数如何获取 使用箭头函数时候this为null 需要注意调用父类函数正确写法为：this.$super 此外以下使用箭头函数hook的写法是错误的，此时获取的this值为null
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = (bundle)=&gt;{ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) } 正确写法如下：
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = function(bundle){ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) }">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-09-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-09-06T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Frida踩坑笔记">
+  <meta name="twitter:description" content="慎用Js箭头函数 前段时间在逆向app时候需要hook onCreate函数，需要调用父类的onCreate的方法进行初始化，此时修改函数内部逻辑时候碰到了两个问题：
+父类的super函数如何获取 使用箭头函数时候this为null 需要注意调用父类函数正确写法为：this.$super 此外以下使用箭头函数hook的写法是错误的，此时获取的this值为null
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = (bundle)=&gt;{ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) } 正确写法如下：
+Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;) .onCreate.implementation = function(bundle){ this.$super.onCreate(bundle) let intent = Java.use(&#34;android.content.Intent&#34;) .$new(this,Java.use(&#34;com.hex.wanshiwu.v2.main.MainActivityV2&#34;).class) this.startActivity(intent) }">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -309,12 +351,12 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c&#43;&#43;%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c&#43;&#43;%E8%B8%A9%E5%9D%91%E7%AC%94%E8%AE%B0/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>C&#43;&#43;踩坑笔记</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/"
       ><span>LLVM框架开发（二）</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -343,7 +385,7 @@ Java.use(&#34;com.hex.wanshiwu.v2.splash.SplashActivityV2&#34;)
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

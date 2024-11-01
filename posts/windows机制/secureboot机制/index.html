@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -85,14 +85,14 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -108,7 +108,7 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -159,11 +159,11 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -172,12 +172,60 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="SecureBoot机制">
+  <meta itemprop="description" content="从用户态恶意软件说起 随着攻防技术在对抗中彼此不断进步,微软在对用户态恶意软件的防护已经很成熟了,对于微软商店中的软件(虽然微软商店的软件不是主流,涵盖的软件也相对较少,但这是一种趋势),本身就是运行在沙盒环境中,很难掀起什么风浪,而对于传统的桌面端软件,有Windows defender的签名检测,smartscreen对于不信任软件的提醒,以及uac对软件提权请求的拦截。
+对于内核态恶意软件呢?用户态的恶意软件能做的事情其实很有限,只有到达内核态,与操作系统拥有相同的权限,才能做更多的事情,微软对这些rootkits有哪些防御措施
+rootkit的简明分类 Firmware rootkit:这种恶意软件通过patch BIOS以及其他固件,达到在Windows之前启动的目的,从而达到隐藏和进行恶意操作的目的 Bootkit:对bootloader动手脚,bootloader是引导Windows系统的一个关键程序,以达到在Windows之前启动的目的 Kernel rootkit:替换部分Windows的系统关键驱动,以便达到和Windows一起启动的效果 Driver rootkit:伪装成受Windows信任的第三方驱动程序,进行恶意活动 对应措施 Secure Boot:带有UEFI固件和可信平台模块(TPM)的PC可以配置为只加载可信操作系统引导加载程序 Trusted Boot:Windows会在加载启动之前检查每个组件的完整性。 Early Launch Anti-Malware (ELAM):在加载之前,杀毒驱动会先加载测试所有驱动程序,并防止未经批准的驱动程序加载。 Measured Boot:PC的固件记录引导过程可以被发送到可信的服务器,从而客观地评估PC的健康状况 一些细节 当装有UEFI的PC启动时,PC首先验证固件是数字签名的,从而降低firmware rootkit的风险。如果启用了secure boot,固件将检查bootloader的数字签名,以保证它没有被修改,并在随后检查其是否有受信任证书,如果这些成功,secure boot的工作就完成了,对于secure boot来说,它可以使用TPM但不要求必须有TPM,而Measured Boot则需要TPM支持
+之后,bootloader在加载内核之前会对其进行数字签名验证, 随后内核依次验证Windows启动过程中的所有其他组件,包括启动驱动程序,启动文件和ELAM等,如果文件已被修改则拒绝加载损坏的组件,Windows 10通常可以自动修复损坏的组件,恢复Windows的完整性并允许PC正常启动
+ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件的驱动,这样一来恶意软件即使伪装成驱动,权限也不会有杀毒软件的高,杀毒软件可以轻松干掉它,从而继续这条信任链。 由于操作系统尚未启动，并且Windows需要尽快启动，因此ELAM的任务很简单：检查每个要加载的驱动并确定其是否在受信任的驱动程序列表中,如果不受信任,就不会加载它。
+至于Measured Boot,没有TPM的情况下不会生效">
+  <meta itemprop="datePublished" content="2021-07-20T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2021-07-20T00:00:00+00:00">
+  <meta itemprop="wordCount" content="38">
+  <meta itemprop="keywords" content="Windows机制">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/secureboot%E6%9C%BA%E5%88%B6/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="SecureBoot机制">
+  <meta property="og:description" content="从用户态恶意软件说起 随着攻防技术在对抗中彼此不断进步,微软在对用户态恶意软件的防护已经很成熟了,对于微软商店中的软件(虽然微软商店的软件不是主流,涵盖的软件也相对较少,但这是一种趋势),本身就是运行在沙盒环境中,很难掀起什么风浪,而对于传统的桌面端软件,有Windows defender的签名检测,smartscreen对于不信任软件的提醒,以及uac对软件提权请求的拦截。
+对于内核态恶意软件呢?用户态的恶意软件能做的事情其实很有限,只有到达内核态,与操作系统拥有相同的权限,才能做更多的事情,微软对这些rootkits有哪些防御措施
+rootkit的简明分类 Firmware rootkit:这种恶意软件通过patch BIOS以及其他固件,达到在Windows之前启动的目的,从而达到隐藏和进行恶意操作的目的 Bootkit:对bootloader动手脚,bootloader是引导Windows系统的一个关键程序,以达到在Windows之前启动的目的 Kernel rootkit:替换部分Windows的系统关键驱动,以便达到和Windows一起启动的效果 Driver rootkit:伪装成受Windows信任的第三方驱动程序,进行恶意活动 对应措施 Secure Boot:带有UEFI固件和可信平台模块(TPM)的PC可以配置为只加载可信操作系统引导加载程序 Trusted Boot:Windows会在加载启动之前检查每个组件的完整性。 Early Launch Anti-Malware (ELAM):在加载之前,杀毒驱动会先加载测试所有驱动程序,并防止未经批准的驱动程序加载。 Measured Boot:PC的固件记录引导过程可以被发送到可信的服务器,从而客观地评估PC的健康状况 一些细节 当装有UEFI的PC启动时,PC首先验证固件是数字签名的,从而降低firmware rootkit的风险。如果启用了secure boot,固件将检查bootloader的数字签名,以保证它没有被修改,并在随后检查其是否有受信任证书,如果这些成功,secure boot的工作就完成了,对于secure boot来说,它可以使用TPM但不要求必须有TPM,而Measured Boot则需要TPM支持
+之后,bootloader在加载内核之前会对其进行数字签名验证, 随后内核依次验证Windows启动过程中的所有其他组件,包括启动驱动程序,启动文件和ELAM等,如果文件已被修改则拒绝加载损坏的组件,Windows 10通常可以自动修复损坏的组件,恢复Windows的完整性并允许PC正常启动
+ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件的驱动,这样一来恶意软件即使伪装成驱动,权限也不会有杀毒软件的高,杀毒软件可以轻松干掉它,从而继续这条信任链。 由于操作系统尚未启动，并且Windows需要尽快启动，因此ELAM的任务很简单：检查每个要加载的驱动并确定其是否在受信任的驱动程序列表中,如果不受信任,就不会加载它。
+至于Measured Boot,没有TPM的情况下不会生效">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-07-20T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-07-20T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="SecureBoot机制">
+  <meta name="twitter:description" content="从用户态恶意软件说起 随着攻防技术在对抗中彼此不断进步,微软在对用户态恶意软件的防护已经很成熟了,对于微软商店中的软件(虽然微软商店的软件不是主流,涵盖的软件也相对较少,但这是一种趋势),本身就是运行在沙盒环境中,很难掀起什么风浪,而对于传统的桌面端软件,有Windows defender的签名检测,smartscreen对于不信任软件的提醒,以及uac对软件提权请求的拦截。
+对于内核态恶意软件呢?用户态的恶意软件能做的事情其实很有限,只有到达内核态,与操作系统拥有相同的权限,才能做更多的事情,微软对这些rootkits有哪些防御措施
+rootkit的简明分类 Firmware rootkit:这种恶意软件通过patch BIOS以及其他固件,达到在Windows之前启动的目的,从而达到隐藏和进行恶意操作的目的 Bootkit:对bootloader动手脚,bootloader是引导Windows系统的一个关键程序,以达到在Windows之前启动的目的 Kernel rootkit:替换部分Windows的系统关键驱动,以便达到和Windows一起启动的效果 Driver rootkit:伪装成受Windows信任的第三方驱动程序,进行恶意活动 对应措施 Secure Boot:带有UEFI固件和可信平台模块(TPM)的PC可以配置为只加载可信操作系统引导加载程序 Trusted Boot:Windows会在加载启动之前检查每个组件的完整性。 Early Launch Anti-Malware (ELAM):在加载之前,杀毒驱动会先加载测试所有驱动程序,并防止未经批准的驱动程序加载。 Measured Boot:PC的固件记录引导过程可以被发送到可信的服务器,从而客观地评估PC的健康状况 一些细节 当装有UEFI的PC启动时,PC首先验证固件是数字签名的,从而降低firmware rootkit的风险。如果启用了secure boot,固件将检查bootloader的数字签名,以保证它没有被修改,并在随后检查其是否有受信任证书,如果这些成功,secure boot的工作就完成了,对于secure boot来说,它可以使用TPM但不要求必须有TPM,而Measured Boot则需要TPM支持
+之后,bootloader在加载内核之前会对其进行数字签名验证, 随后内核依次验证Windows启动过程中的所有其他组件,包括启动驱动程序,启动文件和ELAM等,如果文件已被修改则拒绝加载损坏的组件,Windows 10通常可以自动修复损坏的组件,恢复Windows的完整性并允许PC正常启动
+ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件的驱动,这样一来恶意软件即使伪装成驱动,权限也不会有杀毒软件的高,杀毒软件可以轻松干掉它,从而继续这条信任链。 由于操作系统尚未启动，并且Windows需要尽快启动，因此ELAM的任务很简单：检查每个要加载的驱动并确定其是否在受信任的驱动程序列表中,如果不受信任,就不会加载它。
+至于Measured Boot,没有TPM的情况下不会生效">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/secureboot%E6%9C%BA%E5%88%B6/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -305,12 +353,12 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E7%9A%84%E5%90%84%E7%A7%8D%E9%93%BE%E6%8E%A5/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E7%9A%84%E5%90%84%E7%A7%8D%E9%93%BE%E6%8E%A5/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows系统下各种链接</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/msvcrt%E7%9A%84%E9%93%BE%E6%8E%A5/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/msvcrt%E7%9A%84%E9%93%BE%E6%8E%A5/"
       ><span>msvcrt的链接</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -339,7 +387,7 @@ ELAM说白了就是在加载一些第三方驱动之前最先加载杀毒软件�
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

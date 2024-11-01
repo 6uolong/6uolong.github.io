@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>杂项 on huolong blog</title>
-    <link>http://localhost:1313/categories/%E6%9D%82%E9%A1%B9/</link>
+    <link>https://6uolong.github.io/categories/%E6%9D%82%E9%A1%B9/</link>
     <description>Recent content in 杂项 on huolong blog</description>
     <generator>Hugo</generator>
-    <language>en-us</language>
+    <language>zh-CN</language>
     <lastBuildDate>Sun, 03 Nov 2019 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://localhost:1313/categories/%E6%9D%82%E9%A1%B9/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://6uolong.github.io/categories/%E6%9D%82%E9%A1%B9/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MD语法介绍</title>
-      <link>http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/markdown%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/</link>
+      <link>https://6uolong.github.io/posts/%E6%9D%82%E9%A1%B9/markdown%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/</link>
       <pubDate>Sun, 03 Nov 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/markdown%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/</guid>
+      <guid>https://6uolong.github.io/posts/%E6%9D%82%E9%A1%B9/markdown%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95/</guid>
       <description>&lt;p&gt;1、标题的写法：&lt;/p&gt;&#xA;&lt;h1 id=&#34;这是一级标题&#34;&gt;这是一级标题&lt;/h1&gt;&#xA;&lt;h2 id=&#34;这是二级标题&#34;&gt;这是二级标题&lt;/h2&gt;&#xA;&lt;h3 id=&#34;这是三级标题&#34;&gt;这是三级标题&lt;/h3&gt;&#xA;&lt;h4 id=&#34;这是四级标题&#34;&gt;这是四级标题&lt;/h4&gt;&#xA;&lt;h5 id=&#34;这是五级标题&#34;&gt;这是五级标题&lt;/h5&gt;&#xA;&lt;h6 id=&#34;这是最低的六级标题&#34;&gt;这是最低的六级标题&lt;/h6&gt;&#xA;&lt;p&gt;2、列表&#xA;无序列表可以用用* ， + ， —三种符号来创建&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;列表元素1&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;列表元素2&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;列表元素3&#xA;有序列表用数字直接创建&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;列表元素1&lt;/li&gt;&#xA;&lt;li&gt;列表元素2&lt;/li&gt;&#xA;&lt;li&gt;列表元素3&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;p&gt;3、区块引用&#xA;比如说，你想对某个部分做的内容做一些说明或者引用某某的话等，可以进行区块引用&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;谁终将声震人间，必长久深自缄默。&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;尼采他老人家说的&lt;/p&gt;&#xA;&lt;blockquote&gt;&#xA;&lt;p&gt;其实后面还有一句的。&lt;/p&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;/blockquote&gt;&#xA;&lt;p&gt;4、华丽的分割线&lt;/p&gt;&#xA;&lt;hr&gt;&#xA;&lt;p&gt;看见上面那个没，那就是华丽丽的分割线&lt;/p&gt;&#xA;&lt;p&gt;5、链接&#xA;有2种链接方式：行内式和参数式&#xA;&lt;a href=&#34;http://www.google.com&#34;&gt;行内式&lt;/a&gt;即这是一个行内式&#xA;参数式&lt;/p&gt;&#xA;&lt;p&gt;6、图片加载&#xA;&lt;img src=&#34;https://img2018.cnblogs.com/blog/1197364/201908/1197364-20190826182458729-2062223622.png&#34; alt=&#34;这是一个图片&#34;&gt;&lt;/p&gt;&#xA;&lt;p&gt;7、代码&#xA;&lt;code&gt;print(&amp;quot;hello world!&amp;quot;)&lt;/code&gt;&#xA;这是多行注释&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#include&amp;lt;stdio.h&amp;gt;&#xA;int main()&#xA;{&#xA;    printf(&amp;#34;Hello World!&amp;#34;);&#xA;    return 0;&#xA;}&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;8、表格&#xA;介绍一种比较好写的表格写法&lt;/p&gt;&#xA;&lt;table&gt;&#xA;  &lt;thead&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;th&gt;学生姓名&lt;/th&gt;&#xA;          &lt;th&gt;分数&lt;/th&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/thead&gt;&#xA;  &lt;tbody&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;小明&lt;/td&gt;&#xA;          &lt;td&gt;90&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;小红&lt;/td&gt;&#xA;          &lt;td&gt;99&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;      &lt;tr&gt;&#xA;          &lt;td&gt;小浩&lt;/td&gt;&#xA;          &lt;td&gt;100&lt;/td&gt;&#xA;      &lt;/tr&gt;&#xA;  &lt;/tbody&gt;&#xA;&lt;/table&gt;&#xA;&lt;p&gt;9、强调&#xA;一个星号或者是一个下划线包起来，会转换为 &amp;lt;em&amp;gt; 倾斜，如果是2个，会转换为 &amp;lt;strong&amp;gt; 加粗&#xA;&lt;del&gt;删除掉我吧&lt;/del&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>突发奇想的THANOS程序</title>
-      <link>http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/python%E9%9A%8F%E6%9C%BA%E5%88%A0%E9%99%A4/</link>
+      <link>https://6uolong.github.io/posts/%E6%9D%82%E9%A1%B9/python%E9%9A%8F%E6%9C%BA%E5%88%A0%E9%99%A4/</link>
       <pubDate>Fri, 10 May 2019 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/posts/%E6%9D%82%E9%A1%B9/python%E9%9A%8F%E6%9C%BA%E5%88%A0%E9%99%A4/</guid>
+      <guid>https://6uolong.github.io/posts/%E6%9D%82%E9%A1%B9/python%E9%9A%8F%E6%9C%BA%E5%88%A0%E9%99%A4/</guid>
       <description>&lt;h3 id=&#34;随机删除脚本&#34;&gt;随机删除脚本&lt;/h3&gt;&#xA;&lt;p&gt;这几天看了复仇者联盟４，忽然有点想写一个灭霸程序，双击打开输入路径后一半的文件灰飞烟灭。&lt;/p&gt;&#xA;&lt;p&gt;具体实现代码如下:&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;import os&#xA;import random&#xA;import shutil&#xA;&#xA;def thanos(dir_path):&#xA;    files = os.listdir(dir_path) # 列出目录下文件&#xA;    sample = random.sample(files, len(files) // 2) # 随机选取k个元素组成新的列表&#xA;    for item in sample:&#xA;        file_path = os.path.join(dir_path,item)&#xA;        try:&#xA;            if(os.path.isfile(file_path)):&#xA;                os.remove(file_path)&#xA;            elif(os.path.isdir(file_path)):&#xA;                shutil.rmtree(file_path)&#xA;        except PermissionError as e:&#xA;                pass&#xA;&#xA;&#xA;if __name__ == &amp;#34;__main__&amp;#34;:&#xA;    path = input(&amp;#34;please input file path:&amp;#34;)&#xA;    if(path == &amp;#39;&amp;#39;):&#xA;        path = os.getcwd() # 获取目录&#xA;    thanos(path)&#xA;&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;顺便比较一下这几种删除函数&#34;&gt;顺便比较一下这几种删除函数&lt;/h4&gt;&#xA;&lt;p&gt;os.remove(),os.unlink(),os.removedirs(),shutil.rmtree()这几个函数都有删除的功能，区别如下：&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;os.remove()和os.unlink()这两个函数功能是一样的，都是删除一个文件。&lt;/li&gt;&#xA;&lt;li&gt;os.removedirs()是递归删除空文件夹，即先删除子目录再尝试删除父目录，如果目录是空的则进行删除操作。&lt;/li&gt;&#xA;&lt;li&gt;shutil.rmtree()表示递归删除文件夹下的所有子文件夹和子文件而不管是否为空。&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
     </item>
   </channel>

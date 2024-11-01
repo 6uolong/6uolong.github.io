@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -106,14 +106,14 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -129,7 +129,7 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -180,11 +180,11 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -193,12 +193,65 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="Frida检测">
+  <meta itemprop="description" content="直接检测frida文件，frida文件一般会放在/data/local/tmp目录下，可以直接查找该目录下的文件判断是否存在frida。较老版本的frida会在运行后在当前目录下释放一个名为re.frida.server的文件，不过新版本已经改进了这一问题。
+识别指定端口，frida server启动后默认会在27042端口监听。
+检测ptrace状态，frida是基于ptrace技术发挥作用的，而ptrace操作是独占式的，故程序可以通过尝试对自身进行ptrace来检测frida。
+检测maps文件，frida（以64位为例）注入进程后会加载frida-agent-64.so，故进程可以通过访问/proc/self/maps查找是否加载该库判断frida的存在。
+检测线程status，frida注入进程后会启动多个新线程，通过查询/proc/self/task/number_for_tid/status下的线程信息判断是否被frida注入。以下为常见的frida会启动的新线程名次：
+gmain：Frida 使用 Glib 库，其中的主事件循环被称为 GMainLoop。在 Frida 中，gmain 表示 GMainLoop 的线程。 gdbus：GDBus 是 Glib 提供的一个用于 D-Bus 通信的库。在 Frida 中，gdbus 表示 GDBus 相关的线程。 gum-js-loop：Gum 是 Frida 的运行时引擎，用于执行注入的 JavaScript 代码。gum-js-loop 表示 Gum 引擎执行 JavaScript 代码的线程。 pool-frida：Frida 中的某些功能可能会使用线程池来处理任务，pool-frida 表示 Frida 中的线程池。 linjector：一种用于 Android 设备的开源工具，它允许用户在运行时向 Android 应用程序注入动态链接库（DLL）文件。通过注入 DLL 文件，用户可以修改应用程序的行为、调试应用程序、监视函数调用等，这在逆向工程、安全研究和动态分析中是非常有用的。 检测native代码是否被inlinehook。inlinehook是一种代码hook技术，通常用于native层代码的控制，原理可以简单概括为修改函数代码开头的几个字节为跳转指令，跳转到一段由攻击者控制的内存执行额外的操作。因此被inlinehook代码的开头几个字节会发生变化，通过判断文件中的代码和内存中的代码开头是否发生变化可以用于检测frida。
+frida在attach进程注入动态链接库时会显式地校验ELF_magic字段，如果不对则直接报错退出，可以手动在内存中抹掉SO的magic字段，达到反调试的效果。
+FILE *fp=fopen(&#34;/proc/self/maps&#34;,&#34;r&#34;); while (fgets(line, sizeof(line), fp)) { if (strstr(line, &#34;linker64&#34;) ) { start = reinterpret_cast&lt;int *&gt;(strtoul(strtok(line, &#34;-&#34;), NULL, 16)); *(int*)start=*(int*)start^0x7f; // 抹除Magic } } Frida源码中多次调用somain结构体,但它在调用前不会判断是否为空，只要手动置空后Frida一附加就会崩溃。 int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#34;); *(int*)((void*)start&#43;getsomainoff)=0; // 修改somain指针">
+  <meta itemprop="datePublished" content="2024-10-03T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-10-03T00:00:00+00:00">
+  <meta itemprop="wordCount" content="84">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E6%A3%80%E6%B5%8B/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="Frida检测">
+  <meta property="og:description" content="直接检测frida文件，frida文件一般会放在/data/local/tmp目录下，可以直接查找该目录下的文件判断是否存在frida。较老版本的frida会在运行后在当前目录下释放一个名为re.frida.server的文件，不过新版本已经改进了这一问题。
+识别指定端口，frida server启动后默认会在27042端口监听。
+检测ptrace状态，frida是基于ptrace技术发挥作用的，而ptrace操作是独占式的，故程序可以通过尝试对自身进行ptrace来检测frida。
+检测maps文件，frida（以64位为例）注入进程后会加载frida-agent-64.so，故进程可以通过访问/proc/self/maps查找是否加载该库判断frida的存在。
+检测线程status，frida注入进程后会启动多个新线程，通过查询/proc/self/task/number_for_tid/status下的线程信息判断是否被frida注入。以下为常见的frida会启动的新线程名次：
+gmain：Frida 使用 Glib 库，其中的主事件循环被称为 GMainLoop。在 Frida 中，gmain 表示 GMainLoop 的线程。 gdbus：GDBus 是 Glib 提供的一个用于 D-Bus 通信的库。在 Frida 中，gdbus 表示 GDBus 相关的线程。 gum-js-loop：Gum 是 Frida 的运行时引擎，用于执行注入的 JavaScript 代码。gum-js-loop 表示 Gum 引擎执行 JavaScript 代码的线程。 pool-frida：Frida 中的某些功能可能会使用线程池来处理任务，pool-frida 表示 Frida 中的线程池。 linjector：一种用于 Android 设备的开源工具，它允许用户在运行时向 Android 应用程序注入动态链接库（DLL）文件。通过注入 DLL 文件，用户可以修改应用程序的行为、调试应用程序、监视函数调用等，这在逆向工程、安全研究和动态分析中是非常有用的。 检测native代码是否被inlinehook。inlinehook是一种代码hook技术，通常用于native层代码的控制，原理可以简单概括为修改函数代码开头的几个字节为跳转指令，跳转到一段由攻击者控制的内存执行额外的操作。因此被inlinehook代码的开头几个字节会发生变化，通过判断文件中的代码和内存中的代码开头是否发生变化可以用于检测frida。
+frida在attach进程注入动态链接库时会显式地校验ELF_magic字段，如果不对则直接报错退出，可以手动在内存中抹掉SO的magic字段，达到反调试的效果。
+FILE *fp=fopen(&#34;/proc/self/maps&#34;,&#34;r&#34;); while (fgets(line, sizeof(line), fp)) { if (strstr(line, &#34;linker64&#34;) ) { start = reinterpret_cast&lt;int *&gt;(strtoul(strtok(line, &#34;-&#34;), NULL, 16)); *(int*)start=*(int*)start^0x7f; // 抹除Magic } } Frida源码中多次调用somain结构体,但它在调用前不会判断是否为空，只要手动置空后Frida一附加就会崩溃。 int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#34;); *(int*)((void*)start&#43;getsomainoff)=0; // 修改somain指针">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-10-03T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-10-03T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Frida检测">
+  <meta name="twitter:description" content="直接检测frida文件，frida文件一般会放在/data/local/tmp目录下，可以直接查找该目录下的文件判断是否存在frida。较老版本的frida会在运行后在当前目录下释放一个名为re.frida.server的文件，不过新版本已经改进了这一问题。
+识别指定端口，frida server启动后默认会在27042端口监听。
+检测ptrace状态，frida是基于ptrace技术发挥作用的，而ptrace操作是独占式的，故程序可以通过尝试对自身进行ptrace来检测frida。
+检测maps文件，frida（以64位为例）注入进程后会加载frida-agent-64.so，故进程可以通过访问/proc/self/maps查找是否加载该库判断frida的存在。
+检测线程status，frida注入进程后会启动多个新线程，通过查询/proc/self/task/number_for_tid/status下的线程信息判断是否被frida注入。以下为常见的frida会启动的新线程名次：
+gmain：Frida 使用 Glib 库，其中的主事件循环被称为 GMainLoop。在 Frida 中，gmain 表示 GMainLoop 的线程。 gdbus：GDBus 是 Glib 提供的一个用于 D-Bus 通信的库。在 Frida 中，gdbus 表示 GDBus 相关的线程。 gum-js-loop：Gum 是 Frida 的运行时引擎，用于执行注入的 JavaScript 代码。gum-js-loop 表示 Gum 引擎执行 JavaScript 代码的线程。 pool-frida：Frida 中的某些功能可能会使用线程池来处理任务，pool-frida 表示 Frida 中的线程池。 linjector：一种用于 Android 设备的开源工具，它允许用户在运行时向 Android 应用程序注入动态链接库（DLL）文件。通过注入 DLL 文件，用户可以修改应用程序的行为、调试应用程序、监视函数调用等，这在逆向工程、安全研究和动态分析中是非常有用的。 检测native代码是否被inlinehook。inlinehook是一种代码hook技术，通常用于native层代码的控制，原理可以简单概括为修改函数代码开头的几个字节为跳转指令，跳转到一段由攻击者控制的内存执行额外的操作。因此被inlinehook代码的开头几个字节会发生变化，通过判断文件中的代码和内存中的代码开头是否发生变化可以用于检测frida。
+frida在attach进程注入动态链接库时会显式地校验ELF_magic字段，如果不对则直接报错退出，可以手动在内存中抹掉SO的magic字段，达到反调试的效果。
+FILE *fp=fopen(&#34;/proc/self/maps&#34;,&#34;r&#34;); while (fgets(line, sizeof(line), fp)) { if (strstr(line, &#34;linker64&#34;) ) { start = reinterpret_cast&lt;int *&gt;(strtoul(strtok(line, &#34;-&#34;), NULL, 16)); *(int*)start=*(int*)start^0x7f; // 抹除Magic } } Frida源码中多次调用somain结构体,但它在调用前不会判断是否为空，只要手动置空后Frida一附加就会崩溃。 int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#34;); *(int*)((void*)start&#43;getsomainoff)=0; // 修改somain指针">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E6%A3%80%E6%B5%8B/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -347,7 +400,7 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/android%E6%8A%93%E5%8C%85%E5%AF%B9%E6%8A%97/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/android%E6%8A%93%E5%8C%85%E5%AF%B9%E6%8A%97/"
       ><span>Android抓包对抗</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -376,7 +429,7 @@ int getsomainoff = findsym(&#34;/system/bin/linker64&#34;,&#34;__dl__ZL6somain&#
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

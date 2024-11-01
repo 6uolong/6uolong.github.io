@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -120,14 +120,14 @@ int main()
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -143,7 +143,7 @@ int main()
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -194,11 +194,11 @@ int main()
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -207,12 +207,51 @@ int main()
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="C语言零碎">
+  <meta itemprop="description" content="C 语言中的输入输出 gets()函数和puts()函数一起处理字符串非常方便，gets()函数会自动将最后的回车“干掉”，这样就不用担心下次输入时发现缓冲区里面有个\n了。而puts()则会自动换行，配合使用very nice！ for(int i=0;i&lt;N;i&#43;&#43;)在for中定义的i变量也只在for的作用域中生效，如果i只是为了让{}中语句重复执行几次而没有什么特殊意义，这样写是可以的。 可能令人吃惊，\n在scanf格式串中不表示等待换行符，而是读取并放弃连续的空白字符。（事实上，scanf格式串中的任何空白字符都表示读取并放弃空白字符。而且，诸如%d这样的格式也会扔掉前边的空白，因此你通常根本不需要在scanf格式串中加入显式的空白。）scanf()函数有些大坑，有些非常规输入你要懂得一些缓冲区的知识才能解释，因此如果你有拿这个玩意实现一些非常规操作的话，最好掂量一下。 fgets()函数和gets()函数很像，别指望这个函数读取\n，它和gets一个尿性，无非是把stdin改成了任意FILE指针指向的地址，不过虽然不能读取\n，读取空格还是可以的。fgets(string,n,stdin)与gets(string)在一定范围内是等价的。 stdin,stdout,stderr就是FILE类型的指针，不过他是随着计算机系统的开启默认打开的，其中0就是stdin，表示输入流，指从键盘输入，1代表stdout，2代表stderr，1,2默认是显示器。printf（）其实就是向stdout中输出，等同于fprintf（stdout，“xxxx”），perror()其实就是向stderr中输出，相当于fprintf（stderr，“xxxx”） 关于缓冲区的理解： 全缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，只要1024个字节都放满了，那么程序会立即来读取这1024个字节的数据。只要1024个字节没有放满，哪怕只放了1023个字节，程序都不会来读取，这就是全缓冲的意思。 行缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，假如放了10个字节的数据，你敲了回车键，那么程序就马上来读取了。假如放了20个字节，你敲了回车键，程序也会来读取。所以即使1024个字节没有放满，但是你敲了回车键，程序就会来读取，这个就叫做行缓冲。典型代表是标准输入(stdin)和标准输出(stdout)，scanf()的诸多坑就是因为它的存在导致。 无缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，刚放了1个字节，程序就马上来读取了；又放了一个字节，程序又马上来读取了，这就是没有缓冲。比如getch()函数。 linux与Windows上通用的清除缓冲区的方法，我们知道在Windows下清除缓冲区的方法是fflush(stdin)，但是该方法在linux下不一定能够奏效，我们可以使用scanf(&#34;%*[^\n]%c&#34;);%[^\n]将逐个读取缓冲区中的 ‘\n’ 字符之前的其它字符，% 后面的 * 表示将读取的这些字符丢弃，遇到 ‘\n’ 字符时便停止读取。此时，缓冲区中尚有一个 ‘\n’ 字符遗留，所以后面的%*c 将读取并丢弃这个遗留的换行符，这里的星号和前面的星号作用相同。由于所有从键盘的输入都是以回车结束的，而回车会产生一个 ‘\n’ 字符，所以将 ‘\n’ 连同它之前的字符全部读取并丢弃之后，也就相当于清除了输入缓冲区。 C语言数组的初始化：C语言会在初始化数组的时候把未赋值的元素赋值为0，注意在对字符串进行初始化的时候不要让字符串长度正好等于元素个数，否则在输出的时候可能发生错误(原因：’\0’为字符串结束的标志，因为长度和元素个数正好相等，结尾没有’\0’，系统不知道什么时候字符串结束，可能会多输出) 格式化输出 %n存在的内存泄漏和修改漏洞 %n可以再printf函数中对变量赋值,值的大小为printf执行到%n处打印的字符数目
+#include&lt;stdio.h&gt; int main() { char* p = &#34;hello,world&#34;; int len = 0; printf(&#34;helloworld%n&#34;,&amp;len); printf(&#34;%d&#34;, len); return 0; } 因为它能够修改内存,故从很早之前开始在VS编程中使用%n会导致程序无法运行
+结构体所占内存问题 #include&lt;stdio.h&gt; typedef struct { char c1; long i; char c2; double f; }a; typedef struct { char c1; char c2; long i; double f; }b; int main() { printf(&#34;%d %d&#34;, sizeof(a),sizeof(b)); return 0; } 输出结果猜猜是什么? 24和16 结构体所占大小的两条准则:">
+  <meta itemprop="datePublished" content="2022-01-06T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-01-06T00:00:00+00:00">
+  <meta itemprop="wordCount" content="157">
+  <meta itemprop="keywords" content="C和CPP">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="C语言零碎">
+  <meta property="og:description" content="C 语言中的输入输出 gets()函数和puts()函数一起处理字符串非常方便，gets()函数会自动将最后的回车“干掉”，这样就不用担心下次输入时发现缓冲区里面有个\n了。而puts()则会自动换行，配合使用very nice！ for(int i=0;i&lt;N;i&#43;&#43;)在for中定义的i变量也只在for的作用域中生效，如果i只是为了让{}中语句重复执行几次而没有什么特殊意义，这样写是可以的。 可能令人吃惊，\n在scanf格式串中不表示等待换行符，而是读取并放弃连续的空白字符。（事实上，scanf格式串中的任何空白字符都表示读取并放弃空白字符。而且，诸如%d这样的格式也会扔掉前边的空白，因此你通常根本不需要在scanf格式串中加入显式的空白。）scanf()函数有些大坑，有些非常规输入你要懂得一些缓冲区的知识才能解释，因此如果你有拿这个玩意实现一些非常规操作的话，最好掂量一下。 fgets()函数和gets()函数很像，别指望这个函数读取\n，它和gets一个尿性，无非是把stdin改成了任意FILE指针指向的地址，不过虽然不能读取\n，读取空格还是可以的。fgets(string,n,stdin)与gets(string)在一定范围内是等价的。 stdin,stdout,stderr就是FILE类型的指针，不过他是随着计算机系统的开启默认打开的，其中0就是stdin，表示输入流，指从键盘输入，1代表stdout，2代表stderr，1,2默认是显示器。printf（）其实就是向stdout中输出，等同于fprintf（stdout，“xxxx”），perror()其实就是向stderr中输出，相当于fprintf（stderr，“xxxx”） 关于缓冲区的理解： 全缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，只要1024个字节都放满了，那么程序会立即来读取这1024个字节的数据。只要1024个字节没有放满，哪怕只放了1023个字节，程序都不会来读取，这就是全缓冲的意思。 行缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，假如放了10个字节的数据，你敲了回车键，那么程序就马上来读取了。假如放了20个字节，你敲了回车键，程序也会来读取。所以即使1024个字节没有放满，但是你敲了回车键，程序就会来读取，这个就叫做行缓冲。典型代表是标准输入(stdin)和标准输出(stdout)，scanf()的诸多坑就是因为它的存在导致。 无缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，刚放了1个字节，程序就马上来读取了；又放了一个字节，程序又马上来读取了，这就是没有缓冲。比如getch()函数。 linux与Windows上通用的清除缓冲区的方法，我们知道在Windows下清除缓冲区的方法是fflush(stdin)，但是该方法在linux下不一定能够奏效，我们可以使用scanf(&#34;%*[^\n]%c&#34;);%[^\n]将逐个读取缓冲区中的 ‘\n’ 字符之前的其它字符，% 后面的 * 表示将读取的这些字符丢弃，遇到 ‘\n’ 字符时便停止读取。此时，缓冲区中尚有一个 ‘\n’ 字符遗留，所以后面的%*c 将读取并丢弃这个遗留的换行符，这里的星号和前面的星号作用相同。由于所有从键盘的输入都是以回车结束的，而回车会产生一个 ‘\n’ 字符，所以将 ‘\n’ 连同它之前的字符全部读取并丢弃之后，也就相当于清除了输入缓冲区。 C语言数组的初始化：C语言会在初始化数组的时候把未赋值的元素赋值为0，注意在对字符串进行初始化的时候不要让字符串长度正好等于元素个数，否则在输出的时候可能发生错误(原因：’\0’为字符串结束的标志，因为长度和元素个数正好相等，结尾没有’\0’，系统不知道什么时候字符串结束，可能会多输出) 格式化输出 %n存在的内存泄漏和修改漏洞 %n可以再printf函数中对变量赋值,值的大小为printf执行到%n处打印的字符数目
+#include&lt;stdio.h&gt; int main() { char* p = &#34;hello,world&#34;; int len = 0; printf(&#34;helloworld%n&#34;,&amp;len); printf(&#34;%d&#34;, len); return 0; } 因为它能够修改内存,故从很早之前开始在VS编程中使用%n会导致程序无法运行
+结构体所占内存问题 #include&lt;stdio.h&gt; typedef struct { char c1; long i; char c2; double f; }a; typedef struct { char c1; char c2; long i; double f; }b; int main() { printf(&#34;%d %d&#34;, sizeof(a),sizeof(b)); return 0; } 输出结果猜猜是什么? 24和16 结构体所占大小的两条准则:">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-01-06T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-01-06T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="C语言零碎">
+  <meta name="twitter:description" content="C 语言中的输入输出 gets()函数和puts()函数一起处理字符串非常方便，gets()函数会自动将最后的回车“干掉”，这样就不用担心下次输入时发现缓冲区里面有个\n了。而puts()则会自动换行，配合使用very nice！ for(int i=0;i&lt;N;i&#43;&#43;)在for中定义的i变量也只在for的作用域中生效，如果i只是为了让{}中语句重复执行几次而没有什么特殊意义，这样写是可以的。 可能令人吃惊，\n在scanf格式串中不表示等待换行符，而是读取并放弃连续的空白字符。（事实上，scanf格式串中的任何空白字符都表示读取并放弃空白字符。而且，诸如%d这样的格式也会扔掉前边的空白，因此你通常根本不需要在scanf格式串中加入显式的空白。）scanf()函数有些大坑，有些非常规输入你要懂得一些缓冲区的知识才能解释，因此如果你有拿这个玩意实现一些非常规操作的话，最好掂量一下。 fgets()函数和gets()函数很像，别指望这个函数读取\n，它和gets一个尿性，无非是把stdin改成了任意FILE指针指向的地址，不过虽然不能读取\n，读取空格还是可以的。fgets(string,n,stdin)与gets(string)在一定范围内是等价的。 stdin,stdout,stderr就是FILE类型的指针，不过他是随着计算机系统的开启默认打开的，其中0就是stdin，表示输入流，指从键盘输入，1代表stdout，2代表stderr，1,2默认是显示器。printf（）其实就是向stdout中输出，等同于fprintf（stdout，“xxxx”），perror()其实就是向stderr中输出，相当于fprintf（stderr，“xxxx”） 关于缓冲区的理解： 全缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，只要1024个字节都放满了，那么程序会立即来读取这1024个字节的数据。只要1024个字节没有放满，哪怕只放了1023个字节，程序都不会来读取，这就是全缓冲的意思。 行缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，假如放了10个字节的数据，你敲了回车键，那么程序就马上来读取了。假如放了20个字节，你敲了回车键，程序也会来读取。所以即使1024个字节没有放满，但是你敲了回车键，程序就会来读取，这个就叫做行缓冲。典型代表是标准输入(stdin)和标准输出(stdout)，scanf()的诸多坑就是因为它的存在导致。 无缓冲 内存中有一段存储区域，比如有1024个字节大小，有一个程序会从这段存储区域中读取数据。现在系统把一个文件的内容放入这个存储区，刚放了1个字节，程序就马上来读取了；又放了一个字节，程序又马上来读取了，这就是没有缓冲。比如getch()函数。 linux与Windows上通用的清除缓冲区的方法，我们知道在Windows下清除缓冲区的方法是fflush(stdin)，但是该方法在linux下不一定能够奏效，我们可以使用scanf(&#34;%*[^\n]%c&#34;);%[^\n]将逐个读取缓冲区中的 ‘\n’ 字符之前的其它字符，% 后面的 * 表示将读取的这些字符丢弃，遇到 ‘\n’ 字符时便停止读取。此时，缓冲区中尚有一个 ‘\n’ 字符遗留，所以后面的%*c 将读取并丢弃这个遗留的换行符，这里的星号和前面的星号作用相同。由于所有从键盘的输入都是以回车结束的，而回车会产生一个 ‘\n’ 字符，所以将 ‘\n’ 连同它之前的字符全部读取并丢弃之后，也就相当于清除了输入缓冲区。 C语言数组的初始化：C语言会在初始化数组的时候把未赋值的元素赋值为0，注意在对字符串进行初始化的时候不要让字符串长度正好等于元素个数，否则在输出的时候可能发生错误(原因：’\0’为字符串结束的标志，因为长度和元素个数正好相等，结尾没有’\0’，系统不知道什么时候字符串结束，可能会多输出) 格式化输出 %n存在的内存泄漏和修改漏洞 %n可以再printf函数中对变量赋值,值的大小为printf执行到%n处打印的字符数目
+#include&lt;stdio.h&gt; int main() { char* p = &#34;hello,world&#34;; int len = 0; printf(&#34;helloworld%n&#34;,&amp;len); printf(&#34;%d&#34;, len); return 0; } 因为它能够修改内存,故从很早之前开始在VS编程中使用%n会导致程序无法运行
+结构体所占内存问题 #include&lt;stdio.h&gt; typedef struct { char c1; long i; char c2; double f; }a; typedef struct { char c1; char c2; long i; double f; }b; int main() { printf(&#34;%d %d&#34;, sizeof(a),sizeof(b)); return 0; } 输出结果猜猜是什么? 24和16 结构体所占大小的两条准则:">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%9B%B6%E7%A2%8E/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -414,12 +453,12 @@ malloc分配的内存在堆上
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/java%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Java网络编程</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/c%E5%92%8Ccpp/c%E8%AF%AD%E8%A8%80%E9%A2%84%E5%A4%84%E7%90%86/"
       ><span>C语言预处理机制</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -448,7 +487,7 @@ malloc分配的内存在堆上
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

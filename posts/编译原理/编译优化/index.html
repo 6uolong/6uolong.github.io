@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -93,14 +93,14 @@ float x = 1.2 * 1.2;
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -116,7 +116,7 @@ float x = 1.2 * 1.2;
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -167,11 +167,11 @@ float x = 1.2 * 1.2;
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -180,12 +180,75 @@ float x = 1.2 * 1.2;
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="编译优化">
+  <meta itemprop="description" content="优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。
+常量折叠和常量传播 编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。
+常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：
+double a, b; a = b &#43; 1.0 / 3.0; 替换为： double a, b; a = b &#43; 0.33333;
+常量传播会将值已经确定值的变量替换为具体值，例如：
+int x = 14; int y = 7 - x / 2; 转换为：
+int x = 14; int y = 7 - 14 / 2; 常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。
+函数内联 函数内联会将函数调用替换为具体的函数体代码，例如：
+float square(float a) { return a * a;} float x = square(1.2); 替换为：
+float x = 1.2 * 1.2; 函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：
+消除了调用、返回和参数传递的开销。 如果只有一个内联函数调用，代码就会变小。 函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。 函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。">
+  <meta itemprop="datePublished" content="2022-08-25T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2022-08-25T00:00:00+00:00">
+  <meta itemprop="wordCount" content="225">
+  <meta itemprop="keywords" content="编译原理">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="编译优化">
+  <meta property="og:description" content="优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。
+常量折叠和常量传播 编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。
+常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：
+double a, b; a = b &#43; 1.0 / 3.0; 替换为： double a, b; a = b &#43; 0.33333;
+常量传播会将值已经确定值的变量替换为具体值，例如：
+int x = 14; int y = 7 - x / 2; 转换为：
+int x = 14; int y = 7 - 14 / 2; 常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。
+函数内联 函数内联会将函数调用替换为具体的函数体代码，例如：
+float square(float a) { return a * a;} float x = square(1.2); 替换为：
+float x = 1.2 * 1.2; 函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：
+消除了调用、返回和参数传递的开销。 如果只有一个内联函数调用，代码就会变小。 函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。 函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-08-25T00:00:00+00:00">
+    <meta property="article:modified_time" content="2022-08-25T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="编译优化">
+  <meta name="twitter:description" content="优化器是连接编译器前端和后端的重要部分，本文简要介绍一些常见的编译优化手段，需要注意的是编译优化本质上是对程序代码的一种转换，在大多数情况下是对程序的优化，但在某些特殊情况下并不能起到优化效果，具体应用这些优化需要考虑后端架构、程序体积等。
+常量折叠和常量传播 编译器优化中有一个指导策略，即尽量把计算时机提前，能够在编译时期计算完成的不要拖到程序执行时，常量折叠和常量传播就是对这种策略的践行。
+常量折叠会将只包含常量的表达式或子表达式替换为计算结果，比如：
+double a, b; a = b &#43; 1.0 / 3.0; 替换为： double a, b; a = b &#43; 0.33333;
+常量传播会将值已经确定值的变量替换为具体值，例如：
+int x = 14; int y = 7 - x / 2; 转换为：
+int x = 14; int y = 7 - 14 / 2; 常量折叠和常量传播经常会联合使用，常量折叠后可能会产生使用常量传播的机会，同样常量传播后可能会产生使用常量折叠的机会。
+函数内联 函数内联会将函数调用替换为具体的函数体代码，例如：
+float square(float a) { return a * a;} float x = square(1.2); 替换为：
+float x = 1.2 * 1.2; 函数内联多应用于函数调用次数少，函数体长度短的情况中。其优点如下：
+消除了调用、返回和参数传递的开销。 如果只有一个内联函数调用，代码就会变小。 函数内联破坏了函数间调用关系，一定程度上起到了代码混淆作用。 函数内联的缺点是如果要内联的函数被多次调用，且函数体很大，那么代码体积会变大很多。">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -370,12 +433,12 @@ int b = a &lt;&lt; 5;
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/llvm%E6%A1%86%E6%9E%B6%E5%BC%80%E5%8F%91%E4%BA%8C/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>LLVM框架开发（二）</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/xposed%E6%A8%A1%E5%9D%97%E5%85%A5%E9%97%A8/"
       ><span>Xposed模块入门</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -404,7 +467,7 @@ int b = a &lt;&lt; 5;
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"

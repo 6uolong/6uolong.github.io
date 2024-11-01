@@ -33,10 +33,10 @@
 <html
   class="not-ready lg:text-base"
   style="--bg: #faf8f1"
-  lang="en-us"
+  lang="zh-CN"
   dir="ltr"
 >
-  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta
@@ -105,14 +105,14 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
   
   
   
-  <link rel="preload stylesheet" as="style" href="http://localhost:1313/main.min.css" />
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
 
   
   
   
   
   
-  <link rel="preload" as="image" href="http://localhost:1313/theme.png" />
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
 
   
   
@@ -128,7 +128,7 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
   
   <script
     defer
-    src="http://localhost:1313/highlight.min.js"
+    src="https://6uolong.github.io/highlight.min.js"
     onload="hljs.initHighlightingOnLoad();"
   ></script>
   
@@ -179,11 +179,11 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
   
   <link
     rel="icon"
-    href="http://localhost:1313/favicon.ico"
+    href="https://6uolong.github.io/favicon.ico"
   />
   <link
     rel="apple-touch-icon"
-    href="http://localhost:1313/apple-touch-icon.png"
+    href="https://6uolong.github.io/apple-touch-icon.png"
   />
 
   
@@ -192,12 +192,57 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
   
   
   
+  
+  
+  
+  <meta itemprop="name" content="Windows进程创建过程">
+  <meta itemprop="description" content="子系统类型选项 当创建一个饮用程序的时候,连接器选项中有一个很重要的参数,就是子系统类型选择(/SUBSYSTEM:),其中比较常用的有CONSOLE,WINDOWS,NATIVE三个选项,对应CUI程序,GUI程序以及系统和驱动程序这三种. 当用户运行应用程序时,系统的PE loader会根据可选PE头中的信息来加载程序,如果是CUI程序,系统会保证至少有一个终端来显示程序运行的结果(举例来说就是如果从cmd中打开CUI程序,若不是命令指定在新窗口中打开,则只会在输入命令的终端窗口显示输出结果;而如果我们用任务管理器开启一个CUI程序,则系统会帮我们打开一个新终端来显示结果,至于为什么结果会一闪而过,这是因为你在编写程序时没加一些让它停下来的指令,程序运行完成就return 0么得了) 而如果这是一个GUI程序,系统就只会加载这个程序,不会给你加一个默认的界面,因为他认为你自己会设计一个图形化的界面的.
+main函数开始之前是什么 main函数是我们程序员写下的代码开始发挥作用的地方,但是程序运行时最先执行的函数并不是main函数,main函数之前操作系统会调用c/c&#43;&#43;运行时启动函数比图mainCRTStartup这种东西,GUI程序则是WinMainCRTStartup函数.这个函数主要做哪些事情:
+获取完整命令行和环境变量 初始化c/c&#43;&#43;运行库的全局变量 初始化内存分配函数,比如malloc和alloc函数以及其他底层IO例程需要用到的堆,始化以下指针变量：stdin,stdout,stderr.(限控制台程序) 调用所有全局变量和静态c&#43;&#43;类对象的构造函数 完成这些工作后会调用应用程序的入口点函数,同时定义变量nMainRetVal = main函数的返回值,之后程序的控制权便交给了main函数(或者WinMain函数),当main函数返回后(即return 0),会调用exit函数,进行以下过程: 调用_onexit函数调用所注册的函数 调用所有全局变量和静态c&#43;&#43;类对象的析构函数 释放堆及其他资源 调用exit函数退出程序,向其传入的参数是main函数的返回值 不被注意但是天天见的explorer explorer进程掌管着进入系统后我们在桌面上看到的大部分东西:壁纸,快捷方式,桌面上基本一切的一切都是它产生的,如果你kill掉这个process,桌面就乌漆嘛黑啥也没了.我们双击图标能够创建进程,就是归功于explorer.exe的,这个程序会在你双击图标的时候调用CreateProcess函数创建进程.
+进程是如何创建出来的 首先明确一点就是任何进程都是其他进程创建出来的,比如一般我们在桌面上双击图标就是让explorer创建了进程. 进程的创建过程:
+映射exe文件(简单说是把文件放到内存中,) 创建内核对象EPROCESS 映射系统DLL(ntdll.dll) 创建线程内核对象ETHREAD 系统创建线程 映射dll(ntdll!LdrlnitializeThunk) 线程开始执行 关键系统进程 System Idle Process进程:pid为0,处理器有几个线程这玩意有几个线程,功能是循环统计CPU的空闲度,这个值越大越好。 System进程：ID为4，包含了内核模式系统线程。系统辅助线程、执行体和驱动进程通过PsCreateSystemThread创建的线程都在System中。这个进程中的所有模块都处在高地址的内核内存区(即0x80000000后),受到保护. winlogon.exe：登录进程，负责用户交互的登录和注销。Ctrl&#43;Alt&#43;Del就是给它发请求。这就是为什么手贱结束explorer进程之后仍然可以Ctrl&#43;Alt&#43;Del打开任务管理器再次启动explorer进程来恢复正常. csrss.exe：Windows子系统环境进程，包括控制面板窗口的功能，创建删除进程和线程。 lsass.exe：本地系统安全策略。负责允许哪些用户登录到本地系统、口令策略、授予用户和用户组的特权、系统安全审计设置、认证用户身份、安全审计消息发送到系统的Event Log等功能。 services.exe：负责管理Windows系统服务，这里的系统服务指一些特殊的进程，通常不与登录用户进行交互，因而被配置成可以在系统引导时自启动，无需交互登录过程。Windows中很多功能组件都是以服务方式实现的，比如Event Log，任务调度器和各种网络组件等。 smss.exe:这是Windows的核心进程之一，是Windows NT内核的会话管理程序。 Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这个程序。开机出现“Generic host processfor win32 services”（遇到问题需要关闭），一般是这个进程找不到dll文件所致。">
+  <meta itemprop="datePublished" content="2021-03-19T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2021-03-19T00:00:00+00:00">
+  <meta itemprop="wordCount" content="50">
+  <meta itemprop="keywords" content="Windows机制">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E8%BF%9B%E7%A8%8B%E5%88%9B%E5%BB%BA/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="Windows进程创建过程">
+  <meta property="og:description" content="子系统类型选项 当创建一个饮用程序的时候,连接器选项中有一个很重要的参数,就是子系统类型选择(/SUBSYSTEM:),其中比较常用的有CONSOLE,WINDOWS,NATIVE三个选项,对应CUI程序,GUI程序以及系统和驱动程序这三种. 当用户运行应用程序时,系统的PE loader会根据可选PE头中的信息来加载程序,如果是CUI程序,系统会保证至少有一个终端来显示程序运行的结果(举例来说就是如果从cmd中打开CUI程序,若不是命令指定在新窗口中打开,则只会在输入命令的终端窗口显示输出结果;而如果我们用任务管理器开启一个CUI程序,则系统会帮我们打开一个新终端来显示结果,至于为什么结果会一闪而过,这是因为你在编写程序时没加一些让它停下来的指令,程序运行完成就return 0么得了) 而如果这是一个GUI程序,系统就只会加载这个程序,不会给你加一个默认的界面,因为他认为你自己会设计一个图形化的界面的.
+main函数开始之前是什么 main函数是我们程序员写下的代码开始发挥作用的地方,但是程序运行时最先执行的函数并不是main函数,main函数之前操作系统会调用c/c&#43;&#43;运行时启动函数比图mainCRTStartup这种东西,GUI程序则是WinMainCRTStartup函数.这个函数主要做哪些事情:
+获取完整命令行和环境变量 初始化c/c&#43;&#43;运行库的全局变量 初始化内存分配函数,比如malloc和alloc函数以及其他底层IO例程需要用到的堆,始化以下指针变量：stdin,stdout,stderr.(限控制台程序) 调用所有全局变量和静态c&#43;&#43;类对象的构造函数 完成这些工作后会调用应用程序的入口点函数,同时定义变量nMainRetVal = main函数的返回值,之后程序的控制权便交给了main函数(或者WinMain函数),当main函数返回后(即return 0),会调用exit函数,进行以下过程: 调用_onexit函数调用所注册的函数 调用所有全局变量和静态c&#43;&#43;类对象的析构函数 释放堆及其他资源 调用exit函数退出程序,向其传入的参数是main函数的返回值 不被注意但是天天见的explorer explorer进程掌管着进入系统后我们在桌面上看到的大部分东西:壁纸,快捷方式,桌面上基本一切的一切都是它产生的,如果你kill掉这个process,桌面就乌漆嘛黑啥也没了.我们双击图标能够创建进程,就是归功于explorer.exe的,这个程序会在你双击图标的时候调用CreateProcess函数创建进程.
+进程是如何创建出来的 首先明确一点就是任何进程都是其他进程创建出来的,比如一般我们在桌面上双击图标就是让explorer创建了进程. 进程的创建过程:
+映射exe文件(简单说是把文件放到内存中,) 创建内核对象EPROCESS 映射系统DLL(ntdll.dll) 创建线程内核对象ETHREAD 系统创建线程 映射dll(ntdll!LdrlnitializeThunk) 线程开始执行 关键系统进程 System Idle Process进程:pid为0,处理器有几个线程这玩意有几个线程,功能是循环统计CPU的空闲度,这个值越大越好。 System进程：ID为4，包含了内核模式系统线程。系统辅助线程、执行体和驱动进程通过PsCreateSystemThread创建的线程都在System中。这个进程中的所有模块都处在高地址的内核内存区(即0x80000000后),受到保护. winlogon.exe：登录进程，负责用户交互的登录和注销。Ctrl&#43;Alt&#43;Del就是给它发请求。这就是为什么手贱结束explorer进程之后仍然可以Ctrl&#43;Alt&#43;Del打开任务管理器再次启动explorer进程来恢复正常. csrss.exe：Windows子系统环境进程，包括控制面板窗口的功能，创建删除进程和线程。 lsass.exe：本地系统安全策略。负责允许哪些用户登录到本地系统、口令策略、授予用户和用户组的特权、系统安全审计设置、认证用户身份、安全审计消息发送到系统的Event Log等功能。 services.exe：负责管理Windows系统服务，这里的系统服务指一些特殊的进程，通常不与登录用户进行交互，因而被配置成可以在系统引导时自启动，无需交互登录过程。Windows中很多功能组件都是以服务方式实现的，比如Event Log，任务调度器和各种网络组件等。 smss.exe:这是Windows的核心进程之一，是Windows NT内核的会话管理程序。 Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这个程序。开机出现“Generic host processfor win32 services”（遇到问题需要关闭），一般是这个进程找不到dll文件所致。">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2021-03-19T00:00:00+00:00">
+    <meta property="article:modified_time" content="2021-03-19T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Windows进程创建过程">
+  <meta name="twitter:description" content="子系统类型选项 当创建一个饮用程序的时候,连接器选项中有一个很重要的参数,就是子系统类型选择(/SUBSYSTEM:),其中比较常用的有CONSOLE,WINDOWS,NATIVE三个选项,对应CUI程序,GUI程序以及系统和驱动程序这三种. 当用户运行应用程序时,系统的PE loader会根据可选PE头中的信息来加载程序,如果是CUI程序,系统会保证至少有一个终端来显示程序运行的结果(举例来说就是如果从cmd中打开CUI程序,若不是命令指定在新窗口中打开,则只会在输入命令的终端窗口显示输出结果;而如果我们用任务管理器开启一个CUI程序,则系统会帮我们打开一个新终端来显示结果,至于为什么结果会一闪而过,这是因为你在编写程序时没加一些让它停下来的指令,程序运行完成就return 0么得了) 而如果这是一个GUI程序,系统就只会加载这个程序,不会给你加一个默认的界面,因为他认为你自己会设计一个图形化的界面的.
+main函数开始之前是什么 main函数是我们程序员写下的代码开始发挥作用的地方,但是程序运行时最先执行的函数并不是main函数,main函数之前操作系统会调用c/c&#43;&#43;运行时启动函数比图mainCRTStartup这种东西,GUI程序则是WinMainCRTStartup函数.这个函数主要做哪些事情:
+获取完整命令行和环境变量 初始化c/c&#43;&#43;运行库的全局变量 初始化内存分配函数,比如malloc和alloc函数以及其他底层IO例程需要用到的堆,始化以下指针变量：stdin,stdout,stderr.(限控制台程序) 调用所有全局变量和静态c&#43;&#43;类对象的构造函数 完成这些工作后会调用应用程序的入口点函数,同时定义变量nMainRetVal = main函数的返回值,之后程序的控制权便交给了main函数(或者WinMain函数),当main函数返回后(即return 0),会调用exit函数,进行以下过程: 调用_onexit函数调用所注册的函数 调用所有全局变量和静态c&#43;&#43;类对象的析构函数 释放堆及其他资源 调用exit函数退出程序,向其传入的参数是main函数的返回值 不被注意但是天天见的explorer explorer进程掌管着进入系统后我们在桌面上看到的大部分东西:壁纸,快捷方式,桌面上基本一切的一切都是它产生的,如果你kill掉这个process,桌面就乌漆嘛黑啥也没了.我们双击图标能够创建进程,就是归功于explorer.exe的,这个程序会在你双击图标的时候调用CreateProcess函数创建进程.
+进程是如何创建出来的 首先明确一点就是任何进程都是其他进程创建出来的,比如一般我们在桌面上双击图标就是让explorer创建了进程. 进程的创建过程:
+映射exe文件(简单说是把文件放到内存中,) 创建内核对象EPROCESS 映射系统DLL(ntdll.dll) 创建线程内核对象ETHREAD 系统创建线程 映射dll(ntdll!LdrlnitializeThunk) 线程开始执行 关键系统进程 System Idle Process进程:pid为0,处理器有几个线程这玩意有几个线程,功能是循环统计CPU的空闲度,这个值越大越好。 System进程：ID为4，包含了内核模式系统线程。系统辅助线程、执行体和驱动进程通过PsCreateSystemThread创建的线程都在System中。这个进程中的所有模块都处在高地址的内核内存区(即0x80000000后),受到保护. winlogon.exe：登录进程，负责用户交互的登录和注销。Ctrl&#43;Alt&#43;Del就是给它发请求。这就是为什么手贱结束explorer进程之后仍然可以Ctrl&#43;Alt&#43;Del打开任务管理器再次启动explorer进程来恢复正常. csrss.exe：Windows子系统环境进程，包括控制面板窗口的功能，创建删除进程和线程。 lsass.exe：本地系统安全策略。负责允许哪些用户登录到本地系统、口令策略、授予用户和用户组的特权、系统安全审计设置、认证用户身份、安全审计消息发送到系统的Event Log等功能。 services.exe：负责管理Windows系统服务，这里的系统服务指一些特殊的进程，通常不与登录用户进行交互，因而被配置成可以在系统引导时自启动，无需交互登录过程。Windows中很多功能组件都是以服务方式实现的，比如Event Log，任务调度器和各种网络组件等。 smss.exe:这是Windows的核心进程之一，是Windows NT内核的会话管理程序。 Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这个程序。开机出现“Generic host processfor win32 services”（遇到问题需要关闭），一般是这个进程找不到dll文件所致。">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/windows%E4%B8%8B%E8%BF%9B%E7%A8%8B%E5%88%9B%E5%BB%BA/" />
+  
+  
 </head>
 
   <body class="text-black duration-200 ease-out dark:text-white">
     <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
   <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
-    <a class="-translate-y-[1px] text-2xl font-medium" href="http://localhost:1313/"
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
       >huolong blog</a
     >
     <div
@@ -345,12 +390,12 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
     class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
   >
     
-    <a class="ltr:pr-3 rtl:pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/dll%E6%B3%A8%E5%85%A5%E5%92%8Chook/"
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/dll%E6%B3%A8%E5%85%A5%E5%92%8Chook/"
       ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>dll注入与hook</span></a
     >
     
     
-    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="http://localhost:1313/posts/windows%E6%9C%BA%E5%88%B6/uac_bypass/"
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/windows%E6%9C%BA%E5%88%B6/uac_bypass/"
       ><span>windows 10下利用schtasks绕过uac</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
     >
     
@@ -379,7 +424,7 @@ Svchost.exe:这属于Windows的系统程序，服务进程的执行离不开这�
   <div class="mr-auto">
   
     &copy; 2024
-    <a class="link" href="http://localhost:1313/">huolong blog</a>
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
   
   </div>
   <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
