@@ -1,0 +1,395 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-CN"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>DES算法详解 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="DES数据加密标准（Data Encryption Standard）是发明最早的最广泛使用的分组对称加密算法。1976年被美国联邦政府的国家标准局确定为联邦资料处理标准（FIPS），随后在国际上广泛流传开来。DES 加密算法中，明文和密文为 64bit 分组，也就是8字节。密钥的长度为 64 位，但是密钥的每个第八位设置为奇偶校验位，所以只有 56 bit 对实际强度有影响。
+算法原理
+主要的加密流程如下图所示：
+
+子密钥生成
+DES 在加密过程中会用到 16 个 48 bit 的子密钥，而输入的密钥长度只有 64 bit，故需要根据主密钥生成子密钥，总共分为以下三步：
+
+将输入的 64 bit 密钥经过 PC1 置换变为 56 bit 的输出，再将其分为 C0 和 D0 两部分
+将 C0 和 D0 循环左移
+C0 和 D0 通过 PC2 置换获取 48 bit 子密钥，重复 2-3 步 16 轮
+
+
+初始置换
+将 64 bit 的明文组进行初始置换，这里的置换只是将数据的位置进行变化，得到一个新的数据。在密码学上的意义不大。
+
+Feistel 结构和 F 轮函数
+Feistel 结构会将 64 bit 的输入分成两半，每次会加密一半的明文，然后将左右位置互换。加密过程中会用到 F 轮函数，处理 16 轮，该函数会进行以下几个步骤：" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://6uolong.github.io/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://6uolong.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://6uolong.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="DES算法详解">
+  <meta itemprop="description" content="DES数据加密标准（Data Encryption Standard）是发明最早的最广泛使用的分组对称加密算法。1976年被美国联邦政府的国家标准局确定为联邦资料处理标准（FIPS），随后在国际上广泛流传开来。DES 加密算法中，明文和密文为 64bit 分组，也就是8字节。密钥的长度为 64 位，但是密钥的每个第八位设置为奇偶校验位，所以只有 56 bit 对实际强度有影响。
+算法原理 主要的加密流程如下图所示： 子密钥生成 DES 在加密过程中会用到 16 个 48 bit 的子密钥，而输入的密钥长度只有 64 bit，故需要根据主密钥生成子密钥，总共分为以下三步：
+将输入的 64 bit 密钥经过 PC1 置换变为 56 bit 的输出，再将其分为 C0 和 D0 两部分 将 C0 和 D0 循环左移 C0 和 D0 通过 PC2 置换获取 48 bit 子密钥，重复 2-3 步 16 轮 初始置换 将 64 bit 的明文组进行初始置换，这里的置换只是将数据的位置进行变化，得到一个新的数据。在密码学上的意义不大。 Feistel 结构和 F 轮函数 Feistel 结构会将 64 bit 的输入分成两半，每次会加密一半的明文，然后将左右位置互换。加密过程中会用到 F 轮函数，处理 16 轮，该函数会进行以下几个步骤：">
+  <meta itemprop="datePublished" content="2024-11-28T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-11-28T00:00:00+00:00">
+  <meta itemprop="wordCount" content="110">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-des/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="DES算法详解">
+  <meta property="og:description" content="DES数据加密标准（Data Encryption Standard）是发明最早的最广泛使用的分组对称加密算法。1976年被美国联邦政府的国家标准局确定为联邦资料处理标准（FIPS），随后在国际上广泛流传开来。DES 加密算法中，明文和密文为 64bit 分组，也就是8字节。密钥的长度为 64 位，但是密钥的每个第八位设置为奇偶校验位，所以只有 56 bit 对实际强度有影响。
+算法原理 主要的加密流程如下图所示： 子密钥生成 DES 在加密过程中会用到 16 个 48 bit 的子密钥，而输入的密钥长度只有 64 bit，故需要根据主密钥生成子密钥，总共分为以下三步：
+将输入的 64 bit 密钥经过 PC1 置换变为 56 bit 的输出，再将其分为 C0 和 D0 两部分 将 C0 和 D0 循环左移 C0 和 D0 通过 PC2 置换获取 48 bit 子密钥，重复 2-3 步 16 轮 初始置换 将 64 bit 的明文组进行初始置换，这里的置换只是将数据的位置进行变化，得到一个新的数据。在密码学上的意义不大。 Feistel 结构和 F 轮函数 Feistel 结构会将 64 bit 的输入分成两半，每次会加密一半的明文，然后将左右位置互换。加密过程中会用到 F 轮函数，处理 16 轮，该函数会进行以下几个步骤：">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-28T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-11-28T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="DES算法详解">
+  <meta name="twitter:description" content="DES数据加密标准（Data Encryption Standard）是发明最早的最广泛使用的分组对称加密算法。1976年被美国联邦政府的国家标准局确定为联邦资料处理标准（FIPS），随后在国际上广泛流传开来。DES 加密算法中，明文和密文为 64bit 分组，也就是8字节。密钥的长度为 64 位，但是密钥的每个第八位设置为奇偶校验位，所以只有 56 bit 对实际强度有影响。
+算法原理 主要的加密流程如下图所示： 子密钥生成 DES 在加密过程中会用到 16 个 48 bit 的子密钥，而输入的密钥长度只有 64 bit，故需要根据主密钥生成子密钥，总共分为以下三步：
+将输入的 64 bit 密钥经过 PC1 置换变为 56 bit 的输出，再将其分为 C0 和 D0 两部分 将 C0 和 D0 循环左移 C0 和 D0 通过 PC2 置换获取 48 bit 子密钥，重复 2-3 步 16 轮 初始置换 将 64 bit 的明文组进行初始置换，这里的置换只是将数据的位置进行变化，得到一个新的数据。在密码学上的意义不大。 Feistel 结构和 F 轮函数 Feistel 结构会将 64 bit 的输入分成两半，每次会加密一半的明文，然后将左右位置互换。加密过程中会用到 F 轮函数，处理 16 轮，该函数会进行以下几个步骤：">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-des/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">DES算法详解</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Nov 28, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>DES数据加密标准（Data Encryption Standard）是发明最早的最广泛使用的分组对称加密算法。1976年被美国联邦政府的<a href="https://zh.wikipedia.org/wiki/%E5%9B%BD%E5%AE%B6%E6%A0%87%E5%87%86%E5%B1%80" title="国家标准局">国家标准局</a>确定为<a href="https://zh.wikipedia.org/wiki/%E8%81%94%E9%82%A6%E8%B5%84%E6%96%99%E5%A4%84%E7%90%86%E6%A0%87%E5%87%86" title="联邦资料处理标准">联邦资料处理标准</a>（FIPS），随后在国际上广泛流传开来。DES 加密算法中，明文和密文为 64bit 分组，也就是8字节。密钥的长度为 64 位，但是密钥的每个第八位设置为奇偶校验位，所以只有 56 bit 对实际强度有影响。</p>
+<h3 id="算法原理">算法原理</h3>
+<p>主要的加密流程如下图所示：
+<img src="%E4%B8%BB%E8%A6%81%E5%8A%A0%E5%AF%86%E6%B5%81%E7%A8%8B.png" alt=""></p>
+<h4 id="子密钥生成">子密钥生成</h4>
+<p>DES 在加密过程中会用到 16 个 48 bit 的子密钥，而输入的密钥长度只有 64 bit，故需要根据主密钥生成子密钥，总共分为以下三步：</p>
+<ol>
+<li>将输入的 64 bit 密钥经过 PC1 置换变为 56 bit 的输出，再将其分为 C0 和 D0 两部分</li>
+<li>将 C0 和 D0 循环左移</li>
+<li>C0 和 D0 通过 PC2 置换获取 48 bit 子密钥，重复 2-3 步 16 轮</li>
+</ol>
+<p><img src="%E5%AD%90%E5%AF%86%E9%92%A5%E7%94%9F%E6%88%90.png" alt=""></p>
+<h4 id="初始置换">初始置换</h4>
+<p>将 64 bit 的明文组进行初始置换，这里的置换只是将数据的位置进行变化，得到一个新的数据。在密码学上的意义不大。
+<img src="%E5%88%9D%E5%A7%8B%E7%BD%AE%E6%8D%A2.png" alt=""></p>
+<h4 id="feistel-结构和-f-轮函数">Feistel 结构和 F 轮函数</h4>
+<p>Feistel 结构会将 64 bit 的输入分成两半，每次会加密一半的明文，然后将左右位置互换。加密过程中会用到 F 轮函数，处理 16 轮，该函数会进行以下几个步骤：</p>
+<ol>
+<li>扩展 32 bit 的明文到 48 bit</li>
+<li>将扩展后的明文与该轮的子密钥进行异或</li>
+<li>将异或后的结果分成 8 份，每份 6 bit，进行 S-box 置换，S-box 会将 6 bit 的输入转换为 4 bit 的输出</li>
+<li>将上一步处理的 32 bit 结果进行一次 P 置换
+<img src="%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-DES/F%E8%BD%AE%E5%87%BD%E6%95%B0.png" alt=""></li>
+</ol>
+<h4 id="逆初始置换">逆初始置换</h4>
+<p>将 16 轮 Feistel 结构处理后的 64 bit 密文进行逆初始置换，至此 DES 算法对一个分组的加密流程结束。</p>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-tea/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>TEA家族详解</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-aes/"
+      ><span>AES详解</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

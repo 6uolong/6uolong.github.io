@@ -1,0 +1,403 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-CN"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>RC4算法详解 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="RC4加密算法（Rivest Cipher 4）是大名鼎鼎的RSA三人组中的头号人物 Ron Rivest 在 1987 年设计的密钥长度可变的流加密算法簇，之所以称其为簇，是由于其核心部分的S-box长度可为任意，但一般为256字节。它是有线等效加密（WEP）中采用的加密算法，也曾经是TLS可采用的算法之一。但是现在 RC4 已经不再安全。
+算法原理
+流密码算法的核心在于密钥流的生成，RC4 的密钥流生成过程主要有两步：
+
+根据 key 生成 S-Box。
+根据 S-Box 生成密钥流
+因为整体原理并不复杂，直接附上 Python 源码：
+
+def rc4(key, data):
+    S = list(range(256))
+    j = 0
+    out = []
+
+    # Key-scheduling algorithm
+    for i in range(256):
+        j = (j &#43; S[i] &#43; key[i % len(key)]) % 256
+        S[i], S[j] = S[j], S[i]
+
+    # Pseudo-random generation algorithm
+    i = j = 0
+    for char in data:
+        i = (i &#43; 1) % 256
+        j = (j &#43; S[i]) % 256
+        S[i], S[j] = S[j], S[i]
+        out.append(chr(ord(char) ^ S[(S[i] &#43; S[j]) % 256]))
+
+    return  &#34;&#34;.join(out)
+" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://6uolong.github.io/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://6uolong.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://6uolong.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="RC4算法详解">
+  <meta itemprop="description" content="RC4加密算法（Rivest Cipher 4）是大名鼎鼎的RSA三人组中的头号人物 Ron Rivest 在 1987 年设计的密钥长度可变的流加密算法簇，之所以称其为簇，是由于其核心部分的S-box长度可为任意，但一般为256字节。它是有线等效加密（WEP）中采用的加密算法，也曾经是TLS可采用的算法之一。但是现在 RC4 已经不再安全。
+算法原理 流密码算法的核心在于密钥流的生成，RC4 的密钥流生成过程主要有两步：
+根据 key 生成 S-Box。 根据 S-Box 生成密钥流 因为整体原理并不复杂，直接附上 Python 源码： def rc4(key, data): S = list(range(256)) j = 0 out = [] # Key-scheduling algorithm for i in range(256): j = (j &#43; S[i] &#43; key[i % len(key)]) % 256 S[i], S[j] = S[j], S[i] # Pseudo-random generation algorithm i = j = 0 for char in data: i = (i &#43; 1) % 256 j = (j &#43; S[i]) % 256 S[i], S[j] = S[j], S[i] out.append(chr(ord(char) ^ S[(S[i] &#43; S[j]) % 256])) return &#34;&#34;.join(out)">
+  <meta itemprop="datePublished" content="2024-12-02T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-12-02T00:00:00+00:00">
+  <meta itemprop="wordCount" content="99">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E6%B5%81%E5%AF%86%E7%A0%81%E7%AE%97%E6%B3%95-rc4/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="RC4算法详解">
+  <meta property="og:description" content="RC4加密算法（Rivest Cipher 4）是大名鼎鼎的RSA三人组中的头号人物 Ron Rivest 在 1987 年设计的密钥长度可变的流加密算法簇，之所以称其为簇，是由于其核心部分的S-box长度可为任意，但一般为256字节。它是有线等效加密（WEP）中采用的加密算法，也曾经是TLS可采用的算法之一。但是现在 RC4 已经不再安全。
+算法原理 流密码算法的核心在于密钥流的生成，RC4 的密钥流生成过程主要有两步：
+根据 key 生成 S-Box。 根据 S-Box 生成密钥流 因为整体原理并不复杂，直接附上 Python 源码： def rc4(key, data): S = list(range(256)) j = 0 out = [] # Key-scheduling algorithm for i in range(256): j = (j &#43; S[i] &#43; key[i % len(key)]) % 256 S[i], S[j] = S[j], S[i] # Pseudo-random generation algorithm i = j = 0 for char in data: i = (i &#43; 1) % 256 j = (j &#43; S[i]) % 256 S[i], S[j] = S[j], S[i] out.append(chr(ord(char) ^ S[(S[i] &#43; S[j]) % 256])) return &#34;&#34;.join(out)">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-12-02T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-12-02T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="RC4算法详解">
+  <meta name="twitter:description" content="RC4加密算法（Rivest Cipher 4）是大名鼎鼎的RSA三人组中的头号人物 Ron Rivest 在 1987 年设计的密钥长度可变的流加密算法簇，之所以称其为簇，是由于其核心部分的S-box长度可为任意，但一般为256字节。它是有线等效加密（WEP）中采用的加密算法，也曾经是TLS可采用的算法之一。但是现在 RC4 已经不再安全。
+算法原理 流密码算法的核心在于密钥流的生成，RC4 的密钥流生成过程主要有两步：
+根据 key 生成 S-Box。 根据 S-Box 生成密钥流 因为整体原理并不复杂，直接附上 Python 源码： def rc4(key, data): S = list(range(256)) j = 0 out = [] # Key-scheduling algorithm for i in range(256): j = (j &#43; S[i] &#43; key[i % len(key)]) % 256 S[i], S[j] = S[j], S[i] # Pseudo-random generation algorithm i = j = 0 for char in data: i = (i &#43; 1) % 256 j = (j &#43; S[i]) % 256 S[i], S[j] = S[j], S[i] out.append(chr(ord(char) ^ S[(S[i] &#43; S[j]) % 256])) return &#34;&#34;.join(out)">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E6%B5%81%E5%AF%86%E7%A0%81%E7%AE%97%E6%B3%95-rc4/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">RC4算法详解</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Dec 2, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>RC4加密算法（Rivest Cipher 4）是大名鼎鼎的RSA三人组中的头号人物 Ron Rivest 在 1987 年设计的密钥长度可变的流加密算法簇，之所以称其为簇，是由于其核心部分的S-box长度可为任意，但一般为256字节。它是有线等效加密（WEP）中采用的加密算法，也曾经是TLS可采用的算法之一。但是现在 RC4 已经不再安全。</p>
+<h3 id="算法原理">算法原理</h3>
+<p>流密码算法的核心在于密钥流的生成，RC4 的密钥流生成过程主要有两步：</p>
+<ol>
+<li>根据 key 生成 S-Box。</li>
+<li>根据 S-Box 生成密钥流
+因为整体原理并不复杂，直接附上 Python 源码：</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">rc4</span>(key, data):
+</span></span><span style="display:flex;"><span>    S <span style="color:#f92672">=</span> list(range(<span style="color:#ae81ff">256</span>))
+</span></span><span style="display:flex;"><span>    j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    out <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Key-scheduling algorithm</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">256</span>):
+</span></span><span style="display:flex;"><span>        j <span style="color:#f92672">=</span> (j <span style="color:#f92672">+</span> S[i] <span style="color:#f92672">+</span> key[i <span style="color:#f92672">%</span> len(key)]) <span style="color:#f92672">%</span> <span style="color:#ae81ff">256</span>
+</span></span><span style="display:flex;"><span>        S[i], S[j] <span style="color:#f92672">=</span> S[j], S[i]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># Pseudo-random generation algorithm</span>
+</span></span><span style="display:flex;"><span>    i <span style="color:#f92672">=</span> j <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> char <span style="color:#f92672">in</span> data:
+</span></span><span style="display:flex;"><span>        i <span style="color:#f92672">=</span> (i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> <span style="color:#ae81ff">256</span>
+</span></span><span style="display:flex;"><span>        j <span style="color:#f92672">=</span> (j <span style="color:#f92672">+</span> S[i]) <span style="color:#f92672">%</span> <span style="color:#ae81ff">256</span>
+</span></span><span style="display:flex;"><span>        S[i], S[j] <span style="color:#f92672">=</span> S[j], S[i]
+</span></span><span style="display:flex;"><span>        out<span style="color:#f92672">.</span>append(chr(ord(char) <span style="color:#f92672">^</span> S[(S[i] <span style="color:#f92672">+</span> S[j]) <span style="color:#f92672">%</span> <span style="color:#ae81ff">256</span>]))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span>  <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(out)
+</span></span></code></pre></div></section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%88%86%E7%BB%84%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95-tea/"
+      ><span>TEA家族详解</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>

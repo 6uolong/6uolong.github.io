@@ -1,0 +1,404 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html
+  class="not-ready lg:text-base"
+  style="--bg: #faf8f1"
+  lang="zh-CN"
+  dir="ltr"
+>
+  <head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  
+  <title>SHA1详解 - huolong blog</title>
+
+  
+  <meta name="theme-color" />
+
+  
+  
+  
+  
+  <meta name="description" content="SHA1（Secure Hash Algorithm 1）是一种散列函数，由美国国家安全局设计，并由美国国家标准技术研究所（NIST）发布为联邦资料处理标准（FIPS）。它接受任意长度的输入（其实是不超过 2^64 长度）并输出 160 bit 的摘要。它的处理流程与 MD5 有很多相似之处，且在 2017 年已经发现碰撞，建议使用 SHA2 或 SHA3 算法替代。
+算法原理
+填充数据
+与 MD5 的数据填充流程一致。
+分组数据运算
+首先赋值 5 个初始链接变量，因为每个变量为 32 bit，SHA1 的摘要长度比 MD5 多 32 bit，即正好多一个链接变量。
+A: 0x67452301 B: 0xefcdab89 C: 0x98badcfe D: 0x10325476 E: 0xC3D2E1F0
+与 MD5 类似，SHA1 也有 4 个非线性函数：
+Ft(B,C,D) = (B&amp;C)|(~B&amp;D) (0&lt;=t&lt;=19)
+Ft(B,C,D) = B^C^D (20&lt;=t&lt;=39)
+Ft(B,C,D) = (B&amp;C)|(B&amp;D)|(C&amp;D) (40&lt;=t&lt;=59)
+Ft(B,C,D) = B^C^D (60&lt;=t&lt;=79)
+与 MD5 相似，SHA1 在进行分组数据运算时，也会用到 Mi 和 tj（SHA1 中一般用 Wt 和 Kt 表示）" />
+  <meta name="author" content="huolong blog" />
+  
+
+  
+  
+  
+  
+  
+  
+  <link rel="preload stylesheet" as="style" href="https://6uolong.github.io/main.min.css" />
+
+  
+  
+  
+  
+  
+  <link rel="preload" as="image" href="https://6uolong.github.io/theme.png" />
+
+  
+  
+  
+  
+  
+
+  
+  
+  
+
+  
+  
+  <script
+    defer
+    src="https://6uolong.github.io/highlight.min.js"
+    onload="hljs.initHighlightingOnLoad();"
+  ></script>
+  
+
+  
+  
+  
+  
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.css"
+  integrity="sha384-3UiQGuEI4TTMaFmGIZumfRPtfKQ3trwQE2JgosJxCnGmQpL/lJdjpcHkaaFwHlcI"
+  crossorigin="anonymous"
+/>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/katex.min.js"
+  integrity="sha384-G0zcxDFp5LWZtDuRMnBkk3EphCK1lhEf4UEyEM693ka574TZGwo4IWwS6QLzM/2t"
+  crossorigin="anonymous"
+></script>
+<script
+  defer
+  src="https://cdn.jsdelivr.net/npm/katex@0.16.7/dist/contrib/auto-render.min.js"
+  integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05"
+  crossorigin="anonymous"
+></script>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () =>
+    renderMathInElement(document.body, {
+      
+      
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      
+      throwOnError: false,
+    }),
+  );
+</script>
+
+  
+  
+  
+
+  
+  <link
+    rel="icon"
+    href="https://6uolong.github.io/favicon.ico"
+  />
+  <link
+    rel="apple-touch-icon"
+    href="https://6uolong.github.io/apple-touch-icon.png"
+  />
+
+  
+  <meta name="generator" content="Hugo 0.136.5">
+
+  
+  
+  
+  
+  
+  
+  <meta itemprop="name" content="SHA1详解">
+  <meta itemprop="description" content="SHA1（Secure Hash Algorithm 1）是一种散列函数，由美国国家安全局设计，并由美国国家标准技术研究所（NIST）发布为联邦资料处理标准（FIPS）。它接受任意长度的输入（其实是不超过 2^64 长度）并输出 160 bit 的摘要。它的处理流程与 MD5 有很多相似之处，且在 2017 年已经发现碰撞，建议使用 SHA2 或 SHA3 算法替代。
+算法原理 填充数据 与 MD5 的数据填充流程一致。
+分组数据运算 首先赋值 5 个初始链接变量，因为每个变量为 32 bit，SHA1 的摘要长度比 MD5 多 32 bit，即正好多一个链接变量。
+A: 0x67452301 B: 0xefcdab89 C: 0x98badcfe D: 0x10325476 E: 0xC3D2E1F0 与 MD5 类似，SHA1 也有 4 个非线性函数：
+Ft(B,C,D) = (B&amp;C)|(~B&amp;D) (0&lt;=t&lt;=19) Ft(B,C,D) = B^C^D (20&lt;=t&lt;=39) Ft(B,C,D) = (B&amp;C)|(B&amp;D)|(C&amp;D) (40&lt;=t&lt;=59) Ft(B,C,D) = B^C^D (60&lt;=t&lt;=79) 与 MD5 相似，SHA1 在进行分组数据运算时，也会用到 Mi 和 tj（SHA1 中一般用 Wt 和 Kt 表示）">
+  <meta itemprop="datePublished" content="2024-11-13T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2024-11-13T00:00:00+00:00">
+  <meta itemprop="wordCount" content="151">
+  
+  <meta property="og:url" content="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95-sha1/">
+  <meta property="og:site_name" content="huolong blog">
+  <meta property="og:title" content="SHA1详解">
+  <meta property="og:description" content="SHA1（Secure Hash Algorithm 1）是一种散列函数，由美国国家安全局设计，并由美国国家标准技术研究所（NIST）发布为联邦资料处理标准（FIPS）。它接受任意长度的输入（其实是不超过 2^64 长度）并输出 160 bit 的摘要。它的处理流程与 MD5 有很多相似之处，且在 2017 年已经发现碰撞，建议使用 SHA2 或 SHA3 算法替代。
+算法原理 填充数据 与 MD5 的数据填充流程一致。
+分组数据运算 首先赋值 5 个初始链接变量，因为每个变量为 32 bit，SHA1 的摘要长度比 MD5 多 32 bit，即正好多一个链接变量。
+A: 0x67452301 B: 0xefcdab89 C: 0x98badcfe D: 0x10325476 E: 0xC3D2E1F0 与 MD5 类似，SHA1 也有 4 个非线性函数：
+Ft(B,C,D) = (B&amp;C)|(~B&amp;D) (0&lt;=t&lt;=19) Ft(B,C,D) = B^C^D (20&lt;=t&lt;=39) Ft(B,C,D) = (B&amp;C)|(B&amp;D)|(C&amp;D) (40&lt;=t&lt;=59) Ft(B,C,D) = B^C^D (60&lt;=t&lt;=79) 与 MD5 相似，SHA1 在进行分组数据运算时，也会用到 Mi 和 tj（SHA1 中一般用 Wt 和 Kt 表示）">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-11-13T00:00:00+00:00">
+    <meta property="article:modified_time" content="2024-11-13T00:00:00+00:00">
+
+  
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="SHA1详解">
+  <meta name="twitter:description" content="SHA1（Secure Hash Algorithm 1）是一种散列函数，由美国国家安全局设计，并由美国国家标准技术研究所（NIST）发布为联邦资料处理标准（FIPS）。它接受任意长度的输入（其实是不超过 2^64 长度）并输出 160 bit 的摘要。它的处理流程与 MD5 有很多相似之处，且在 2017 年已经发现碰撞，建议使用 SHA2 或 SHA3 算法替代。
+算法原理 填充数据 与 MD5 的数据填充流程一致。
+分组数据运算 首先赋值 5 个初始链接变量，因为每个变量为 32 bit，SHA1 的摘要长度比 MD5 多 32 bit，即正好多一个链接变量。
+A: 0x67452301 B: 0xefcdab89 C: 0x98badcfe D: 0x10325476 E: 0xC3D2E1F0 与 MD5 类似，SHA1 也有 4 个非线性函数：
+Ft(B,C,D) = (B&amp;C)|(~B&amp;D) (0&lt;=t&lt;=19) Ft(B,C,D) = B^C^D (20&lt;=t&lt;=39) Ft(B,C,D) = (B&amp;C)|(B&amp;D)|(C&amp;D) (40&lt;=t&lt;=59) Ft(B,C,D) = B^C^D (60&lt;=t&lt;=79) 与 MD5 相似，SHA1 在进行分组数据运算时，也会用到 Mi 和 tj（SHA1 中一般用 Wt 和 Kt 表示）">
+
+  
+  
+
+  
+  <link rel="canonical" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95-sha1/" />
+  
+  
+</head>
+
+  <body class="text-black duration-200 ease-out dark:text-white">
+    <header class="mx-auto flex h-[4.5rem] max-w-[--w] px-8 lg:justify-center">
+  <div class="relative z-50 ltr:mr-auto rtl:ml-auto flex items-center">
+    <a class="-translate-y-[1px] text-2xl font-medium" href="https://6uolong.github.io/"
+      >huolong blog</a
+    >
+    <div
+      class="btn-dark text-[0] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]"
+      role="button"
+      aria-label="Dark"
+    ></div>
+  </div>
+
+  <div
+    class="btn-menu relative z-50 ltr:-mr-8 rtl:-ml-8 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden"
+    role="button"
+    aria-label="Menu"
+  ></div>
+
+  
+
+  <script>
+    
+    const htmlClass = document.documentElement.classList;
+    setTimeout(() => {
+      htmlClass.remove('not-ready');
+    }, 10);
+
+    
+    const btnMenu = document.querySelector('.btn-menu');
+    btnMenu.addEventListener('click', () => {
+      htmlClass.toggle('open');
+    });
+
+    
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    const lightBg = '#faf8f1'.replace(/"/g, '');
+    const setDark = (isDark) => {
+      metaTheme.setAttribute('content', isDark ? '#000' : lightBg);
+      htmlClass[isDark ? 'add' : 'remove']('dark');
+      localStorage.setItem('dark', isDark);
+    };
+
+    
+    const darkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+    if (htmlClass.contains('dark')) {
+      setDark(true);
+    } else {
+      const darkVal = localStorage.getItem('dark');
+      setDark(darkVal ? darkVal === 'true' : darkScheme.matches);
+    }
+
+    
+    darkScheme.addEventListener('change', (event) => {
+      setDark(event.matches);
+    });
+
+    
+    const btnDark = document.querySelector('.btn-dark');
+    btnDark.addEventListener('click', () => {
+      setDark(localStorage.getItem('dark') !== 'true');
+    });
+  </script>
+
+  <div
+    class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full select-none flex-col justify-center pb-16 duration-200 dark:bg-black lg:static lg:h-auto lg:flex-row lg:!bg-transparent lg:pb-0 lg:transition-none"
+  >
+    
+    
+
+    
+  </div>
+</header>
+
+
+    <main
+      class="prose prose-neutral relative mx-auto min-h-[calc(100%-9rem)] max-w-[--w] px-8 pb-16 pt-14 dark:prose-invert"
+    >
+      
+
+<article>
+  <header class="mb-14">
+    <h1 class="!my-0 pb-2.5">SHA1详解</h1>
+
+    
+    <div class="text-xs antialiased opacity-60">
+      
+      <time>Nov 13, 2024</time>
+      
+      
+      
+      
+    </div>
+    
+  </header>
+
+  <section><p>SHA1（Secure Hash Algorithm 1）是一种散列函数，由美国国家安全局设计，并由美国<a href="https://zh.wikipedia.org/wiki/%E5%9C%8B%E5%AE%B6%E6%A8%99%E6%BA%96%E6%8A%80%E8%A1%93%E7%A0%94%E7%A9%B6%E6%89%80" title="国家标准技术研究所">国家标准技术研究所</a>（NIST）发布为<a href="https://zh.wikipedia.org/wiki/%E8%81%AF%E9%82%A6%E8%B3%87%E6%96%99%E8%99%95%E7%90%86%E6%A8%99%E6%BA%96" title="联邦资料处理标准">联邦资料处理标准</a>（FIPS）。它接受任意长度的输入（其实是不超过 2^64 长度）并输出 160 bit 的摘要。它的处理流程与 MD5 有很多相似之处，且在 2017 年已经发现碰撞，建议使用 SHA2 或 SHA3 算法替代。</p>
+<h3 id="算法原理">算法原理</h3>
+<h4 id="填充数据">填充数据</h4>
+<p>与 MD5 的数据填充流程一致。</p>
+<h4 id="分组数据运算">分组数据运算</h4>
+<p>首先赋值 5 个初始链接变量，因为每个变量为 32 bit，SHA1 的摘要长度比 MD5 多 32 bit，即正好多一个链接变量。</p>
+<pre tabindex="0"><code>A: 0x67452301 B: 0xefcdab89 C: 0x98badcfe D: 0x10325476 E: 0xC3D2E1F0
+</code></pre><p>与 MD5 类似，SHA1 也有 4 个非线性函数：</p>
+<pre tabindex="0"><code>Ft(B,C,D) = (B&amp;C)|(~B&amp;D) (0&lt;=t&lt;=19)
+Ft(B,C,D) = B^C^D (20&lt;=t&lt;=39)
+Ft(B,C,D) = (B&amp;C)|(B&amp;D)|(C&amp;D) (40&lt;=t&lt;=59)
+Ft(B,C,D) = B^C^D (60&lt;=t&lt;=79)
+</code></pre><p>与 MD5 相似，SHA1 在进行分组数据运算时，也会用到 Mi 和 tj（SHA1 中一般用 Wt 和 Kt 表示）</p>
+<p>$$
+W_t = \begin{cases}
+M_i &amp; 0 \le t \le15 \\
+(W_{t-3}\oplus W_{t-8}\oplus W_{t-14}\oplus W_{t-16})&laquo;&lt;1 &amp; 16\le t\le79
+\end{cases}
+$$</p>
+<pre tabindex="0"><code>Kt=0x5A827999 (0&lt;=t&lt;=19)
+Kt=0x6ED9EBA1 (20&lt;=t&lt;=39)
+Kt=0x8F188CDC (40&lt;=t&lt;=59)
+Kt=0xCA62C1D6 (60&lt;=t&lt;=79)
+</code></pre><p>基于这四种非线性函数，SHA1 对每个分组进行 80 轮操作，与 MD5 相似，以下操作的 a,b,c,d,e 的初值与初始链接变量相同：</p>
+<pre tabindex="0"><code>\\ 以下操作执行80轮
+T = a&lt;&lt;&lt;5 + Ft(b,c,d) + e + Wt + Kt
+e = d
+d = c
+c = b&lt;&lt;&lt;30
+b = a
+a = T
+</code></pre><p>与 MD5 的后续操作一致，将 A,B,C,D 值更新，当所有的分组运算完毕后，将 A,B,C,D 拼接起来并按照小端序展示即可。</p>
+<h3 id="sha1-python-实现">SHA1 Python 实现</h3>
+</section>
+
+  
+  
+
+  
+  
+  
+  
+  <nav
+    class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg !leading-[1.2] *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"
+  >
+    
+    <a class="ltr:pr-3 rtl:pl-3" href="https://6uolong.github.io/posts/%E5%AF%86%E7%A0%81%E5%AD%A6/%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95-md5/"
+      ><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>MD5详解</span></a
+    >
+    
+    
+    <a class="ltr:ml-auto rtl:mr-auto justify-end pl-3" href="https://6uolong.github.io/posts/%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91/frida%E6%A3%80%E6%B5%8B/"
+      ><span>Frida检测</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a
+    >
+    
+  </nav>
+  
+  
+
+  
+  
+
+  
+  
+
+  
+
+
+  
+</article>
+
+
+    </main>
+
+    <footer
+  class="mx-auto flex h-[4.5rem] max-w-[--w] items-center px-8 text-xs uppercase tracking-wider opacity-60"
+>
+  <div class="mr-auto">
+  
+    &copy; 2024
+    <a class="link" href="https://6uolong.github.io/">huolong blog</a>
+  
+  </div>
+  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
+    >powered by hugo️️</a
+  >️
+  <a
+    class="link"
+    href="https://github.com/nanxiaobei/hugo-paper"
+    rel="noopener"
+    target="_blank"
+    >hugo-paper</a
+  >
+</footer>
+
+  </body>
+</html>
